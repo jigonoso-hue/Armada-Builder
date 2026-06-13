@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Broadsides! — Armada Builder</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0d1b2a;color:#e8e0d0;height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+:root{
+  --navy:#1B2A4A;--crimson:#8B1A1A;--gold:#C8961E;--sand:#F5F0E8;--mid:#D4C9B0;
+  --t1:#4A4030;--t1bg:#2a2620;--t2:#7A5500;--t2bg:#2d2000;--t3:#7A1A10;--t3bg:#2a0d0a;
+  --water:#0a3d5c;--water2:#0d4f78;
+}
+
+/* ── Top bar ── */
+#topbar{background:#0f1e30;border-bottom:1px solid #1e3a5a;padding:8px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+#topbar h1{font-size:15px;font-weight:500;color:#c8961e;letter-spacing:.04em;}
+#topbar .sub{font-size:11px;color:#6a8aaa;margin-left:4px;}
+.stats-bar{display:flex;gap:16px;margin-left:auto;align-items:center;}
+.stat-chip{font-size:11px;color:#8aadcc;background:#0d2a40;border:0.5px solid #1e3a5a;border-radius:6px;padding:3px 10px;}
+.stat-chip span{color:#c8961e;font-weight:500;}
+
+/* ── Layout ── */
+#app{display:flex;flex-direction:column;flex:1;overflow:hidden;}
+
+/* ── Ship catalogue ── */
+#catalogue{background:#0f1e30;border-bottom:1px solid #1e3a5a;padding:8px 12px;flex-shrink:0;}
+#catalogue h2{font-size:11px;font-weight:500;color:#6a8aaa;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+#tier-tabs{display:flex;gap:4px;margin-bottom:6px;}
+.tier-tab{font-size:11px;padding:3px 10px;border-radius:99px;border:0.5px solid #1e3a5a;background:transparent;color:#6a8aaa;cursor:pointer;}
+.tier-tab.active{background:#c8961e;color:#0f1e30;border-color:#c8961e;font-weight:500;}
+#ship-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;}
+#ship-scroll::-webkit-scrollbar{height:3px;}
+#ship-scroll::-webkit-scrollbar-track{background:#0a1520;}
+#ship-scroll::-webkit-scrollbar-thumb{background:#1e3a5a;border-radius:3px;}
+
+.ship-chip{
+  flex-shrink:0;background:#0d2a40;border:0.5px solid #1e3a5a;border-radius:8px;
+  padding:7px 10px;cursor:grab;user-select:none;transition:border-color .15s,background .15s;
+  min-width:120px;
+}
+.ship-chip:hover{border-color:#c8961e;background:#102e48;}
+.ship-chip.dragging{opacity:.4;cursor:grabbing;}
+.ship-chip .sc-name{font-size:12px;font-weight:500;color:#e8e0d0;white-space:nowrap;}
+.ship-chip .sc-origin{font-size:10px;color:#6a8aaa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;}
+.ship-chip .sc-stats{display:flex;gap:6px;margin-top:4px;}
+.sc-badge{font-size:10px;padding:1px 6px;border-radius:4px;background:#0a1e30;border:0.5px solid #1e3a5a;color:#8aadcc;}
+.sc-badge.t1{background:#1a1a0a;border-color:#4a4030;color:#a09060;}
+.sc-badge.t2{background:#1a1000;border-color:#7a5500;color:#c89030;}
+.sc-badge.t3{background:#1a0808;border-color:#7a1a10;color:#c86050;}
+
+/* ── Main area: water + detail ── */
+#main{display:flex;flex:1;overflow:hidden;}
+
+/* ── Water ── */
+#water-area{
+  flex:1;position:relative;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 60%,#0d4f78 0%,#0a3d5c 40%,#061e2e 100%);
+}
+#water-label{position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  font-size:11px;color:#1e5a80;text-transform:uppercase;letter-spacing:.1em;pointer-events:none;}
+
+.water-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(30,90,128,.15) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(30,90,128,.15) 1px,transparent 1px);
+  background-size:50px 50px;pointer-events:none;
+}
+
+#water-drop-zone{position:absolute;inset:0;}
+
+/* ── Ship tokens in water ── */
+.ship-token{
+  position:absolute;cursor:pointer;user-select:none;
+  background:#0f2a40;border:1.5px solid #1e5a80;border-radius:10px;
+  padding:8px 12px;min-width:140px;
+  transition:border-color .15s,box-shadow .15s;
+}
+.ship-token:hover{border-color:#c8961e;}
+.ship-token.selected{border-color:#c8961e;box-shadow:0 0 0 2px rgba(200,150,30,.25);}
+.ship-token .st-tier{font-size:9px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;}
+.ship-token .st-name{font-size:13px;font-weight:500;color:#e8e0d0;}
+.ship-token .st-ac{font-size:10px;color:#6a8aaa;margin-top:2px;}
+.ship-token .st-delete{
+  position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:4px;
+  background:transparent;border:none;color:#6a8aaa;cursor:pointer;font-size:12px;
+  display:flex;align-items:center;justify-content:center;
+}
+.ship-token .st-delete:hover{color:#c86050;background:#1a0808;}
+.ship-token .st-systems{display:flex;gap:3px;flex-wrap:wrap;margin-top:5px;}
+.sys-pip{width:8px;height:8px;border-radius:2px;border:0.5px solid;flex-shrink:0;}
+
+/* ── Detail panel ── */
+#detail-panel{
+  width:360px;flex-shrink:0;background:#0f1e30;border-left:1px solid #1e3a5a;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+#detail-empty{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  color:#2a4a6a;
+}
+#detail-empty i{font-size:40px;}
+#detail-empty p{font-size:12px;}
+#detail-content{flex:1;overflow-y:auto;display:none;flex-direction:column;}
+#detail-content::-webkit-scrollbar{width:4px;}
+#detail-content::-webkit-scrollbar-track{background:#0a1520;}
+#detail-content::-webkit-scrollbar-thumb{background:#1e3a5a;}
+
+#detail-header{padding:12px 14px;border-bottom:1px solid #1e3a5a;flex-shrink:0;}
+#detail-ship-name{font-size:15px;font-weight:500;color:#e8e0d0;}
+#detail-ship-sub{font-size:11px;color:#6a8aaa;margin-top:1px;}
+#detail-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:10px 14px;flex-shrink:0;}
+.ds-stat{background:#0a1e30;border-radius:6px;padding:6px 8px;border:0.5px solid #1e3a5a;}
+.ds-stat .dsl{font-size:9px;color:#6a8aaa;text-transform:uppercase;letter-spacing:.05em;}
+.ds-stat .dsv{font-size:13px;font-weight:500;color:#e8e0d0;}
+
+#detail-systems{padding:0 14px 10px;flex:1;}
+#detail-systems h3{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#6a8aaa;margin-bottom:8px;}
+
+.system-section{margin-bottom:10px;}
+.system-section-label{font-size:10px;color:#4a6a8a;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+
+.slot-row{display:flex;gap:6px;flex-wrap:wrap;}
+
+.sys-slot{
+  border:1px dashed #1e3a5a;border-radius:8px;padding:6px 10px;min-width:90px;
+  font-size:11px;color:#2a4a6a;background:#08182a;cursor:pointer;
+  transition:border-color .15s,background .15s;position:relative;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+}
+.sys-slot.filled{border-style:solid;border-color:#1e4a6a;background:#0a2234;color:#8aadcc;}
+.sys-slot.filled .slot-name{font-size:11px;color:#c8d8e8;font-weight:500;}
+.sys-slot.filled .slot-tier{font-size:9px;color:#4a8aaa;}
+.sys-slot.drag-over{border-color:#c8961e;background:#102030;}
+.sys-slot .slot-remove{position:absolute;top:2px;right:3px;font-size:10px;color:#4a6a8a;cursor:pointer;line-height:1;}
+.sys-slot .slot-remove:hover{color:#c86050;}
+.sys-slot.empty-slot .slot-icon{font-size:16px;color:#1e3a5a;}
+.sys-slot.empty-slot:hover{border-color:#2e5a8a;background:#0a2234;color:#4a8aaa;}
+
+/* ── System catalogue in detail ── */
+#sys-catalogue{padding:0 14px 14px;border-top:1px solid #1e3a5a;flex-shrink:0;}
+#sys-catalogue h3{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#6a8aaa;margin:8px 0 6px;}
+#sys-cat-tabs{display:flex;gap:3px;margin-bottom:6px;flex-wrap:wrap;}
+.sys-cat-tab{font-size:10px;padding:2px 8px;border-radius:99px;border:0.5px solid #1e3a5a;background:transparent;color:#6a8aaa;cursor:pointer;}
+.sys-cat-tab.active{background:#1e3a5a;color:#c8d8e8;}
+#sys-list{display:flex;gap:5px;flex-wrap:wrap;max-height:100px;overflow-y:auto;}
+#sys-list::-webkit-scrollbar{width:3px;}
+#sys-list::-webkit-scrollbar-thumb{background:#1e3a5a;}
+
+.sys-item{
+  font-size:10px;padding:4px 8px;border-radius:6px;border:0.5px solid #1e3a5a;
+  background:#08182a;color:#8aadcc;cursor:grab;user-select:none;
+  transition:border-color .15s;white-space:nowrap;
+}
+.sys-item:hover{border-color:#c8961e;color:#c8d8e8;}
+.sys-item.dragging{opacity:.4;}
+.sys-item .si-tier{font-size:9px;color:#4a6a8a;}
+.sys-item .si-name{font-weight:500;}
+
+/* ── Trait box ── */
+#detail-trait{padding:0 14px 10px;flex-shrink:0;}
+#detail-trait .trait-box{background:#0a2234;border:0.5px solid #1e3a5a;border-radius:8px;padding:8px 10px;}
+#detail-trait .trait-label{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#4a8aaa;margin-bottom:3px;}
+#detail-trait .trait-text{font-size:11px;color:#8aadcc;line-height:1.5;}
+
+/* ── Upgrade slots ── */
+.upgrade-slot{
+  border:1px dashed #1e3a5a;border-radius:8px;padding:5px 8px;
+  font-size:11px;color:#2a4a6a;background:#08182a;cursor:pointer;
+  transition:border-color .15s;flex:1;min-width:120px;position:relative;
+}
+.upgrade-slot.filled{border-style:solid;border-color:#4a3a1a;background:#1a1400;color:#c8961e;}
+.upgrade-slot.filled .upg-name{font-size:11px;color:#c8b060;font-weight:500;}
+.upgrade-slot.filled .upg-cost{font-size:9px;color:#6a5a30;}
+.upgrade-slot.drag-over{border-color:#c8961e;}
+.upgrade-slot .slot-remove{position:absolute;top:2px;right:3px;font-size:10px;color:#6a5a30;cursor:pointer;}
+.upgrade-slot .slot-remove:hover{color:#c86050;}
+
+/* ── Tier colour helpers ── */
+.t1-color{color:#a09060;} .t2-color{color:#c89030;} .t3-color{color:#c86050;}
+.t1-border{border-color:#4a4030;} .t2-border{border-color:#7a5500;} .t3-border{border-color:#7a1a10;}
+</style>
+</head>
+<body>
+<h2 class="sr-only">Broadsides! Armada Builder — drag ships into the water, select them to configure systems and upgrades</h2>
+
+<div id="topbar">
+  <h1>BROADSIDES! <span class="sub">Armada Builder</span></h1>
+  <div class="stats-bar">
+    <div class="stat-chip">Ships: <span id="stat-ships">0</span></div>
+    <div class="stat-chip">Total HP: <span id="stat-hp">0</span></div>
+    <div class="stat-chip">Fleet cost: <span id="stat-cost">0 gp</span></div>
+  </div>
+</div>
+
+<div id="app">
+  <div id="catalogue">
+    <h2>Ship Catalogue — drag to water</h2>
+    <div id="tier-tabs">
+      <button class="tier-tab active" onclick="filterTier('all')">All</button>
+      <button class="tier-tab" onclick="filterTier(0)">Tier 0</button>
+      <button class="tier-tab" onclick="filterTier(1)">Tier 1</button>
+      <button class="tier-tab" onclick="filterTier(2)">Tier 2</button>
+      <button class="tier-tab" onclick="filterTier(3)">Tier 3</button>
+    </div>
+    <div id="ship-scroll"></div>
+  </div>
+
+  <div id="main">
+    <div id="water-area">
+      <div class="water-grid"></div>
+      <div id="water-label">Your Armada</div>
+      <div id="water-drop-zone"
+        ondragover="waterDragOver(event)"
+        ondragleave="waterDragLeave(event)"
+        ondrop="waterDrop(event)">
+      </div>
+    </div>
+    <div id="detail-panel">
+      <div id="detail-empty">
+        <i class="ti ti-anchor" aria-hidden="true"></i>
+        <p>Select a ship to configure</p>
+      </div>
+      <div id="detail-content"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SHIPS = [
+  {id:'fishing',name:'Fishing Boat',origin:'Baseline — Tier 0',tier:0,ac:15,hp:240,speed:7,turn:'1 sq',crew:'2–4',cost:1000,mounts:2,
+   slots:{helm:1,cannon:2,harpoon:1,focus:1,nest:1,rigger:1},special:'Basic coastal vessel. No special trait.',layout:'2 cannon mounts (1/side). Standard layout.'},
+  {id:'small',name:'Small Ship',origin:'Baseline — Tier 1',tier:1,ac:15,hp:360,speed:13,turn:'1 sq',crew:'5–10',cost:3000,mounts:4,
+   slots:{helm:1,cannon:4,harpoon:1,focus:1,nest:1,rigger:1},special:'Light and agile. Good for quick travel and scouting.',layout:'4 cannon mounts (2/side). Full standard layout.'},
+  {id:'medium',name:'Medium Ship',origin:'Baseline — Tier 2',tier:2,ac:14,hp:600,speed:10,turn:'2 sq',crew:'15–25',cost:10000,mounts:6,
+   slots:{helm:1,cannon:6,harpoon:1,focus:1,nest:1,rigger:1},special:'Balanced adventuring vessel. Good cargo and reliability.',layout:'6 cannon mounts (3/side). Full standard layout.'},
+  {id:'large',name:'Large Ship',origin:'Baseline — Tier 3',tier:3,ac:13,hp:1050,speed:8,turn:'3 sq',crew:'40–60',cost:25000,mounts:8,
+   slots:{helm:1,cannon:8,harpoon:1,focus:1,nest:1,rigger:1},special:'Heavy, broad-decked for long hauls and major treasure loads.',layout:'8 cannon mounts (4/side). Full standard layout.'},
+  {id:'flagship',name:'Flagship',origin:'Baseline — Tier 4',tier:4,ac:12,hp:1800,speed:14,turn:'2 sq',crew:'50–100',cost:50000,mounts:10,
+   slots:{helm:1,cannon:10,harpoon:1,focus:1,nest:1,rigger:1},special:'Famed vessel of unmatched speed or durability.',layout:'10 cannon mounts (5/side). Full standard layout.'},
+  {id:'birlinn',name:'Birlinn',origin:'Scottish Highlands — oared war galley',tier:1,ac:15,hp:420,speed:14,turn:'1 sq',crew:'10–20',cost:5000,mounts:1,
+   slots:{helm:1,cannon:1,harpoon:0,focus:1,nest:0,rigger:1},special:'Dual-powered: oars and sail. Captain switches between oar-speed (+2 sq, ignore wind) and sail-speed as free action.',layout:'1 cannon mount (fore only). No harpoon — too narrow. Arcane focus at prow.'},
+  {id:'dhow',name:'Dhow',origin:'Arab — lateen-rigged coastal raider',tier:1,ac:14,hp:360,speed:14,turn:'1 sq',crew:'8–15',cost:5500,mounts:2,
+   slots:{helm:1,cannon:2,harpoon:1,focus:1,nest:0,rigger:1},special:'Lateen rig: ignores wind direction penalties. +2 sq within 45° of wind.',layout:'2 side cannon mounts. No crow\'s nest (lateen mast). Harpoon at stern.'},
+  {id:'proa',name:'Proa',origin:'Polynesian — outrigger speed vessel',tier:1,ac:13,hp:300,speed:16,turn:'1 sq',crew:'6–12',cost:4500,mounts:1,
+   slots:{helm:1,cannon:1,harpoon:0,focus:1,nest:0,rigger:1},special:'Fastest T1. Outrigger hull: cannot be knocked prone by rams. Rammer takes full damage, Proa takes none.',layout:'1 fore cannon only. No harpoon (too light). No crow\'s nest.'},
+  {id:'longship',name:'Longship',origin:'Norse — raiding dragon ship',tier:1,ac:14,hp:390,speed:13,turn:'1 sq',crew:'20–40',cost:6000,mounts:2,
+   slots:{helm:1,cannon:2,harpoon:1,focus:0,nest:0,rigger:1},special:'Ram deals no self-damage (dragon prow). Boarding crew gain advantage first turn AND first attack.',layout:'2 side cannon mounts. No crow\'s nest. Harpoon at prow. No arcane focus slot.'},
+  {id:'warjunk',name:'War Junk',origin:'Chinese — armoured war junk',tier:1,ac:16,hp:480,speed:10,turn:'2 sq',crew:'15–30',cost:6500,mounts:3,
+   slots:{helm:1,cannon:3,harpoon:0,focus:1,nest:1,rigger:1},special:'Armoured battens: all hull damage reduced by 10 (before x10).',layout:'3 cannon mounts (1 fore, 1 per side). No harpoon. Crow\'s nest on main mast.'},
+  {id:'felucca',name:'Felucca',origin:'Egyptian/Mediterranean — river-sea hybrid',tier:1,ac:14,hp:330,speed:12,turn:'1 sq',crew:'8–16',cost:4800,mounts:2,
+   slots:{helm:1,cannon:2,harpoon:1,focus:1,nest:1,rigger:1},special:'Shallow draft: operates in rivers, deltas, and harbour shallows other ships cannot enter.',layout:'2 side cannons. Crow\'s nest. Harpoon at prow. Arcane focus at stern.'},
+  {id:'outrigger',name:'Outrigger War Canoe',origin:'Pacific Islander — wave-rider',tier:1,ac:13,hp:270,speed:15,turn:'1 sq',crew:'8–16',cost:4000,mounts:1,
+   slots:{helm:1,cannon:1,harpoon:1,focus:0,nest:0,rigger:1},special:'Wave rider: +2 sq in rough seas/storms. Crew advantage on saves vs overboard.',layout:'1 fore cannon. Harpoon. No crow\'s nest. No arcane focus.'},
+  {id:'trireme',name:'Trireme',origin:'Greek/Roman — oared war galley',tier:1,ac:15,hp:450,speed:12,turn:'2 sq',crew:'30–50',cost:7000,mounts:2,
+   slots:{helm:1,cannon:2,harpoon:0,focus:1,nest:1,rigger:1},special:'Bronze ram prow: ram +3d10 extra damage. Trireme takes no structural damage from ramming. Once/combat: target system directly, no disadvantage.',layout:'2 side cannons. Crow\'s nest. No harpoon (ram is boarding tool). Arcane focus at stern.'},
+  {id:'geobukseon',name:'Geobukseon',origin:'Korean — ironclad turtle ship',tier:2,ac:18,hp:900,speed:8,turn:'2 sq',crew:'40–80',cost:18000,mounts:6,
+   slots:{helm:1,cannon:6,harpoon:0,focus:1,nest:0,rigger:1},special:'Iron shell: immune to fire and boarding. Enemy cannot climb aboard unless they destroy a hatch (AC 20, 60 HP, 3 hatches). Crew protected from sniper fire.',layout:'6 cannon mounts. Fully enclosed — no crow\'s nest, no harpoon. Arcane focus fitted internally.'},
+  {id:'admiraljunk',name:'Admiral Junk',origin:'Chinese — Zheng He-class treasure ship',tier:2,ac:15,hp:1200,speed:9,turn:'3 sq',crew:'50–100',cost:22000,mounts:8,
+   slots:{helm:1,cannon:8,harpoon:1,focus:1,nest:2,rigger:1},special:'Command vessel: Morale Die one step higher. All Command DCs –1. Enemy ships within 3 sq: DC 12 Wis or begin at Shaken morale.',layout:'8 cannon mounts. Two crow\'s nest slots. Harpoon at prow. Arcane focus.'},
+  {id:'carrack',name:'Carrack',origin:'Portuguese/Spanish — ocean-going broadside warship',tier:2,ac:14,hp:900,speed:9,turn:'2 sq',crew:'30–60',cost:20000,mounts:6,
+   slots:{helm:1,cannon:6,harpoon:1,focus:1,nest:2,rigger:1},special:'High-castle: snipers +1 extra hit bonus. Spotters see over all enemy cover. Upper deck cannons add +1d10 hull damage vs smaller ships.',layout:'6 side cannon mounts. Two crow\'s nest slots (fore/aft castles). Harpoon at prow.'},
+  {id:'galleass',name:'Galleass',origin:'Mediterranean — hybrid galley-galleon',tier:2,ac:14,hp:750,speed:11,turn:'2 sq',crew:'40–70',cost:17000,mounts:5,
+   slots:{helm:1,cannon:5,harpoon:1,focus:1,nest:1,rigger:1},special:'Oar-and-sail: ignores wind penalties, full speed in dead calm. Once/combat: +3 sq straight-line movement free.',layout:'5 cannon mounts (1 fore, 2 per side). Crow\'s nest. Harpoon at stern.'},
+  {id:'xebec',name:'Xebec',origin:'Barbary Coast — three-masted corsair',tier:2,ac:15,hp:720,speed:12,turn:'1 sq',crew:'25–50',cost:16000,mounts:4,
+   slots:{helm:1,cannon:4,harpoon:1,focus:1,nest:1,rigger:1},special:'Corsair\'s agility: turn cost 1 sq at T2 (normally 2). Once/combat: Hard About as free action, no DC.',layout:'4 cannon mounts (2 per side). Crow\'s nest. Harpoon. Arcane focus.'},
+  {id:'fluyt',name:'Fluyt',origin:'Dutch — cargo-converted raider',tier:2,ac:13,hp:900,speed:10,turn:'2 sq',crew:'20–40',cost:14000,mounts:4,
+   slots:{helm:1,cannon:4,harpoon:1,focus:1,nest:1,rigger:1},special:'Cargo conversion: carries 3 stored spare systems. Engineer can spend 2 charges to activate a stored system as emergency replacement.',layout:'4 side cannon mounts. Crow\'s nest. Harpoon. Arcane focus. 3 cargo system slots.'},
+  {id:'polacre',name:'Polacre',origin:'Mediterranean — fast merchant-warship',tier:2,ac:14,hp:660,speed:13,turn:'1 sq',crew:'20–35',cost:15000,mounts:4,
+   slots:{helm:1,cannon:4,harpoon:1,focus:1,nest:1,rigger:1},special:'Fastest T2. Push the rig (once/combat): +4 sq speed this round. Mast takes 1d6×10 strain damage after.',layout:'4 side cannon mounts. Single crow\'s nest. Harpoon. Arcane focus.'},
+  {id:'wardhow',name:'War Dhow',origin:'Arab — heavy armed trade escort',tier:2,ac:14,hp:780,speed:12,turn:'1 sq',crew:'25–45',cost:16500,mounts:4,
+   slots:{helm:1,cannon:4,harpoon:1,focus:1,nest:1,rigger:1},special:'Night raider: advantage on initiative. First round +2 sq speed. In darkness/fog: crew no disadvantage on attacks.',layout:'4 cannon mounts. Crow\'s nest. Harpoon at stern. Arcane focus at prow.'},
+  {id:'ironclad',name:'Ironclad Ram',origin:'Victorian-inspired — steam-iron warship',tier:3,ac:19,hp:2100,speed:10,turn:'2 sq',crew:'50–100',cost:55000,mounts:8,
+   slots:{helm:1,cannon:8,harpoon:0,focus:1,nest:0,rigger:1},special:'Armoured colossus: hull damage –20 (before x10). Immune to fire. Ram deals 8d10×10. Harpoon lines snap on iron hull (DC 20). Requires Coal or Brine Engine.',layout:'8 cannon mounts (3/side, 1 fore, 1 aft). No crow\'s nest. No harpoon. Arcane focus at stern.'},
+  {id:'dragonboat',name:'Dragon Boat Imperial',origin:'Chinese — ceremonial war-dragon flagship',tier:3,ac:15,hp:1800,speed:13,turn:'2 sq',crew:'60–120',cost:60000,mounts:8,
+   slots:{helm:1,cannon:8,harpoon:1,focus:2,nest:2,rigger:1},special:'Dragon presence: enemy ships within 5 sq lose 3 morale (DC 15 Wis). Morale Die always one tier higher. Morale cannot drop below Steady while Captain lives.',layout:'8 cannon mounts. Two crow\'s nest slots. Harpoon at prow. Double arcane focus slot (two casters).'},
+  {id:'manowar',name:"Man-o-War",origin:'British — ship of the line',tier:3,ac:14,hp:1800,speed:11,turn:'3 sq',crew:'60–120',cost:58000,mounts:10,
+   slots:{helm:1,cannon:10,harpoon:1,focus:1,nest:2,rigger:1},special:'Line of battle: 3+ mounts firing same turn adds +1d10×10 per mount beyond the second. Hard About DC 16 regardless of helm tier.',layout:'10 cannon mounts (5/side). Two crow\'s nest slots. Harpoon at prow. Arcane focus at stern.'},
+  {id:'galleon',name:"Galleon de Guerra",origin:'Spanish — armed treasure galleon',tier:3,ac:14,hp:1950,speed:10,turn:'2 sq',crew:'50–100',cost:50000,mounts:8,
+   slots:{helm:1,cannon:8,harpoon:1,focus:1,nest:2,rigger:1},special:'Treasure hold: 200 gp spare parts per combat. Engineer spends 50 gp instead of kit charges for any kit action.',layout:'8 cannon mounts. Two crow\'s nest slots. Harpoon at stern. Arcane focus at prow.'},
+  {id:'kobaya',name:'Kobaya',origin:'Japanese — fast patrol frigate',tier:3,ac:15,hp:1350,speed:16,turn:'1 sq',crew:'30–60',cost:40000,mounts:6,
+   slots:{helm:1,cannon:6,harpoon:1,focus:1,nest:1,rigger:1},special:'Fastest T3. Ghost run (once/combat): double Speed, all attacks against it at disadvantage, no Captain Command. Crew DC 12 Con or lose action next round.',layout:'6 cannon mounts (2/side, 1 fore, 1 aft). Single crow\'s nest. Harpoon. Arcane focus.'},
+  {id:'atakebune',name:'Atakebune',origin:'Japanese — castle ship',tier:3,ac:17,hp:1950,speed:8,turn:'3 sq',crew:'50–100',cost:52000,mounts:8,
+   slots:{helm:1,cannon:8,harpoon:1,focus:1,nest:1,rigger:1},special:'Tower fortress: snipers +3 to hit, three-quarter cover. Anti-boarding: first round boarding crew have disadvantage (not advantage) — tower defenders hold high ground.',layout:'8 cannon mounts. Tower replaces crow\'s nest (counts as T3 nest +1 hit). Harpoon at prow.'},
+  {id:'quadrireme',name:'Quadrireme',origin:'Carthaginian/Roman — four-bank war galley',tier:3,ac:15,hp:1650,speed:13,turn:'2 sq',crew:'60–100',cost:45000,mounts:6,
+   slots:{helm:1,cannon:6,harpoon:1,focus:1,nest:1,rigger:1},special:'Four-bank surge (once/combat): full Speed bonus movement after normal move, straight only. Ram after surge: +4d10×10 bonus. Crew DC 13 Con or disadvantage.',layout:'6 cannon mounts (2/side, 1 fore, 1 aft). Crow\'s nest. Harpoon at prow (bronze-tipped).'},
+  {id:'baochuan',name:'Baochuan',origin:'Chinese — Zheng He fleet flagship',tier:3,ac:15,hp:2400,speed:9,turn:'3 sq',crew:'100–200',cost:70000,mounts:10,
+   slots:{helm:1,cannon:10,harpoon:2,focus:2,nest:3,rigger:1},special:'Fleet command: allied ships within 6 sq gain +1 attacks and +1 morale/round passively. Captain can issue Commands to allied ships in range. Largest ship.',layout:'10 cannon mounts. Three crow\'s nest slots. Two harpoon launcher slots. Two arcane focus slots. Full Rigger\'s Kit.'},
+];
+
+const SYSTEMS = {
+  helm:[
+    {id:'helm_t1',name:"Ship's wheel",tier:1,type:'helm',cost:0},
+    {id:'helm_t2',name:'Reinforced helm',tier:2,type:'helm',cost:2000},
+    {id:'helm_t3',name:'Sovereign helm',tier:3,type:'helm',cost:8000},
+    {id:'twin_crowns',name:'The Twin Crowns',tier:2,type:'helm',cost:2800},
+    {id:'gales_embrace',name:"Gale's Embrace",tier:2,type:'helm',cost:3200},
+    {id:'whisper_deep',name:'Whisper of the Deep',tier:2,type:'helm',cost:3500},
+    {id:'warlord_podium',name:"The Warlord's Podium",tier:2,type:'helm',cost:4000},
+    {id:'breath_thalindra',name:'Breath of Thalindra',tier:3,type:'helm',cost:10000},
+    {id:'iron_admiral',name:'The Iron Admiral',tier:3,type:'helm',cost:12000},
+    {id:'veilrunner',name:"Veilrunner's Spoke",tier:3,type:'helm',cost:13000},
+    {id:'fang_leviathan',name:'Fang of the Leviathan',tier:3,type:'helm',cost:14000},
+  ],
+  cannon:[
+    {id:'cannon_t1',name:'Iron cannon',tier:1,type:'cannon',cost:500},
+    {id:'cannon_t2',name:'Steel long gun',tier:2,type:'cannon',cost:2000},
+    {id:'cannon_t3',name:'Dwarven siege gun',tier:3,type:'cannon',cost:8000},
+    {id:'widows_spray',name:"The Widow's Spray",tier:2,type:'cannon',cost:2500},
+    {id:'ironjaw',name:'Ironjaw',tier:2,type:'cannon',cost:3000},
+    {id:'grey_veil',name:'The Grey Veil',tier:2,type:'cannon',cost:2200},
+    {id:'chainbreaker',name:'Chainbreaker',tier:2,type:'cannon',cost:2800},
+    {id:'hellsmouth',name:'Hellsmouth',tier:3,type:'cannon',cost:10000},
+    {id:'groundshaker',name:'Groundshaker',tier:3,type:'cannon',cost:12000},
+    {id:'pale_shot',name:'The Pale Shot',tier:3,type:'cannon',cost:11000},
+    {id:'null_bore',name:'The Null Bore',tier:3,type:'cannon',cost:14000},
+  ],
+  focus:[
+    {id:'focus_t1',name:'Runed lens',tier:1,type:'focus',cost:800},
+    {id:'focus_t2',name:'Resonance focus',tier:2,type:'focus',cost:4000},
+    {id:'focus_t3',name:'Void anchor',tier:3,type:'focus',cost:15000},
+    {id:'stormcaller',name:'The Stormcaller',tier:2,type:'focus',cost:5000},
+    {id:'mirrorcast',name:'Mirrorcast',tier:2,type:'focus',cost:5500},
+    {id:'warding_stone',name:'The Warding Stone',tier:2,type:'focus',cost:4500},
+    {id:'tidecallers_eye',name:"Tidecaller's Eye",tier:2,type:'focus',cost:4800},
+    {id:'heart_askareth',name:'Heart of Askareth',tier:3,type:'focus',cost:18000},
+    {id:'broken_clock',name:'The Broken Clock',tier:3,type:'focus',cost:20000},
+    {id:'silencing_stone',name:'The Silencing Stone',tier:3,type:'focus',cost:17000},
+    {id:'maw_world',name:'Maw of the World',tier:3,type:'focus',cost:22000},
+  ],
+  harpoon:[
+    {id:'harpoon_t1',name:'Hand winch',tier:1,type:'harpoon',cost:400},
+    {id:'harpoon_t2',name:'Spring launcher',tier:2,type:'harpoon',cost:1500},
+    {id:'harpoon_t3',name:'Siege harpoon',tier:3,type:'harpoon',cost:6000},
+    {id:'the_thorn',name:'The Thorn',tier:2,type:'harpoon',cost:2200},
+    {id:'wraithline',name:'Wraithline',tier:2,type:'harpoon',cost:2500},
+    {id:'widows_net',name:"The Widow's Net",tier:2,type:'harpoon',cost:1800},
+    {id:'heartstring',name:'Heartstring',tier:2,type:'harpoon',cost:2800},
+    {id:'jaw_deep',name:'Jaw of the Deep',tier:3,type:'harpoon',cost:8000},
+    {id:'whispering_chain',name:'The Whispering Chain',tier:3,type:'harpoon',cost:9000},
+    {id:'dead_anchor',name:'Dead Anchor',tier:3,type:'harpoon',cost:7500},
+    {id:'boarding_ram',name:'The Boarding Ram',tier:3,type:'harpoon',cost:8500},
+  ],
+  nest:[
+    {id:'nest_t1',name:'Basic crow\'s nest',tier:1,type:'nest',cost:200},
+    {id:'nest_t2',name:'Reinforced platform',tier:2,type:'nest',cost:800},
+    {id:'nest_t3',name:"Eagle's perch",tier:3,type:'nest',cost:3000},
+    {id:'ironclad_crow',name:'The Ironclad Crow',tier:2,type:'nest',cost:1200},
+    {id:'eye_fog',name:'Eye of the Fog',tier:2,type:'nest',cost:1400},
+    {id:'swivel_sorrow',name:'Swivel of Sorrow',tier:2,type:'nest',cost:1000},
+    {id:'watchmans_cradle',name:"The Watchman's Cradle",tier:2,type:'nest',cost:1600},
+    {id:'talon_ancient',name:'Talon of the Ancient',tier:3,type:'nest',cost:4000},
+    {id:'shadowwatch',name:'The Shadowwatch',tier:3,type:'nest',cost:5000},
+    {id:'stormwatch',name:'Stormwatch of Karreth',tier:3,type:'nest',cost:4500},
+    {id:'reapers_roost',name:"Reaper's Roost",tier:3,type:'nest',cost:6000},
+  ],
+  rigger:[
+    {id:'rigger_t1',name:"Worn kit",tier:1,type:'rigger',cost:300},
+    {id:'rigger_t2',name:"Craftsman's kit",tier:2,type:'rigger',cost:1200},
+    {id:'rigger_t3',name:"Masterwork kit",tier:3,type:'rigger',cost:5000},
+    {id:'brewmasters',name:"The Brewmaster's Satchel",tier:2,type:'rigger',cost:1800},
+    {id:'rune_rail',name:'Rune & Rail',tier:2,type:'rigger',cost:2000},
+    {id:'surgeons_grip',name:"The Surgeon's Grip",tier:2,type:'rigger',cost:1600},
+    {id:'tinkers_burden',name:"The Tinker's Burden",tier:2,type:'rigger',cost:1500},
+    {id:'iron_patience',name:'Iron Patience',tier:3,type:'rigger',cost:7000},
+    {id:'living_forge',name:'The Living Forge',tier:3,type:'rigger',cost:8000},
+    {id:'unmakers_bag',name:"The Unmaker's Bag",tier:3,type:'rigger',cost:9000},
+    {id:'siege_hound',name:'The Siege Hound',tier:3,type:'rigger',cost:7500},
+  ],
+};
+
+const UPGRADES = [
+  {id:'iron_heart',name:'The Iron Heart',type:'engine',cost:12000},
+  {id:'scorched_heart',name:'The Scorched Heart',type:'engine',cost:20000},
+  {id:'brine_core',name:'The Brine Core',type:'engine',cost:35000},
+  {id:'still_flame',name:'The Still Flame',type:'engine',cost:12000},
+  {id:'hateful_eye',name:'The Hateful Eye',type:'offense',cost:6000},
+  {id:'poisoncraft',name:'Poisoncraft Hold',type:'offense',cost:7000},
+  {id:'widows_mantle',name:"Widow's Mantle",type:'defense',cost:7500},
+  {id:'veilshroud',name:'The Veilshroud',type:'defense',cost:8500},
+  {id:'the_cradle',name:'The Cradle',type:'defense',cost:9000},
+  {id:'mirror_hull',name:'The Mirror Hull',type:'defense',cost:14000},
+  {id:'long_ear',name:'The Long Ear',type:'utility',cost:4500},
+  {id:'iron_jaw',name:'The Iron Jaw',type:'utility',cost:5500},
+  {id:'dead_lanterns',name:"Dead Men's Lanterns",type:'utility',cost:6000},
+  {id:'oracle_deck',name:'The Oracle Deck',type:'utility',cost:7000},
+  {id:'deepwalker',name:'Deepwalker Keel',type:'utility',cost:15000},
+  {id:'pact_swords',name:'Pact of Swords',type:'crew',cost:10000},
+  {id:'marines',name:'Ashenglass Marines',type:'crew',cost:8000},
+  {id:'soulwarden',name:'The Soulwarden',type:'magic',cost:18000},
+  {id:'tidecallers_net',name:"The Tidecaller's Net",type:'magic',cost:11000},
+  {id:'iron_web',name:'The Iron Web',type:'hull',cost:8000},
+  {id:'ghost_rigging',name:'Ghost Rigging',type:'hull',cost:6500},
+  {id:'killing_deck',name:'The Killing Deck',type:'hull',cost:5000},
+  {id:'wrathbone_prow',name:'The Wrathbone Prow',type:'hull',cost:4500},
+  {id:'stormcaller_mast',name:'Stormcaller Mast',type:'hull',cost:9000},
+];
+
+const TYPE_COLORS = {
+  helm:'#8aadcc',cannon:'#c86050',focus:'#a080cc',
+  harpoon:'#60c8a0',nest:'#c8a050',rigger:'#8acc80',
+};
+const TIER_CLASS = {1:'t1-color',2:'t2-color',3:'t3-color'};
+
+let armada = [];
+let selectedShipId = null;
+let currentTierFilter = 'all';
+let currentSysCat = 'helm';
+let dragSource = null;
+let dragType = null;
+let dragSlotKey = null;
+
+function filterTier(t) {
+  currentTierFilter = t;
+  document.querySelectorAll('.tier-tab').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  renderCatalogue();
+}
+
+function renderCatalogue() {
+  const scroll = document.getElementById('ship-scroll');
+  const ships = currentTierFilter === 'all' ? SHIPS : SHIPS.filter(s => s.tier === currentTierFilter);
+  scroll.innerHTML = ships.map(s => `
+    <div class="ship-chip" draggable="true" data-ship-id="${s.id}"
+      ondragstart="chipDragStart(event,'${s.id}')"
+      ondragend="chipDragEnd(event)">
+      <div class="sc-name">${s.name}</div>
+      <div class="sc-origin">${s.origin}</div>
+      <div class="sc-stats">
+        <span class="sc-badge t${Math.min(s.tier,3)}">T${s.tier}</span>
+        <span class="sc-badge">AC ${s.ac}</span>
+        <span class="sc-badge">HP ${s.hp}</span>
+        <span class="sc-badge">${s.speed}sq</span>
+        <span class="sc-badge">${(s.cost).toLocaleString()}gp</span>
+      </div>
+    </div>`).join('');
+}
+
+function chipDragStart(e, shipId) {
+  dragType = 'new-ship';
+  dragSource = shipId;
+  e.dataTransfer.effectAllowed = 'copy';
+  setTimeout(() => e.target.classList.add('dragging'), 0);
+}
+
+function chipDragEnd(e) {
+  e.target.classList.remove('dragging');
+  dragType = null;
+  dragSource = null;
+}
+
+function waterDragOver(e) {
+  if (dragType === 'new-ship' || dragType === 'move-ship') {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+  }
+}
+
+function waterDragLeave(e) {}
+
+function waterDrop(e) {
+  e.preventDefault();
+  if (dragType === 'new-ship') {
+    const ship = SHIPS.find(s => s.id === dragSource);
+    if (!ship) return;
+    const rect = document.getElementById('water-area').getBoundingClientRect();
+    const x = Math.max(10, Math.min(e.clientX - rect.left - 70, rect.width - 160));
+    const y = Math.max(10, Math.min(e.clientY - rect.top - 40, rect.height - 90));
+    const inst = {
+      uid: Date.now() + Math.random(),
+      shipId: ship.id,
+      x, y,
+      systems: {},
+      upgrades: [],
+    };
+    Object.keys(ship.slots).forEach(k => {
+      if (ship.slots[k] > 0) {
+        inst.systems[k] = new Array(ship.slots[k]).fill(null);
+      }
+    });
+    armada.push(inst);
+    renderArmada();
+    updateStats();
+    selectShip(inst.uid);
+  }
+}
+
+function renderArmada() {
+  const zone = document.getElementById('water-drop-zone');
+  const tokens = armada.map(inst => {
+    const ship = SHIPS.find(s => s.id === inst.shipId);
+    const tc = inst.shipId.includes('t') ? '' : '';
+    const tierNum = Math.min(ship.tier, 3);
+    const pipColors = Object.keys(inst.systems).flatMap(k =>
+      inst.systems[k].map(v => v ? TYPE_COLORS[k] || '#888' : '#1e3a5a')
+    ).slice(0,10);
+    return `<div class="ship-token${selectedShipId===inst.uid?' selected':''}"
+      style="left:${inst.x}px;top:${inst.y}px;"
+      data-uid="${inst.uid}"
+      onclick="selectShip('${inst.uid}')"
+      onmousedown="tokenMouseDown(event,'${inst.uid}')">
+      <div class="st-tier t${tierNum}-color">T${ship.tier} · ${ship.ac} AC</div>
+      <div class="st-name">${ship.name}</div>
+      <div class="st-ac">${ship.hp} HP · ${ship.speed}sq</div>
+      <div class="st-systems">
+        ${pipColors.map(c=>`<div class="sys-pip" style="background:${c}20;border-color:${c}"></div>`).join('')}
+      </div>
+      <button class="st-delete" onclick="deleteShip(event,'${inst.uid}')" title="Remove ship">
+        <i class="ti ti-x" aria-hidden="true"></i>
+      </button>
+    </div>`;
+  }).join('');
+  zone.innerHTML = tokens;
+}
+
+let draggingToken = null, tokenOffX = 0, tokenOffY = 0;
+
+function tokenMouseDown(e, uid) {
+  if (e.target.closest('.st-delete')) return;
+  e.preventDefault();
+  draggingToken = uid;
+  const el = document.querySelector(`[data-uid="${uid}"]`);
+  const rect = el.getBoundingClientRect();
+  tokenOffX = e.clientX - rect.left;
+  tokenOffY = e.clientY - rect.top;
+  el.style.zIndex = 100;
+  el.style.cursor = 'grabbing';
+  document.addEventListener('mousemove', tokenMouseMove);
+  document.addEventListener('mouseup', tokenMouseUp);
+}
+
+function tokenMouseMove(e) {
+  if (!draggingToken) return;
+  const el = document.querySelector(`[data-uid="${draggingToken}"]`);
+  const waterRect = document.getElementById('water-area').getBoundingClientRect();
+  const x = Math.max(0, Math.min(e.clientX - waterRect.left - tokenOffX, waterRect.width - 150));
+  const y = Math.max(0, Math.min(e.clientY - waterRect.top - tokenOffY, waterRect.height - 80));
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  const inst = armada.find(i => i.uid == draggingToken);
+  if (inst) { inst.x = x; inst.y = y; }
+}
+
+function tokenMouseUp(e) {
+  if (!draggingToken) return;
+  const el = document.querySelector(`[data-uid="${draggingToken}"]`);
+  if (el) { el.style.zIndex = ''; el.style.cursor = ''; }
+  draggingToken = null;
+  document.removeEventListener('mousemove', tokenMouseMove);
+  document.removeEventListener('mouseup', tokenMouseUp);
+}
+
+function selectShip(uid) {
+  selectedShipId = uid;
+  renderArmada();
+  renderDetail();
+}
+
+function deleteShip(e, uid) {
+  e.stopPropagation();
+  armada = armada.filter(i => i.uid != uid);
+  if (selectedShipId == uid) {
+    selectedShipId = null;
+    renderDetail();
+  }
+  renderArmada();
+  updateStats();
+}
+
+function renderDetail() {
+  const empty = document.getElementById('detail-empty');
+  const content = document.getElementById('detail-content');
+  if (!selectedShipId) {
+    empty.style.display = 'flex';
+    content.style.display = 'none';
+    return;
+  }
+  const inst = armada.find(i => i.uid == selectedShipId);
+  if (!inst) { empty.style.display='flex'; content.style.display='none'; return; }
+  const ship = SHIPS.find(s => s.id === inst.shipId);
+  empty.style.display = 'none';
+  content.style.display = 'flex';
+  content.innerHTML = `
+    <div id="detail-header">
+      <div id="detail-ship-name">${ship.name}</div>
+      <div id="detail-ship-sub">${ship.origin}</div>
+    </div>
+    <div id="detail-stats-grid">
+      <div class="ds-stat"><div class="dsl">AC</div><div class="dsv">${ship.ac}</div></div>
+      <div class="ds-stat"><div class="dsl">HP</div><div class="dsv">${ship.hp.toLocaleString()}</div></div>
+      <div class="ds-stat"><div class="dsl">Speed</div><div class="dsv">${ship.speed} sq</div></div>
+      <div class="ds-stat"><div class="dsl">Turn</div><div class="dsv">${ship.turn}</div></div>
+      <div class="ds-stat"><div class="dsl">Crew</div><div class="dsv">${ship.crew}</div></div>
+      <div class="ds-stat"><div class="dsl">Cost</div><div class="dsv">${ship.cost.toLocaleString()} gp</div></div>
+    </div>
+    <div id="detail-trait">
+      <div class="trait-box">
+        <div class="trait-label">Unique trait</div>
+        <div class="trait-text">${ship.special}</div>
+      </div>
+    </div>
+    <div id="detail-systems">
+      <h3>Systems — drag to fill slots</h3>
+      ${renderSystemSlots(inst, ship)}
+      <div style="margin-top:10px;">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#4a6a8a;margin-bottom:4px;">Ship upgrades</div>
+        ${renderUpgradeSlots(inst)}
+      </div>
+    </div>
+    <div id="sys-catalogue">
+      <h3>Available systems</h3>
+      <div id="sys-cat-tabs">
+        ${Object.keys(SYSTEMS).map(k=>`<button class="sys-cat-tab${currentSysCat===k?' active':''}" onclick="setSysCat('${k}')">${k}</button>`).join('')}
+        <button class="sys-cat-tab${currentSysCat==='upgrade'?' active':''}" onclick="setSysCat('upgrade')">upgrades</button>
+      </div>
+      <div id="sys-list">
+        ${renderSysItems()}
+      </div>
+    </div>
+  `;
+}
+
+function renderSystemSlots(inst, ship) {
+  const slotTypes = [
+    {key:'helm',label:'Helm',icon:'ti-steering-wheel'},
+    {key:'cannon',label:'Cannons',icon:'ti-circle-dot'},
+    {key:'focus',label:'Arcane focus',icon:'ti-crystal-ball'},
+    {key:'harpoon',label:'Harpoon',icon:'ti-hook'},
+    {key:'nest',label:"Crow's nest",icon:'ti-binoculars'},
+    {key:'rigger',label:"Rigger's kit",icon:'ti-tool'},
+  ];
+  return slotTypes.map(({key,label,icon}) => {
+    const count = ship.slots[key] || 0;
+    if (!count) return '';
+    const slots = inst.systems[key] || [];
+    return `<div class="system-section">
+      <div class="system-section-label"><i class="ti ${icon}" aria-hidden="true" style="font-size:11px;margin-right:3px;color:${TYPE_COLORS[key]}"></i>${label}</div>
+      <div class="slot-row">
+        ${Array.from({length:count},(_,i) => {
+          const sys = slots[i];
+          if (sys) {
+            const sysData = findSystem(sys);
+            return `<div class="sys-slot filled t${sysData?sysData.tier:1}-border"
+              ondragover="slotDragOver(event)" ondragleave="slotDragLeave(event)"
+              ondrop="slotDrop(event,'${key}',${i})"
+              title="Click × to remove">
+              <span class="slot-tier">${sysData?'T'+sysData.tier:''}</span>
+              <span class="slot-name">${sysData?sysData.name:sys}</span>
+              <span class="slot-remove" onclick="removeFromSlot('${key}',${i})">×</span>
+            </div>`;
+          } else {
+            return `<div class="sys-slot empty-slot"
+              ondragover="slotDragOver(event)" ondragleave="slotDragLeave(event)"
+              ondrop="slotDrop(event,'${key}',${i})">
+              <i class="ti ti-plus slot-icon" aria-hidden="true"></i>
+              <span style="font-size:10px;color:#2a4a6a;">empty</span>
+            </div>`;
+          }
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderUpgradeSlots(inst) {
+  const MAX_UPG = 4;
+  const slots = inst.upgrades || [];
+  const rows = [];
+  for (let i = 0; i < MAX_UPG; i++) {
+    const upg = slots[i];
+    if (upg) {
+      const upgData = UPGRADES.find(u => u.id === upg);
+      rows.push(`<div class="upgrade-slot filled"
+        ondragover="upgDragOver(event)" ondragleave="upgDragLeave(event)"
+        ondrop="upgDrop(event,${i})">
+        <span class="slot-remove" onclick="removeUpgrade(${i})">×</span>
+        <span class="upg-name">${upgData?upgData.name:upg}</span>
+        <span class="upg-cost">${upgData?(upgData.cost.toLocaleString()+' gp'):''}</span>
+      </div>`);
+    } else {
+      rows.push(`<div class="upgrade-slot"
+        ondragover="upgDragOver(event)" ondragleave="upgDragLeave(event)"
+        ondrop="upgDrop(event,${i})">
+        <i class="ti ti-plus" aria-hidden="true" style="font-size:12px;color:#2a4a6a;"></i>
+        <span style="color:#2a4a6a;font-size:10px;"> upgrade slot</span>
+      </div>`);
+    }
+  }
+  return `<div class="slot-row">${rows.join('')}</div>`;
+}
+
+function renderSysItems() {
+  if (currentSysCat === 'upgrade') {
+    return UPGRADES.map(u => `
+      <div class="sys-item" draggable="true"
+        ondragstart="sysItemDragStart(event,'${u.id}','upgrade')"
+        ondragend="sysItemDragEnd(event)">
+        <span class="si-name">${u.name}</span>
+        <span class="si-tier" style="display:block;color:#6a5a30;">${u.type} · ${u.cost.toLocaleString()}gp</span>
+      </div>`).join('');
+  }
+  const items = SYSTEMS[currentSysCat] || [];
+  return items.map(s => `
+    <div class="sys-item" draggable="true"
+      ondragstart="sysItemDragStart(event,'${s.id}','${s.type}')"
+      ondragend="sysItemDragEnd(event)">
+      <span class="si-tier t${s.tier}-color">T${s.tier}</span>
+      <span class="si-name" style="margin-left:4px;">${s.name}</span>
+      <span class="si-tier" style="display:block;color:#4a6a8a;">${s.cost.toLocaleString()} gp</span>
+    </div>`).join('');
+}
+
+function setSysCat(cat) {
+  currentSysCat = cat;
+  renderDetail();
+}
+
+let dragSysId = null, dragSysType = null;
+
+function sysItemDragStart(e, id, type) {
+  dragSysId = id;
+  dragSysType = type;
+  e.dataTransfer.effectAllowed = 'copy';
+  setTimeout(() => e.target.classList.add('dragging'), 0);
+}
+
+function sysItemDragEnd(e) {
+  e.target.classList.remove('dragging');
+  dragSysId = null;
+  dragSysType = null;
+}
+
+function slotDragOver(e) {
+  e.preventDefault();
+  e.currentTarget.classList.add('drag-over');
+}
+
+function slotDragLeave(e) {
+  e.currentTarget.classList.remove('drag-over');
+}
+
+function slotDrop(e, slotKey, idx) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!dragSysId || !selectedShipId) return;
+  if (dragSysType !== slotKey) {
+    flashSlot(e.currentTarget);
+    return;
+  }
+  const inst = armada.find(i => i.uid == selectedShipId);
+  if (!inst) return;
+  if (!inst.systems[slotKey]) inst.systems[slotKey] = [];
+  const existing = inst.systems[slotKey][idx];
+  if (existing === dragSysId) return;
+  inst.systems[slotKey][idx] = dragSysId;
+  renderDetail();
+  renderArmada();
+  updateStats();
+}
+
+function upgDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function upgDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+
+function upgDrop(e, idx) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!dragSysId || dragSysType !== 'upgrade' || !selectedShipId) return;
+  const inst = armada.find(i => i.uid == selectedShipId);
+  if (!inst) return;
+  if (!inst.upgrades) inst.upgrades = [];
+  while (inst.upgrades.length <= idx) inst.upgrades.push(null);
+  inst.upgrades[idx] = dragSysId;
+  renderDetail();
+  updateStats();
+}
+
+function removeFromSlot(slotKey, idx) {
+  const inst = armada.find(i => i.uid == selectedShipId);
+  if (!inst || !inst.systems[slotKey]) return;
+  inst.systems[slotKey][idx] = null;
+  renderDetail();
+  renderArmada();
+  updateStats();
+}
+
+function removeUpgrade(idx) {
+  const inst = armada.find(i => i.uid == selectedShipId);
+  if (!inst || !inst.upgrades) return;
+  inst.upgrades[idx] = null;
+  renderDetail();
+  updateStats();
+}
+
+function flashSlot(el) {
+  el.style.borderColor = '#c86050';
+  el.style.background = '#1a0808';
+  setTimeout(() => {
+    el.style.borderColor = '';
+    el.style.background = '';
+  }, 400);
+}
+
+function findSystem(id) {
+  for (const cat of Object.values(SYSTEMS)) {
+    const found = cat.find(s => s.id === id);
+    if (found) return found;
+  }
+  return null;
+}
+
+function updateStats() {
+  const count = armada.length;
+  const totalHp = armada.reduce((sum, inst) => {
+    const ship = SHIPS.find(s => s.id === inst.shipId);
+    return sum + (ship ? ship.hp : 0);
+  }, 0);
+  const totalCost = armada.reduce((sum, inst) => {
+    const ship = SHIPS.find(s => s.id === inst.shipId);
+    let c = ship ? ship.cost : 0;
+    Object.values(inst.systems).forEach(slots => {
+      slots.forEach(sysId => {
+        if (sysId) {
+          const sys = findSystem(sysId);
+          if (sys) c += sys.cost;
+        }
+      });
+    });
+    (inst.upgrades || []).forEach(upgId => {
+      if (upgId) {
+        const upg = UPGRADES.find(u => u.id === upgId);
+        if (upg) c += upg.cost;
+      }
+    });
+    return sum + c;
+  }, 0);
+  document.getElementById('stat-ships').textContent = count;
+  document.getElementById('stat-hp').textContent = totalHp.toLocaleString();
+  document.getElementById('stat-cost').textContent = totalCost.toLocaleString() + ' gp';
+}
+
+renderCatalogue();
+renderDetail();
+updateStats();
+</script>
+</body>
+</html>
