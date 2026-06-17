@@ -66,7 +66,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .st-info{font-size:10px;color:#4a7a9a;margin-top:1px;}
 .st-pips{display:flex;gap:2px;flex-wrap:wrap;margin-top:4px;}
 .pip{width:7px;height:7px;border-radius:2px;border:0.5px solid;}
-.st-del{position:absolute;top:3px;right:4px;background:none;border:none;color:#2a4a6a;cursor:pointer;font-size:13px;line-height:1;padding:1px;}
+.st-cpy{position:absolute;top:3px;right:22px;background:none;border:none;color:#2a6a4a;cursor:pointer;font-size:11px;line-height:1;padding:1px;opacity:.5;transition:opacity .15s;}.st-cpy:hover{opacity:1;color:#60c890;}.st-del{position:absolute;top:3px;right:4px;background:none;border:none;color:#2a4a6a;cursor:pointer;font-size:13px;line-height:1;padding:1px;}
 .st-del:hover{color:#c86050;}
 
 /* detail panel */
@@ -1001,9 +1001,9 @@ function renderWater(){
       <div class="st-name">${inst.customName||ship.name}</div>
       <div class="st-info">${ship.hp} HP · ${ship.speed}sq</div>
       <div class="st-pips">${pips}</div>
-      <button class="st-del" onclick="delShip(event,'${inst.uid}')" title="Remove"><i class="ti ti-x" aria-hidden="true"></i></button>`;
+      <button class="st-cpy" onclick="copyShip(event,'${inst.uid}')" title="Duplicate"><i class="ti ti-copy" aria-hidden="true"></i></button><button class="st-del" onclick="delShip(event,'${inst.uid}')" title="Remove"><i class="ti ti-x" aria-hidden="true"></i></button>`;
     el.addEventListener('click',()=>selectShip(inst.uid));
-    el.addEventListener('mousedown',e=>{if(e.target.closest('.st-del'))return;startDragToken(e,inst.uid);});
+    el.addEventListener('mousedown',e=>{if(e.target.closest('.st-del')||e.target.closest('.st-cpy'))return;startDragToken(e,inst.uid);});
     zone.appendChild(el);
   });
 }
@@ -3279,6 +3279,20 @@ function _refreshSysGrid(){
   grid.innerHTML = buildSysGrid(at, window._sysFilterCat||'all', window._sysFilterTier||'all');
 }
 
+
+function copyShip(e, uid){
+  e.stopPropagation();
+  const src = armada.find(i=>i.uid==uid);
+  if(!src) return;
+  const clone = JSON.parse(JSON.stringify(src));
+  clone.uid = Date.now() + Math.random();
+  clone.x = Math.min(src.x + 30, 900);
+  clone.y = Math.min(src.y + 30, 600);
+  armada.push(clone);
+  renderWater();
+  updateStats();
+  selectShip(clone.uid);
+}
 // Boot
 renderCat();renderDetail();updateStats();
 </script>
