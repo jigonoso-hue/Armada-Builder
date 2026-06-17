@@ -294,6 +294,9 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
       <div class="dd-sep"></div>
       <div class="dd-label">Generate</div>
       <div class="dd-item" onclick="openEncounterModal()"><i class="ti ti-swords" aria-hidden="true"></i> Create unique encounter</div>
+      <div class="dd-sep"></div>
+      <div class="dd-label">Help</div>
+      <div class="dd-item" style="opacity:.5;cursor:default;"><i class="ti ti-book" aria-hidden="true"></i> How to use <span style="font-size:9px;color:#c8961e;">WIP</span></div>
     </div>
   </div>
 </div>
@@ -322,6 +325,9 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
         <button class="cat-tab" onclick="setCatFilter('merchant',this)">Merchant</button>
         <button class="cat-tab" onclick="setCatFilter('magician',this)">Magician</button>
         <button class="cat-tab" onclick="setCatFilter('zadelian',this)">Zadelian</button>
+        <button class="cat-tab" onclick="setCatFilter('brinecoil',this)">Brinecoil</button>
+        <button class="cat-tab" onclick="setCatFilter('necrofleet',this)">Necro Fleet</button>
+        <button class="cat-tab" onclick="setCatFilter('stormwrecked',this)">Storm Wrecked</button>
       </div>
     </div>
     <div id="ship-list"></div>
@@ -605,7 +611,34 @@ const SHIPS = [
    special:'Resonant engine (built-in): counts as Oil Engine and Brine Engine for all purposes. Cannot be disrupted. Leyline siphon: whenever any magical ability or spell targets this ship and fails, this ship heals 50 HP from the redirected energy. Harmonic broadside: once per combat, all 14 mounts fire simultaneously — no crew required for the volley, the ship channels ley energy through each mount. Resonant collapse: once per long rest, emit a catastrophic resonance wave — all ships within 6 sq take 6d10x10 force, all magical effects and upgrades aboard those ships are suppressed for 1d4 rounds. DC 18 Con save for half.',unique:true},
   {id:'zad_the_first_tide',name:'The First Tide',origin:'Zadelian — T4 prime conduit vessel',tier:4,ac:20,hp:6300,speed:14,turn:'2 sq',crew:'80–160',cost:1500000,
    mounts:{cannon:6,harpoon:4,focus:8,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:2,upgradeSlots:4,
-   special:'Resonant engine (built-in): the ship generates its own leyline — it IS a leyline node. Cannot be disabled, disrupted, or suppressed by any means. Semi-sentient hull: The First Tide acts on its own initiative at count 20 — it may fire any 3 mounts, move up to half speed, or activate one special ability without any crew action. Reality anchor: once per combat, choose any ongoing effect, ability, or movement within 2 miles — it simply stops. No save, no counter. Tidal memory: this ship records the harmonic signature of every ship it has ever encountered. All mounts auto-hit any previously encountered ship. Cascade: when this ship is reduced below 50% HP, it enters resonant cascade — all mounts deal double damage, all crew abilities cost no action, and the ship regenerates 100 HP per round for 3 rounds.',unique:true}
+   special:'Resonant engine (built-in): the ship generates its own leyline — it IS a leyline node. Cannot be disabled, disrupted, or suppressed by any means. Semi-sentient hull: The First Tide acts on its own initiative at count 20 — it may fire any 3 mounts, move up to half speed, or activate one special ability without any crew action. Reality anchor: once per combat, choose any ongoing effect, ability, or movement within 2 miles — it simply stops. No save, no counter. Tidal memory: this ship records the harmonic signature of every ship it has ever encountered. All mounts auto-hit any previously encountered ship. Cascade: when this ship is reduced below 50% HP, it enters resonant cascade — all mounts deal double damage, all crew abilities cost no action, and the ship regenerates 100 HP per round for 3 rounds.',unique:true},
+
+  // ── Brinecoil Ships ──────────────────────────────────────────────────────
+  {id:'saltfang_cutter',name:'Saltfang Cutter',origin:'Brinecoil — T1 fast attack vessel',tier:1,ac:14,hp:640,speed:18,turn:'1 sq',crew:'6–12',cost:42000,mounts:{cannon:0,harpoon:0,focus:2,flex:false},fixed:{helm:true,nest:false,rigger:true},nestSlots:0,upgradeSlots:2,special:'Native Brine Engine (passive): counts as Oil Engine and Brine Engine at all times. Cannot be disabled.\nArc Discharge (1/combat): all ships within 3 sq take 3d10×10 lightning, no attack roll. This ship takes 1d10×10 feedback.\nSaltfang sprint: once per combat move double speed in a straight line as a free action.\nDESTRUCTION: detonates 4d10×10 lightning in 5 sq radius, DC 14 Dex half.',unique:true},
+  {id:'coil_skiff',name:'Coil Skiff',origin:'Brinecoil — T1 escort and flanker',tier:1,ac:13,hp:560,speed:20,turn:'1 sq',crew:'4–8',cost:32000,mounts:{cannon:0,harpoon:0,focus:1,flex:false},fixed:{helm:true,nest:false,rigger:true},nestSlots:0,upgradeSlots:2,special:'Native Brine Engine (passive): always active, cannot be disabled.\nContainment Protocol (1/combat): when any Brinecoil ship within 4 sq is destroyed, use reaction to absorb detonation — AOE reduced to 1 sq. This ship takes 6d10×10 lightning.\nCharge transfer: once per combat transfer Arc Discharge to an allied Brinecoil ship within 3 sq.\nDESTRUCTION: detonates 3d10×10 lightning in 4 sq radius, DC 13 Dex half.',unique:true},
+  {id:'voltclaw_frigate',name:'Voltclaw Frigate',origin:'Brinecoil — T2 assault warship',tier:2,ac:16,hp:1400,speed:14,turn:'2 sq',crew:'20–40',cost:120000,mounts:{cannon:4,harpoon:0,focus:0,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:1,upgradeSlots:3,special:'Native Brine Engine (passive): always active, cannot be disabled.\nVoltclaw broadside (1/combat): all electric mounts fire simultaneously as one action, no crew required.\nChain arc (passive): whenever any electric mount hits a metal-hulled ship, lightning arcs to every other metal-hulled ship within 2 sq — 2d10×10 lightning each.\nDESTRUCTION: detonates 7d10×10 lightning in 5 sq radius, DC 16 Dex half.',unique:true},
+  {id:'brinecage_galleon',name:'Brinecage Galleon',origin:'Brinecoil — T2 support and containment',tier:2,ac:15,hp:1600,speed:10,turn:'2 sq',crew:'25–50',cost:95000,mounts:{cannon:0,harpoon:3,focus:0,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:1,upgradeSlots:3,special:'Native Brine Engine (passive): always active, cannot be disabled.\nBrine cage (1/combat): electromagnetic containment field in 4 sq radius — all non-Brinecoil ships inside speed reduced to 0 for 2 rounds.\nDetonation buffer (passive): allied Brinecoil ships within 5 sq have destruction detonation radius reduced by 2 sq.\nDESTRUCTION: detonates 6d10×10 lightning in 5 sq radius, DC 15 Dex half.',unique:true},
+  {id:'stormspine_dreadnought',name:'Stormspine Dreadnought',origin:'Brinecoil — T3 heavy assault platform',tier:3,ac:17,hp:3200,speed:10,turn:'2 sq',crew:'60–100',cost:380000,mounts:{cannon:6,harpoon:0,focus:0,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:2,upgradeSlots:4,special:'Native Brine Engine (passive): always active, cannot be disabled.\nOverload state (1/long rest): for 3 rounds all electric mounts deal maximum damage, chain arc hits every metal-hulled ship in 4 sq of any target, detonation radius expands to 8 sq. Takes 500 HP at end of 3rd round.\nSpine discharge (recharge 5-6): all ships within 4 sq take 5d10×10 lightning simultaneously.\nDESTRUCTION overload: 12d10×10, 8 sq, DC 18. Normal: 8d10×10, 5 sq, DC 17.',unique:true},
+  {id:'arcvault_cruiser',name:'Arcvault Cruiser',origin:'Brinecoil — T3 fleet coordinator',tier:3,ac:16,hp:3600,speed:8,turn:'2 sq',crew:'50–90',cost:320000,mounts:{cannon:5,harpoon:0,focus:0,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:2,upgradeSlots:4,special:'Native Brine Engine (passive): always active, cannot be disabled.\nArcvault containment (passive): all Brinecoil ships within 6 sq have destruction radius reduced to 1 sq. This ship does not detonate when destroyed.\nFleet charge relay (1/combat): all allied Brinecoil ships within 8 sq may each use Arc Discharge this round as a free action simultaneously.',unique:true},
+  {id:'voltaic_throne',name:'The Voltaic Throne',origin:'Brinecoil — T4 supreme command vessel',tier:4,ac:19,hp:5800,speed:12,turn:'2 sq',crew:'100–180',cost:850000,mounts:{cannon:8,harpoon:0,focus:6,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:2,upgradeSlots:4,special:'Living Brine Engine (passive): hull IS the engine. Cannot be disabled. Allied ships within 6 sq count as having Brine Engine installed.\nTotal arc (1/long rest): every ship on battlefield takes 4d10×10 lightning. Allied Brinecoil immune. Metal hulls double.\nControlled detonation (passive): when an allied Brinecoil ship within 10 sq is destroyed, may redirect explosion as a 60 ft line rather than radius.\nChain sovereignty (passive): whenever chain arc triggers on any allied ship in range, adds 2d10×10 to that arc.\nDESTRUCTION: 15d10×10 lightning, 8 sq radius, DC 20.',unique:true},
+
+  // ── Necro Fleet ──────────────────────────────────────────────────────────
+  {id:'bonecutter_sloop',name:'Bonecutter Sloop',origin:'Necro Fleet — T1 raider',tier:1,ac:14,hp:1100,speed:14,turn:'1 sq',crew:'8–16',cost:42000,mounts:{cannon:2,harpoon:0,focus:0,flex:false},fixed:{helm:true,nest:false,rigger:true},nestSlots:0,upgradeSlots:2,special:'Flesh hull (passive): regenerates 20 HP at the start of each ship turn.\nHarvest (passive): whenever an enemy crew member is killed on this ship or within 1 sq, heals 30 HP.\nBone ram: ram attacks deal +2d10×10 and heal this ship 50 HP on each hit.\nREVULSION: non-undead crew DC 12 Wis save when first assigned or refuse to board.',unique:true},
+  {id:'marrow_barge',name:'The Marrow Barge',origin:'Necro Fleet — T1 support vessel',tier:1,ac:13,hp:1200,speed:10,turn:'2 sq',crew:'10–20',cost:35000,mounts:{cannon:0,harpoon:1,focus:0,flex:false},fixed:{helm:true,nest:false,rigger:true},nestSlots:0,upgradeSlots:2,special:'Flesh hull (passive): regenerates 15 HP per ship turn.\nMass harvest (passive): when an enemy ship is destroyed within 4 sq heals 200 HP. 20+ crew enemy: heals 400 HP.\nTransfer life (1/combat): expend up to 300 HP from this ship to heal any allied Necro Fleet ship within 3 sq.',unique:true},
+  {id:'flayed_galleon',name:'The Flayed Galleon',origin:'Necro Fleet — T2 assault ship',tier:2,ac:15,hp:4200,speed:11,turn:'2 sq',crew:'30–60',cost:150000,mounts:{cannon:4,harpoon:0,focus:0,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:1,upgradeSlots:3,special:'Flesh hull (passive): regenerates 40 HP per ship turn. Hull immune to fire damage.\nHarvest (passive): each enemy crew killed within 2 sq heals 50 HP. Enemy ship destroyed within 4 sq heals 300 HP.\nTendril boarding (1/combat): flesh tendrils onto adjacent ship — drags 1d6 crew overboard (DC 15 Str each), heals 80 HP per crew dragged.',unique:true},
+  {id:'ossuary_cruiser',name:'Ossuary Cruiser',origin:'Necro Fleet — T2 armoured warship',tier:2,ac:17,hp:5000,speed:9,turn:'2 sq',crew:'35–65',cost:120000,mounts:{cannon:3,harpoon:3,focus:0,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:1,upgradeSlots:3,special:'Bone plate armour (passive): all hull damage reduced by 20 before x10. Harpoons cannot grapple this ship.\nFlesh hull (passive): regenerates 30 HP per ship turn.\nHarvest (passive): each enemy crew killed within 2 sq heals 60 HP. Enemy ship destroyed within 4 sq heals 350 HP.\nOssify (1/combat): hull hardens completely for 1 round — immune to all damage. Speed 0 while ossified.',unique:true},
+  {id:'the_hunger',name:'The Hunger',origin:'Necro Fleet — T3 living warship',tier:3,ac:16,hp:10000,speed:12,turn:'2 sq',crew:'80–140',cost:380000,mounts:{cannon:6,harpoon:0,focus:0,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:2,upgradeSlots:4,special:'Flesh hull (passive): regenerates 80 HP per ship turn. Hull immune to fire and acid.\nHarvest (passive): each enemy crew killed within 3 sq heals 80 HP. Enemy ship destroyed within 5 sq heals 500 HP. Cannot be sunk while living enemy crew are within 5 sq.\nConsume (1/long rest): swallows one T1 or T2 ship whole — instantly destroyed, heals double its remaining HP.\nFear aura (passive): enemy crew within 4 sq DC 14 Wis save each round or Frightened.',unique:true},
+  {id:'corpse_tide',name:'Corpse Tide',origin:'Necro Fleet — T3 swarm carrier',tier:3,ac:15,hp:9000,speed:10,turn:'2 sq',crew:'60–120',cost:320000,mounts:{cannon:5,harpoon:0,focus:0,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:2,upgradeSlots:4,special:'Flesh hull (passive): regenerates 60 HP per ship turn.\nHarvest (passive): each harvested crew also increases max HP by 10 until end of combat.\nSpawn tide (1/long rest): expels 2d4 animated corpse-rafts (HP 80, AC 10, Speed 8 sq, 2d10x10 ram per round) that persist until destroyed.\nCorpse tide on death: ejects undead boarders onto nearest enemy ship — 1 undead per 5 HP gained from Harvest.',unique:true},
+  {id:'the_everliving',name:'The Everliving',origin:'Necro Fleet — T4 undying command vessel',tier:4,ac:18,hp:18000,speed:13,turn:'2 sq',crew:'120–200',cost:780000,mounts:{cannon:8,harpoon:8,focus:0,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:2,upgradeSlots:4,special:'Undying hull (passive): regenerates 150 HP per ship turn. Cannot be reduced below 1 HP in a single round. Immune to fire, acid, and necrotic.\nHarvest (passive): each enemy crew killed within 4 sq heals 100 HP. Enemy ship destroyed within 6 sq heals 1,000 HP.\nTrue consume (1/long rest): swallows any tier ship — instantly destroyed, heals double its remaining HP.\nThe dead do not stay dead (passive): once per combat when reduced to 0 HP, drops to 1,000 HP and immediately heals 1,000 HP.\nFleet resurrection (1/long rest): any destroyed allied Necro Fleet ship within 6 sq restored to 50% HP.',unique:true},
+
+  // ── Storm Wrecked ─────────────────────────────────────────────────────────
+  {id:'squall_runner',name:'The Squall Runner',origin:'Storm Wrecked — T1 storm scout',tier:1,ac:13,hp:980,speed:12,turn:'1 sq',crew:'6–14',cost:30000,mounts:{cannon:2,harpoon:0,focus:0,flex:false},fixed:{helm:true,nest:false,rigger:true},nestSlots:0,upgradeSlots:2,special:'Storm hull (passive): immune to weather penalties. Speed 22 sq in storms, 44 sq in Mana Storms.\nLightning call (storm only, 1/combat): calls a lightning strike on any ship within 8 sq — 4d10×10 lightning, DC 13 Dex half. Mana Storm: 8d10×10, no save.\nCALM WEATHER: speed 12 sq, no storm abilities. Hostile on sight at lawful ports.',unique:true},
+  {id:'galeborn',name:'The Galeborn',origin:'Storm Wrecked — T1 storm raider',tier:1,ac:14,hp:1100,speed:10,turn:'1 sq',crew:'8–16',cost:25000,mounts:{cannon:2,harpoon:0,focus:1,flex:false},fixed:{helm:true,nest:false,rigger:true},nestSlots:0,upgradeSlots:2,special:'Storm hull (passive): immune to weather. Storm conditions heal 20 HP per round.\nGale strike (storm only): all cannon and harpoon attacks deal +2d10×10 in storms. Mana Storms: +5d10×10 and all attacks treated as magical.\nWind ward (storm only, 1/combat): pushes one enemy ship 3 sq in any direction — DC 14 Str to resist.\nCALM WEATHER: no bonuses, no regen. Hostile at lawful ports.',unique:true},
+  {id:'wrath_of_channel',name:'Wrath of the Channel',origin:'Storm Wrecked — T2 storm warship',tier:2,ac:15,hp:3600,speed:10,turn:'2 sq',crew:'25–50',cost:110000,mounts:{cannon:4,harpoon:0,focus:0,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:1,upgradeSlots:3,special:'Storm hull (passive): immune to weather. Storm: heals 40 HP per round.\nStorm broadside (storm only): all mounts +3d10×10 in storms. Mana Storm: +7d10×10, ignore magical hull hardening.\nSummon squall (1/combat): creates localised storm in 10 sq radius lasting 3 rounds. Non-Storm Wrecked ships get -2 sq speed inside.\nThunder hull (passive): ships that ram this vessel or are rammed take +4d10×10 lightning on top of ram damage during storms.',unique:true},
+  {id:'thornwind',name:'The Thornwind',origin:'Storm Wrecked — T2 storm support ship',tier:2,ac:16,hp:4000,speed:9,turn:'2 sq',crew:'30–55',cost:90000,mounts:{cannon:3,harpoon:0,focus:0,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:1,upgradeSlots:3,special:'Storm hull (passive): immune to weather. Storm: heals 30 HP per round.\nStorm anchor (storm only, passive): cannot be moved by forced movement of any kind.\nShare the storm (storm only, passive): allied Storm Wrecked ships within 5 sq gain +1d10×10 on all attacks on top of their storm bonuses.\nLightning conductor (storm only, 1/combat): draws a lightning strike onto itself — heals 500 HP and all mounts deal +4d10×10 on next attack this round.',unique:true},
+  {id:'the_maelstrom',name:'The Maelstrom',origin:'Storm Wrecked — T3 storm dreadnought',tier:3,ac:17,hp:7200,speed:8,turn:'2 sq',crew:'70–120',cost:380000,mounts:{cannon:6,harpoon:0,focus:0,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:2,upgradeSlots:4,special:'Storm hull (passive): immune to weather. Storm: heals 80 HP per round. Mana Storm: heals 200 HP per round.\nStorm broadside: +4d10×10 in storm. +10d10×10 in Mana Storm — bypass all immunity and resistance.\nSummon squall (1/combat): creates storm in 15 sq radius lasting 5 rounds.\nGale force (storm only, 1/combat): directional wind burst — all ships in 10 sq cone pushed 4 sq, DC 17 Str or crew lose their next action.\nEye of the storm (passive): never affected by its own Summon Squall penalties.',unique:true},
+  {id:'stormcallers',name:'The Stormcallers',origin:'Storm Wrecked — T3 twin-hull storm carrier',tier:3,ac:15,hp:8000,speed:8,turn:'2 sq',crew:'60–110',cost:320000,mounts:{cannon:5,harpoon:0,focus:6,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:2,upgradeSlots:4,special:'Storm hull (passive): storm heals 60 HP per round. Mana Storm heals 160 HP per round.\nTwin storm engine (storm only, passive): all mounts deal +3d10×10 lightning on top of normal damage. Mana Storm: +8d10×10.\nStormcall (1/long rest): calls a real Mana Storm to ship location — arrives 1d4 rounds, lasts 1 hour. Affects ALL ships in area. Visible from 100 miles.',unique:true},
+  {id:'undying_tempest',name:'The Undying Tempest',origin:'Storm Wrecked — T4 the Storm made flesh',tier:4,ac:19,hp:12000,speed:10,turn:'1 sq',crew:'100–180',cost:820000,mounts:{cannon:8,harpoon:8,focus:0,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:2,upgradeSlots:4,special:'The Storm IS the ship (passive): permanent storm field in 6 sq radius at all times. All Storm Wrecked abilities always active. Real storm: radius extends to 12 sq.\nStorm hull: regenerates 120 HP always. Real storm: 250 HP. Mana Storm: 500 HP.\nAll mounts: +6d10×10 always. Real storm: +12d10×10. Mana Storm: +20d10×10, bypass all immunity.\nTempest judgement (1/long rest): every ship on battlefield takes 10d10×10 lightning. Allied Storm Wrecked immune.\nUndying (passive): if reduced to 0 HP during a storm or Mana Storm, reforms at 3,000 HP next turn. Once per long rest.',unique:true}
 ];
 
 const SYSTEMS = {
@@ -820,7 +853,7 @@ electric_harpoon:[
 };;
 
 const UPGRADES = [
-  {id:'iron_heart',name:'The Iron Heart',type:'Engine',cost:12000,desc:"Coal/oil combustion engine. Permanent always-on power — cannot be shut down mid-combat.\n+4 sq Speed · +1d10 ×10 weapon damage · Turn cost –1 sq\nDRAWBACK: Cannot stealth — massive black smoke visible 10+ miles. Pollution trail lasts 1 hour.\nCleansing: each cleanse drops engine one level (Full → Reduced → Minimal → Shutdown). Shutdown requires 2,000 gp port overhaul.\nIncompatible: Ghost Rigging · Dead Men's Lanterns · Veilshroud · Mirror Hull"},
+  {id:'iron_heart',name:'The Iron Heart',type:'Engine',cost:12000,desc:"Coal/oil combustion engine. Permanent always-on power — cannot be shut down mid-combat.\n+1d10 ×10 weapon damage · Turn cost –1 sq\nDRAWBACK: Cannot stealth — massive black smoke visible 10+ miles. Pollution trail lasts 1 hour.\nCleansing: each cleanse drops engine one level (Full → Reduced → Minimal → Shutdown). Shutdown requires 2,000 gp port overhaul.\nIncompatible: Ghost Rigging · Dead Men's Lanterns · Veilshroud · Mirror Hull"},
   {id:'scorched_heart',name:'The Scorched Heart',type:'Engine MkII',cost:20000,desc:"Refined alchemical coal engine. Upgraded Iron Heart — replaces its bonuses.\n+5 sq Speed · +2d10 ×10 weapon damage · Turn cost –1 sq\nCleansing to 500 ft does NOT cost an engine level (only full shutdown does).\nOverdrive: Captain may declare +3 sq one round — roll d6 after: on 1–2, engine takes 20 damage and may cascade.\nREQUIRES Iron Heart installed first. Incompatible: Ghost Rigging · Brine Core"},
   {id:'brine_core',name:'The Brine Core',type:'Brine Engine',cost:35000,desc:"Crystallized mana engine. Wires the entire ship — all systems benefit simultaneously.\n+6 sq Speed · +2d10 ×10 all weapons · +1 spell level all focus tiers · +30 HP all systems\nMELTDOWN: any system hits 0 HP — roll d6. On 1–2: cascade begins (5d10 ×10/turn for 3 turns, DC 18 Int to stabilize).\nCATASTROPHIC: natural 1 to stabilize = ship destroyed. Ship takes 200+ dmg in one hit = immediate meltdown check.\nCrystal consumed each session (2,000 gp/crystal). 3-day installation at specialist port."},
   {id:'still_flame',name:'The Still Flame',type:'Brine Stabilizer',cost:12000,desc:"Containment lattice and dampening field fitted around the Brine Core. Requires Brine Core installed.\nMeltdown trigger: reduced to 1-in-6 only (d6, fail on 1) · Cascade damage: 3d10 ×10 (down from 5d10) · Stabilize DC: 14 (down from 18)\nCrystal consumption: every 2 sessions (not 1). 5-day installation.\nCANNOT prevent catastrophic meltdown on nat 1 stabilize — just makes it far less likely."},
@@ -863,6 +896,18 @@ const UPGRADES = [
   {id:'ironbone_hull',name:'Ironbone Hull',type:'Hull',cost:15000,desc:"The internal ribbing has been replaced with wrought iron bones — dramatically increasing structural integrity at the cost of agility.\nIronbone: all hull damage reduced by 25 (before x10). The ship cannot be sunk in a single round — minimum 1 HP survives until the next round.\nImpact resistance: this ship takes no self-damage from ramming. Ram attacks deal double damage.\nDRAWBACK: Speed permanently -2 sq. Turn cost permanently +1 sq. Cannot be installed on any T1 ship."},
   {id:'predator_wake',name:'Predator Wake',type:'Utility',cost:10000,desc:"The keel is fitted with a hydromantic wake enhancer — the displacement field pulls smaller vessels off course.\nPredator field: all ships within 3 sq of this ship have Speed reduced by 2 sq (minimum 1).\nCrew disruption: enemy crew within 2 sq must DC 12 Wis save at start of each round or suffer disadvantage on attack rolls.\nDRAWBACK: This ship cannot use stealth while the enhancer is active. Also affects allied ships in range."},
   {id:'twin_helm',name:'Twin Helm Assembly',type:'Utility',cost:9000,desc:"A second helm station is installed, allowing two helmsmen to coordinate simultaneously.\nDual command: this ship may issue two Helm commands per round instead of one.\nFormation lead: allied ships within 4 sq may use this ship Command DC for their own Helm checks if lower than their own.\nDRAWBACK: Requires 2 crew assigned to Helm simultaneously. If either is incapacitated, the assembly reverts to single helm function. Requires an additional Helm system slot."}
+,
+
+  // ── New upgrades ─────────────────────────────────────────────────
+  {id:'fog_bellows',name:'Fog Bellows',type:'Utility',cost:2800,desc:"Pressurised brine-salt fog vents mounted along the hull.\nOnce per combat as a free action, deploy a 4 sq radius fog cloud centred on this ship. Persists 3 rounds, drifts with wind each round (DM determines direction).\nAll ranged attacks targeting this ship from outside the cloud have disadvantage.\nShips inside the cloud cannot be targeted by harpoons or homing abilities.\nMagical detection targeting ships inside the cloud automatically fails for the duration.\nDRAWBACK: The crew of this ship also cannot see out of the cloud. All attacks made from inside the cloud against targets outside it also have disadvantage."},
+  {id:'anti_boarding_net',name:'Anti-Boarding Net',type:'Defense',cost:1600,desc:"Iron-mesh netting permanently rigged over all rails.\nAny creature attempting to board this ship must spend their entire movement crossing the net and succeed a DC 15 Athletics check or fall back into the water and be Restrained until they pass the check.\nOnce per combat: throw the net outward over any boarders already on deck within 10 ft (Restrained, DC 15 Str to escape, 1 action).\nNet: AC 14, HP 100 — enemies can target it to destroy it.\nDRAWBACK: This ship's own crew cannot board enemy ships faster than normal — the net must be partially cut away first (1 action), taking 1 round before any boarding action."},
+  {id:'decoy_launchers',name:'Decoy Launchers',type:'Utility',cost:2200,desc:"Launches weighted, sail-rigged decoys that mimic this ship's silhouette and mana signature at range.\n3 decoys per long rest · 1 crew to operate.\nLaunching a decoy is a free action. A decoy moves in a straight line at this ship's current speed.\nAny ship or creature targeting this vessel must succeed a DC 16 Perception check to distinguish the decoy from the real ship — on a fail they target the decoy instead. Mana decoys fool magical detection and homing attacks for 2 rounds after launch. Each decoy has 40 HP.\nDRAWBACK: Decoys drift on a fixed heading — if this ship changes course, the decoy diverges visibly after 2 rounds, making it obvious which is real."},
+  {id:'bilge_pump_array',name:'Bilge Pump Array',type:'Utility',cost:1400,desc:"Mechanically-pressurised pump array with directional nozzles built into the hull.\n2 crew to operate.\nWhile 2 crew are assigned, removes 150 HP of flooding damage per round automatically — no action required from anyone else.\nFire suppression is also automatic with 2 crew — any fire on this ship is extinguished at the start of the crew's turn.\nOnce per combat: aim nozzles outward as a weapon — pressurised jet deals 3d10×10 bludgeoning to one adjacent ship and all creatures on its deck DC 14 Str or knocked prone."},
+  {id:'greek_fire_station',name:'Greek Fire Station',type:'Offense',cost:4000,desc:"Alchemical fire that burns on water and cannot be extinguished by normal means.\n2 crew to operate · 4 uses per long rest.\nEach use (1 action) — choose one:\n· Launch at one ship within 3 sq: 5d10×10 fire, ship continues burning (2d10×10 fire per round until crew spends 1 action to extinguish, DC 14).\n· Spread on the water: 4 sq radius burning patch lasting 3 rounds, any ship or creature inside takes 3d10 fire per round.\n· Pour into a tether: instantly severs it and deals 5d10×10 fire to the tethered ship, no save.\nDRAWBACK: If this upgrade is destroyed (AC 14, HP 80) it detonates — 6d10×10 fire to this ship and all ships within 3 sq, DC 15 Dex save for half."},
+  {id:'chain_web_launcher',name:'Chain Web Launcher',type:'Utility',cost:2000,desc:"Launches a spread of weighted chain-mesh that expands to a 3 sq radius on impact at a target area within 6 sq.\n2 crew to operate · 4 uses per long rest.\nAny ship in the impact zone must DC 16 Str save or be Slowed to half speed for 3 rounds. On a failed save by 5+, the ship is fully Stopped (speed 0) for 1 round.\nEngine-powered ships lose their speed bonuses from Oil Engine and Brine Engine for the full duration — the chains foul the propulsion.\nAlternative use: deploy the web defensively around this ship instead, creating a 2 sq zone of difficult terrain."},
+  {id:'pitch_cauldron',name:'Pitch Cauldron',type:'Utility',cost:1200,desc:"Heated cauldron of ship's pitch mounted for rapid deck deployment.\n1 crew to operate · 5 uses per long rest.\nEach use (1 action) — choose one:\n· Pour onto this ship's deck: 10 ft radius of burning pitch lasting 10 minutes, any creature moving through it takes 2d10 fire and is Slowed.\n· Apply to any active harpoon tether: the line burns, dealing 3d10 fire to the tethered ship per round and severing the tether after 2 rounds.\n· Throw as a bomb (30 ft): 3d6 fire, 10 ft radius, DC 13 Dex half.\n· Ignite on the water surface: burning patch that drifts with current 1 sq per round."},
+  {id:'deep_recovery_crane',name:'Deep Recovery Crane',type:'Utility',cost:3600,desc:"Heavy-lift winch with 200 ft reinforced cable and depth-rated hooks.\n2 crew to operate.\nRecovers items or creatures from up to 200 ft depth — 1 item per 15 minutes. Can raise a full dive team in an emergency.\nDeploying or recovering a dinghy takes 1 round instead of 5.\nOnce per combat: swing the crane arm into one adjacent ship — 3d10×10 bludgeoning (1 action, 2 crew).\nWeekly at sea: roll a d20 — on 17+ the crane hooks something unexpected (DM determines from the deep)."},
+  {id:'fast_assault_davit',name:'Fast Assault Davit',type:'Utility',cost:3300,desc:"Dual-arm davit system carrying two armed assault skiffs fitted with rams.\n2 crew to operate.\nBoth skiffs deploy simultaneously on the captain's command — no action required, cannot be intercepted.\nEach skiff: 120 HP, AC 14, Speed 10 sq, deals 4d10×10 on a ram.\nSkiffs launch from unexpected arcs and can create flanking attacks in the same round they deploy.\nRetrieving a skiff takes 3 rounds.\nSkiff replacement: if a skiff is destroyed, a replacement costs 400 gp in materials and 1 week of work at a port with a carpenter. At sea without a Shipwright's Corner room: cannot be rebuilt.\nDRAWBACK: Each skiff requires 4 crew to operate — deploying both pulls 8 crew off the main ship. If skiffs are destroyed while crewed, those crew members are lost. Skiffs have no ranged weapons — must close to ram range to deal damage."}
 ];
 
 const TYPE_COLORS = {helm:'#5a9abc',cannon:'#c85040',focus:'#9060c0',harpoon:'#40b080',nest:'#b08040',rigger:'#60b060',upgrade:'#b0802a',anima:'#9060d0',zadelian_cannon:'#2a6090',zadelian_harpoon:'#2a6090',zadelian_focus:'#2a6090',electric_cannon:'#20a0c0',electric_harpoon:'#20a0c0',utility:'#3a8a60'};
@@ -925,6 +970,9 @@ const SHIP_CAT=(function(){
     [['cog','caravel','galleon'],'merchant'],
     [['arcane_skiff','witchboat','spellbarge','conjurers_frigate','archmage_galleon','ley_dreadnought','the_astral_throne'],'magician'],
     [['zad_tidewatcher','zad_pelagic_throne','zad_abyssal_conduit','zad_the_first_tide'],'zadelian'],
+    [['saltfang_cutter','coil_skiff','voltclaw_frigate','brinecage_galleon','stormspine_dreadnought','arcvault_cruiser','voltaic_throne'],'brinecoil'],
+    [['bonecutter_sloop','marrow_barge','flayed_galleon','ossuary_cruiser','the_hunger','corpse_tide','the_everliving'],'necrofleet'],
+    [['squall_runner','galeborn','wrath_of_channel','thornwind','the_maelstrom','stormcallers','undying_tempest'],'stormwrecked'],
   ].forEach(function(pair){ pair[0].forEach(function(id){ m[id]=pair[1]; }); });
   return m;
 })();
@@ -1413,7 +1461,7 @@ function renderSimpleSystems(inst,ship){
       const slots=Array.from({length:sec.count},(_,i)=>assigned[i]||null);
       const pips=slots.map((cid,i)=>{
         if(cid!=null){
-          const c=globalCrew.find(x=>x.id===cid);
+          const c=globalCrew.find(x=>x.id==cid);
           const t=c?c.type:'crew'; const n=c?c.name||'':'';
           return `<div class="cpip ${t}" title="${n||t}" onclick="removeSysCrewPip('${sec.key}',${i})">${crewIcon(c||{type:t})}</div>`;
         }
@@ -1445,7 +1493,8 @@ function openCrewPicker(slotKey,slotIdx){
   const inst=armada.find(i=>i.uid==selectedUid); if(!inst)return;
   const ship=SHIPS.find(s=>s.id===inst.shipId);
   const cap=crewCap(ship);
-  const onShip=_shipCrew(inst.uid).length;
+  const onShipRaw=_shipCrew(inst.uid).length;
+  const onShip=onShipRaw-(inst.standby||[]).length; // exclude standby from cap count
 
   // Get already-slotted IDs so we don't double-assign
   const slottedIds=new Set();
@@ -1494,7 +1543,7 @@ function doAssignPip(slotKey, slotIdx, crewId){
   const inst=armada.find(i=>i.uid==selectedUid); if(!inst)return;
   const ship=SHIPS.find(s=>s.id===inst.shipId);
   const cap=crewCap(ship);
-  const c=globalCrew.find(x=>x.id===crewId); if(!c)return;
+  const c=globalCrew.find(x=>x.id==crewId); if(!c)return;
   // Assign to ship if not already on it
   if(!c.shipId){
     if(_shipCrew(inst.uid).length>=cap){
@@ -1531,7 +1580,8 @@ function renderBelowDeck(inst,ship,slots){
   const cap=crewCap(ship);
   const onShip=myCrew.length;
   const poolNormAvail=_availCrew().filter(c=>c.type==='crew').length;
-  const canFill=poolNormAvail>0&&onShip<cap;
+  const standbyAvail=(inst.standby||[]).length;
+  const canFill=(poolNormAvail>0||standbyAvail>0)&&onShip<cap;
 
   // Slotted IDs
   const slottedIds=new Set();
@@ -1598,15 +1648,64 @@ function renderBelowDeck(inst,ship,slots){
   }
 
   // Only show "All aboard" — no "Add from pool" button (pool is for creation)
+  crewHTML+='<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">';
   if(canFill){
-    crewHTML+='<div style="margin-top:8px;">'+
-      '<button class="cadd crew" style="border-color:#2a6a2a;color:#60b060;" onclick="fillFromPool()">'+
-        '<i class="ti ti-users"></i> All aboard ('+Math.min(poolNormAvail,cap-onShip)+' crew)'+
-      '</button>'+
-    '</div>';
-  } else if(myCrew.length>0&&!canFill&&poolNormAvail===0){
-    crewHTML+='<div style="font-size:9px;color:#3a6a8a;margin-top:6px;">Add regular crew via Crew Pool to fill slots.</div>';
+    crewHTML+='<button class="cadd crew" style="border-color:#2a6a2a;color:#60b060;" onclick="fillFromPool()">'+
+      '<i class="ti ti-users"></i> All aboard ('+Math.min(poolNormAvail+standbyAvail,cap-onShip)+' crew)'+
+    '</button>';
+  } else if(poolNormAvail===0&&onShip<cap){
+    crewHTML+='<span style="font-size:9px;color:#3a6a8a;padding-top:4px;">Add regular crew via Crew Pool to fill slots.</span>';
   }
+  if(myCrew.length>0){
+    crewHTML+='<button class="cadd crew" style="border-color:#6a2a2a;color:#c06060;" onclick="disembarkShip(\'' +inst.uid+ '\')">'+
+      '<i class="ti ti-logout"></i> Disembark all'+
+    '</button>';
+  }
+  crewHTML+='</div>';
+
+  // ── Standby section ───────────────────────────────────────────────────────
+  _initStandby(inst);
+  // Sync standby: remove any from standby who are now in active slots
+  const slottedIdsStandby=new Set();
+  Object.values(inst.roomCrew||{}).forEach(function(arr){arr.forEach(function(v){if(v!=null)slottedIdsStandby.add(v);});});
+  inst.standby=inst.standby.filter(function(id){
+    if(slottedIdsStandby.has(id)) return false; // already in a slot
+    return true;
+  });
+
+  const standbyCount=inst.standby.length;
+  const ship2=SHIPS.find(function(s){return s.id===inst.shipId;});
+  const cap2=ship2?crewCap(ship2):0;
+  const onShip2=_shipCrew(inst.uid).length;
+  const standbyNeeded=Math.max(0,cap2-onShip2);
+  const sbId='standby-'+inst.uid;
+
+  const fullyStaffed = (onShip2 >= cap2);
+  crewHTML+='<div style="margin-top:10px;background:#06101a;border:.5px solid #1a3a55;border-radius:8px;overflow:hidden;">'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;cursor:pointer;" onclick="toggleStandby(\'' +sbId+ '\')">'+
+      '<div style="display:flex;align-items:center;gap:7px;">'+
+        '<span style="font-size:11px;color:#8ab8d8;font-weight:500;">⚓ Standby</span>'+
+        '<span style="font-size:10px;background:#0d1e30;border:.5px solid #1a4a60;border-radius:99px;padding:1px 8px;color:#60c8a8;">'+standbyCount+'</span>'+
+        (fullyStaffed
+          ? '<span style="font-size:9px;color:#3a7a4a;">✓ Fully staffed</span>'
+          : '<span style="font-size:9px;color:#c8961e;">'+(cap2-onShip2)+' below cap</span>')+
+      '</div>'+
+      '<div style="display:flex;gap:6px;align-items:center;">'+
+        (standbyCount>0?'<button onclick="event.stopPropagation();pullFromStandby(\'' +inst.uid+ '\')" style="background:#0a1e14;border:.5px solid #2a6a4a;border-radius:4px;color:#60b080;font-size:10px;padding:2px 8px;cursor:pointer;">Pull from standby</button>':'')+
+        '<span id="'+sbId+'-arr" style="color:#3a6a8a;font-size:10px;">▾</span>'+
+      '</div>'+
+    '</div>'+
+    '<div id="'+sbId+'" style="display:none;padding:0 10px 8px;border-top:.5px solid #1a3a55;">'+
+      (standbyCount===0
+        ? '<div style="font-size:10px;color:#3a6a8a;padding:8px 0;">No crew on standby. Use All Aboard to fill slots and standby to cap.</div>'
+        : '<div style="font-size:10px;color:#8ab8d8;padding:6px 0 3px;">'+standbyCount+' regular crew on standby — will auto-fill empty pips as crew are removed.</div>'+
+          '<div style="display:flex;gap:4px;flex-wrap:wrap;padding-top:4px;">'+
+          inst.standby.map(function(){ return '<div style="background:#0d1e30;border:.5px solid #1a4a60;border-radius:4px;padding:3px 8px;font-size:10px;color:#6090a8;">● Crew</div>'; }).join('')+
+          '</div>'
+      )+
+      '<button onclick="clearStandbyBtn(\'' +inst.uid+ '\')" style="margin-top:8px;background:none;border:none;color:#c86050;cursor:pointer;font-size:10px;padding:0;">Release all standby to pool</button>'+
+    '</div>'+
+  '</div>';
 
   crewHTML+='</div>';
 
@@ -1626,11 +1725,12 @@ function renderBelowDeck(inst,ship,slots){
       const workerPips=Array.from({length:workers},(_,wi)=>{
         const cid=assigned[wi];
         if(cid!=null){
-          const c=globalCrew.find(x=>x.id===cid);
+          const c=globalCrew.find(x=>x.id==cid);
           const t=c?c.type:'crew'; const n=c?(c.type==='crew'?'Crew':c.name||c.type):'';
           return '<div class="cpip '+t+'" onclick="removeRoomCrewPip('+ri+','+wi+')" title="'+n+' — click to unassign">'+crewIcon(c||{type:t})+'</div>';
         }
-        return '<button class="cpip-add" onclick="openCrewPicker(\'room_'+ri+'\','+wi+')" title="Assign crew">+</button>';
+        const slottedCount=Object.values(inst.roomCrew||{}).reduce(function(s,a){return s+a.filter(function(v){return v!=null;}).length;},0)+(inst.systems&&Object.values(inst.systems).reduce?Object.values(inst.systems).reduce(function(s,a){return s+(Array.isArray(a)?a.filter(function(v){return v;}).length:0);},0):0);
+        const atCapNow=_shipCrew(inst.uid).length-(inst.standby||[]).length>=crewCap(ship);return atCapNow?'<div class="cpip" style="opacity:.25;cursor:default;" title="Ship at crew cap">–</div>':'<button class="cpip-add" onclick="openCrewPicker(\'room_'+ri+'\','+wi+')" title="Assign crew">+</button>';
       }).join('');
       return '<div class="room-slot filled" onmouseenter="showRoomTip(event,\''+room.id+'\')" onmouseleave="hideRoomTip()">'+
         '<div class="room-slot-head">'+
@@ -1707,7 +1807,21 @@ function removeRoomCrewPip(roomIdx,workerIdx){
   if(!inst.roomCrew)inst.roomCrew={};
   const k='room_'+roomIdx;
   if(!inst.roomCrew[k])inst.roomCrew[k]=[];
-  inst.roomCrew[k][workerIdx]=null;
+  const cid=inst.roomCrew[k][workerIdx];
+  if(cid){
+    // return to standby rather than pool if standby exists
+    inst.roomCrew[k][workerIdx]=null;
+    _initStandby(inst);
+    // try to fill from standby immediately
+    _autoFillSlot(inst,k,workerIdx);
+    // if we did pull from standby, the removed crew goes back to pool
+    if(inst.roomCrew[k][workerIdx]!==cid){
+      const c=globalCrew.find(x=>x.id===cid);
+      if(c){c.shipId=null;}
+    }
+  } else {
+    inst.roomCrew[k][workerIdx]=null;
+  }
   renderDetail();
 }
 
@@ -2568,15 +2682,19 @@ function _buildCrewPoolBody(){
     '</div>';
   }
 
+  const crewWagesTotal=globalCrew.filter(c=>c.type==='crew').length*2;
+  const totalWages=wages+crewWagesTotal;
   let h='<div style="font-size:11px;color:#4a7a9a;margin-bottom:10px;">'+
     total+' total · '+deployed+' deployed · '+(total-deployed)+' available'+
-    (wages>0?' · <span style="color:#c8961e;">⚙ '+wages+' gp/wk</span>':'')+
+    (totalWages>0?' · <span style="color:#c8961e;">⚙ '+totalWages+' gp/wk</span>':'')+
   '</div>';
 
   h+='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">'+
     '<button class="cadd party" onclick="openPoolAdd(\'party\')">☠ + Party</button>'+
     '<button class="cadd star" onclick="openPoolAdd(\'star\')">★ + Star</button>'+
     '<button class="cadd crew" onclick="addPoolCrew()">● + Crew</button>'+
+    '<button class="cadd crew" onclick="addPoolCrewN(10)" style="border-color:#1a5a2a;color:#60b060;">+10</button>'+
+    '<button class="cadd crew" onclick="addPoolCrewN(100)" style="border-color:#1a5a2a;color:#60b060;">+100</button>'+
   '</div>';
 
   if(total===0) return h+'<div style="font-size:11px;color:#2a5a7a;text-align:center;padding:20px 0;">No crew yet. Add members above. Then assign them to ship slots via the + buttons in Below Deck.</div>';
@@ -2594,13 +2712,23 @@ function _buildCrewPoolBody(){
     star.forEach(c=>{ h+=row(c); });
     h+='<div style="height:6px;"></div>';
   }
-  if(crew.length>0){
+  {
     const avail=crew.filter(c=>!c.shipId).length;
-    h+='<div style="font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#3a6a8a;margin-bottom:5px;">● Regular crew ('+crew.length+' · '+avail+' available)</div>';
-    // Show as a count block, not individual rows
-    h+='<div style="background:#06101a;border:.5px solid #1a3a55;border-radius:7px;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;">'+
-      '<span style="font-size:11px;color:#8ab8d8;">'+crew.length+' crew ('+avail+' available · '+(crew.length-avail)+' deployed)</span>'+
-      '<button onclick="poolRemoveCrew()" style="background:none;border:none;color:#c86050;cursor:pointer;font-size:11px;padding:0;" title="Remove one">– 1</button>'+
+    const crewWages=crew.length*2;
+    h+='<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:5px;">'+
+      '<span style="font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#3a6a8a;">● Regular crew ('+crew.length+')</span>'+
+      (crew.length>0?'<span style="font-size:9px;color:#c8961e;">'+crewWages+' gp/wk total · 2 gp/wk each</span>':'')+
+    '</div>';
+    h+='<div style="background:#06101a;border:.5px solid #1a3a55;border-radius:7px;padding:8px 10px;">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:'+(crew.length>0?'7':'0')+'px;">'+
+        '<span style="font-size:11px;color:#8ab8d8;">'+crew.length+' crew ('+avail+' avail · '+(crew.length-avail)+' deployed)</span>'+
+        '<div style="display:flex;gap:5px;align-items:center;">'+
+          '<button onclick="addPoolCrewN(10)" style="background:#0d1e30;border:.5px solid #1a4a60;border-radius:4px;color:#8ab8d8;cursor:pointer;font-size:10px;padding:2px 7px;">+10</button>'+
+          '<button onclick="addPoolCrewN(100)" style="background:#0d1e30;border:.5px solid #1a4a60;border-radius:4px;color:#8ab8d8;cursor:pointer;font-size:10px;padding:2px 7px;">+100</button>'+
+          '<button onclick="poolRemoveCrew()" style="background:none;border:none;color:#c86050;cursor:pointer;font-size:11px;padding:0 2px;" title="Remove one">–1</button>'+
+          (crew.length>0?'<button onclick="poolClearCrew()" style="background:none;border:none;color:#c86050;cursor:pointer;font-size:10px;padding:0 4px;">Clear all</button>':'')+
+        '</div>'+
+      '</div>'+
     '</div>';
   }
   return h;
@@ -2643,12 +2771,32 @@ function openPoolAdd(type){
 function addPoolCrew(){
   poolAdd('crew','',0);
 }
+function addPoolCrewN(n){
+  for(let i=0;i<n;i++) globalCrew.push({id:Date.now()+Math.random(),type:'crew',name:'',salary:0,shipId:null});
+  _refreshCrewModal();
+}
+function poolClearCrew(){
+  const toRemove=globalCrew.filter(c=>c.type==='crew'&&!c.shipId).map(c=>c.id);
+  toRemove.forEach(id=>{const i=globalCrew.findIndex(c=>c.id===id);if(i!==-1)globalCrew.splice(i,1);});
+  _refreshCrewModal();
+}
 
 
 function unassignCrewFromShip(crewId){
-  const c=globalCrew.find(x=>x.id===crewId); if(!c)return;
-  _unassignFromShip(crewId,c.shipId);
+  const c=globalCrew.find(x=>x.id==crewId); if(!c)return;
+  const uid=c.shipId;
+  _unassignFromShip(crewId,uid);
   c.shipId=null;
+  // find which slot this crew was in and auto-fill from standby
+  const inst=uid?armada.find(i=>i.uid==uid):null;
+  if(inst&&inst.roomCrew){
+    Object.keys(inst.roomCrew).forEach(function(k){
+      const arr=inst.roomCrew[k];
+      for(let i=0;i<arr.length;i++){
+        if(arr[i]===null) _autoFillSlot(inst,k,i);
+      }
+    });
+  }
   _refreshCrewModal(); renderDetail();
 }
 
@@ -2660,40 +2808,52 @@ function assignToThisShip(crewId){
   closeModal(); _refreshCrewModal(); renderDetail();
 }
 
+
+function disembarkShip(uid){
+  globalCrew.forEach(function(c){ if(c.shipId==uid) c.shipId=null; });
+  const inst=armada.find(function(i){return i.uid==uid;});
+  if(inst){ inst.roomCrew={}; inst.standby=[]; }
+  renderDetail(); _refreshCrewModal();
+}
 function fillFromPool(){
   if(!selectedUid)return;
   const inst=armada.find(i=>i.uid==selectedUid); if(!inst)return;
   const ship=SHIPS.find(s=>s.id===inst.shipId);
   const cap=crewCap(ship);
+  _initStandby(inst);
 
-  // Build open slots list (systems + rooms)
+  // First fill all explicit slots
   const totalMounts=(ship.mounts.cannon||0)+(ship.mounts.harpoon||0)+(ship.mounts.focus||0);
   const secs=[
     {key:'sys_helm',count:1},
-    ship.fixed.nest&&ship.nestSlots>0?{key:'sys_nest',count:ship.nestSlots}:null,
+    (ship.fixed&&ship.fixed.nest&&ship.nestSlots>0)?{key:'sys_nest',count:ship.nestSlots}:null,
     {key:'sys_rigger',count:inst.riggers?inst.riggers.length:1},
     {key:'sys_mounts',count:totalMounts},
   ].filter(Boolean);
-  (inst.rooms||[]).forEach((rid,ri)=>{
-    const room=SHIP_ROOMS.find(r=>r.id===rid);
+  (inst.rooms||[]).forEach(function(rid,ri){
+    const room=SHIP_ROOMS.find(function(r){return r.id===rid;});
     if(room&&room.workers>0) secs.push({key:'room_'+ri,count:room.workers});
   });
 
   if(!inst.roomCrew)inst.roomCrew={};
-  let normAvail=_availCrew().filter(c=>c.type==='crew');
+  let normAvail=_availCrew().filter(function(c){return c.type==='crew';});
 
   for(const sec of secs){
     if(!inst.roomCrew[sec.key])inst.roomCrew[sec.key]=[];
     for(let i=0;i<sec.count;i++){
-      if(inst.roomCrew[sec.key][i]) continue; // already filled
+      if(inst.roomCrew[sec.key][i]) continue;
       if(!normAvail.length) break;
-      if(_shipCrew(inst.uid).length>=cap) break; // cap check
+      if(_shipCrew(inst.uid).length-(inst.standby||[]).length>=cap) break;
       const c=normAvail.shift();
       c.shipId=inst.uid;
       while(inst.roomCrew[sec.key].length<=i)inst.roomCrew[sec.key].push(null);
       inst.roomCrew[sec.key][i]=c.id;
     }
   }
+
+  // Then fill standby up to cap
+  _refillStandby(inst, ship);
+
   _refreshCrewModal(); renderDetail();
 }
 
@@ -3293,6 +3453,266 @@ function copyShip(e, uid){
   updateStats();
   selectShip(clone.uid);
 }
+
+function _calcSlots(inst, ship){
+  // Returns array of {key, idx} for every slot on this ship
+  const slots=[];
+  const totalMounts=(ship.mounts.cannon||0)+(ship.mounts.harpoon||0)+(ship.mounts.focus||0);
+  const secs=[
+    {key:'sys_helm',count:1},
+    (ship.fixed&&ship.fixed.nest&&ship.nestSlots>0)?{key:'sys_nest',count:ship.nestSlots}:null,
+    {key:'sys_rigger',count:inst.riggers?inst.riggers.length:1},
+    {key:'sys_mounts',count:totalMounts},
+  ].filter(Boolean);
+  (inst.rooms||[]).forEach(function(rid,ri){
+    const room=SHIP_ROOMS.find(function(r){return r.id===rid;});
+    if(room&&room.workers>0) secs.push({key:'room_'+ri,count:room.workers});
+  });
+  secs.forEach(function(sec){
+    for(let i=0;i<sec.count;i++) slots.push({key:sec.key,idx:i});
+  });
+  return slots;
+}
+
+function _filledSlotCount(inst){
+  if(!inst.roomCrew)return 0;
+  let n=0;
+  Object.values(inst.roomCrew).forEach(function(arr){arr.forEach(function(v){if(v!=null)n++;});});
+  return n;
+}
+
+// Ensure standby array exists on inst
+function _initStandby(inst){ if(!inst.standby)inst.standby=[]; }
+
+// Refill standby up to cap, drawing from global pool of undeployed regular crew
+function _refillStandby(inst, ship){
+  _initStandby(inst);
+  const cap=crewCap(ship);
+  const onShip=_shipCrew(inst.uid).length;
+  const inStandby=inst.standby.length;
+  const want=Math.max(0, cap - onShip - inStandby);
+  if(want<=0)return;
+  const pool=globalCrew.filter(function(c){return c.type==='crew'&&!c.shipId&&!inst.standby.includes(c.id);});
+  const take=Math.min(want, pool.length);
+  for(let i=0;i<take;i++){
+    pool[i].shipId=inst.uid; // mark as belonging to this ship (standby)
+    inst.standby.push(pool[i].id);
+  }
+}
+
+// Pull one from standby into a specific slot, return true if filled
+function _pullFromStandby(inst, key, idx){
+  _initStandby(inst);
+  if(!inst.standby.length)return false;
+  const cid=inst.standby.shift();
+  // ensure array
+  if(!inst.roomCrew)inst.roomCrew={};
+  if(!inst.roomCrew[key])inst.roomCrew[key]=[];
+  while(inst.roomCrew[key].length<=idx)inst.roomCrew[key].push(null);
+  inst.roomCrew[key][idx]=cid;
+  return true;
+}
+
+// When a crew member is removed from a slot, auto-fill from standby
+function _autoFillSlot(inst, key, idx){
+  if(!inst.standby||!inst.standby.length)return;
+  _pullFromStandby(inst, key, idx);
+}
+
+
+function pullFromStandby(uid){
+  // Fill all empty pips from standby
+  const inst=armada.find(function(i){return i.uid==uid;}); if(!inst)return;
+  const ship=SHIPS.find(function(s){return s.id===inst.shipId;}); if(!ship)return;
+  const cap=crewCap(ship);
+  if(!inst.roomCrew)inst.roomCrew={};
+  _initStandby(inst);
+
+  const totalMounts=(ship.mounts.cannon||0)+(ship.mounts.harpoon||0)+(ship.mounts.focus||0);
+  const secs=[
+    {key:'sys_helm',count:1},
+    (ship.fixed&&ship.fixed.nest&&ship.nestSlots>0)?{key:'sys_nest',count:ship.nestSlots}:null,
+    {key:'sys_rigger',count:inst.riggers?inst.riggers.length:1},
+    {key:'sys_mounts',count:totalMounts},
+  ].filter(Boolean);
+  (inst.rooms||[]).forEach(function(rid,ri){
+    const room=SHIP_ROOMS.find(function(r){return r.id===rid;});
+    if(room&&room.workers>0) secs.push({key:'room_'+ri,count:room.workers});
+  });
+
+  // Count only crew actually in slots (not standby)
+  function countSlotted(rc){ return Object.values(rc||{}).reduce(function(s,a){return s+a.filter(function(v){return v!=null;}).length;},0); }
+  for(const sec of secs){
+    if(!inst.roomCrew[sec.key])inst.roomCrew[sec.key]=[];
+    for(let i=0;i<sec.count;i++){
+      if(inst.roomCrew[sec.key][i]) continue; // already filled
+      if(!inst.standby.length) break;
+      if(countSlotted(inst.roomCrew)>=cap) break;
+      const cid=inst.standby.shift();
+      while(inst.roomCrew[sec.key].length<=i)inst.roomCrew[sec.key].push(null);
+      inst.roomCrew[sec.key][i]=cid;
+    }
+  }
+  renderDetail(); _refreshCrewModal();
+}
+function toggleStandby(id){
+  const el=document.getElementById(id);
+  const arr=document.getElementById(id+'-arr');
+  if(!el)return;
+  const open=el.style.display==='block';
+  el.style.display=open?'none':'block';
+  if(arr)arr.textContent=open?'▾':'▴';
+}
+function refillStandbyBtn(uid){
+  const inst=armada.find(i=>i.uid==uid); if(!inst)return;
+  const ship=SHIPS.find(s=>s.id===inst.shipId); if(!ship)return;
+  _refillStandby(inst,ship);
+  renderDetail(); _refreshCrewModal();
+}
+function clearStandbyBtn(uid){
+  const inst=armada.find(i=>i.uid==uid); if(!inst)return;
+  _initStandby(inst);
+  // Return all standby crew to pool
+  inst.standby.forEach(function(cid){
+    const c=globalCrew.find(x=>x.id===cid);
+    if(c)c.shipId=null;
+  });
+  inst.standby=[];
+  renderDetail(); _refreshCrewModal();
+}
+
+
+// ── Tutorial ─────────────────────────────────────────────────────────────────
+const TUTORIAL_STEPS = [
+  {
+    title: '⚓ Welcome to Broadsides!',
+    body: `<p style="color:#8ab8d8;font-size:12px;line-height:1.8;margin-bottom:14px;">This is a fleet builder for the <b style="color:#c8d8e8;">Broadsides!</b> D&D 5e ship combat system. You can build armadas, configure every system on each ship, staff your crew, and generate encounters.</p>
+<p style="color:#8ab8d8;font-size:12px;line-height:1.8;">Here's a quick walkthrough of how everything works.</p>
+<div style="margin-top:16px;background:#06101a;border:.5px solid #1a3a55;border-radius:8px;padding:12px 14px;font-size:11px;color:#4a7a9a;">
+  Use the <b style="color:#8ab8d8;">← Back</b> and <b style="color:#8ab8d8;">Next →</b> buttons or click the dots to jump to any step.
+</div>`
+  },
+  {
+    title: '🚢 Adding ships to your fleet',
+    body: `<div style="font-size:12px;color:#8ab8d8;line-height:1.8;">
+<b style="color:#c8d8e8;">Ship Catalogue</b> — the left panel lists every available ship.<br><br>
+<b style="color:#c0d0e0;">Filter by tier:</b> use the <span style="background:#0d1e30;border:.5px solid #1a4a60;padding:1px 7px;border-radius:4px;">T0 – T4</span> tabs at the top of the catalogue to narrow by tier.<br><br>
+<b style="color:#c0d0e0;">Filter by category:</b> the second row filters by faction — Standard, Cultural, Elven, Giff, Dragonborn, Aquatic, Leviathan, Merchant, Magician, or Zadelian.<br><br>
+<b style="color:#c0d0e0;">Place a ship:</b> <span style="color:#60c890;">drag any ship card</span> from the catalogue and drop it onto the blue water area in the centre. You can drag and reposition tokens freely.
+</div>`
+  },
+  {
+    title: '⚙ Configuring systems — Above Deck',
+    body: `<div style="font-size:12px;color:#8ab8d8;line-height:1.8;">
+Click any ship token on the water to <b style="color:#c8d8e8;">select it</b> — its detail panel opens on the right.<br><br>
+The <b style="color:#c8d8e8;">Above Deck</b> tab shows all mountable systems:<br><br>
+<span style="color:#5a9abc;">🔵 Helm</span> — command and speed. Click the empty slot to pick a helm system.<br>
+<span style="color:#40b080;">🟢 Mounts</span> — cannon, harpoon, focus. Flex slots accept any type. Unique ships have fixed-type slots with Standard / Anima / Zadelian / Electric tabs.<br>
+<span style="color:#b08040;">🟡 Nest</span> — crow's nest spotter.<br>
+<span style="color:#60b060;">🔵 Rigger</span> — repair kit.<br>
+<span style="color:#b0802a;">⬛ Upgrades</span> — hull, engine, and special upgrades.<br><br>
+Hover any filled slot to see its full stat block tooltip.
+</div>`
+  },
+  {
+    title: '🏠 Configuring rooms — Below Deck',
+    body: `<div style="font-size:12px;color:#8ab8d8;line-height:1.8;">
+The <b style="color:#c8d8e8;">Below Deck</b> tab shows crew, rooms, and standby.<br><br>
+<b style="color:#c0d0e0;">Adding rooms:</b> click <span style="background:#06101a;border:.5px solid #1a3a55;padding:1px 8px;border-radius:4px;color:#60b080;">+ Add room</span> at the bottom. Filter by category — Combat, Crew, Utility, Production, Creature, Exploration. Hover any room to see its full description.<br><br>
+<b style="color:#c0d0e0;">Room workers:</b> rooms with staff requirements show pip slots (●). Click <span style="color:#60c890;">+</span> on an empty pip to assign a crew member from your pool. Click a filled pip to unassign.<br><br>
+<b style="color:#c0d0e0;">Production rooms</b> show a Trade Goods / Crew Goods toggle — switch to see what the room produces and its sell value.
+</div>`
+  },
+  {
+    title: '👥 Crew Pool',
+    body: `<div style="font-size:12px;color:#8ab8d8;line-height:1.8;">
+Click <b style="color:#c8d8e8;">Crew Pool</b> in the topbar to manage all crew across your fleet.<br><br>
+<b style="color:#9060c8;">☠ Party</b> — your player characters. Name them individually.<br>
+<b style="color:#c8961e;">★ Star crew</b> — named specialists with custom weekly salaries.<br>
+<b style="color:#4a7a9a;">● Regular crew</b> — anonymous crew at 2 gp/week each. Use <span style="background:#0d1e30;border:.5px solid #1a4a60;padding:1px 7px;border-radius:4px;">+10</span> and <span style="background:#0d1e30;border:.5px solid #1a4a60;padding:1px 7px;border-radius:4px;">+100</span> to add bulk.<br><br>
+The total <b style="color:#c8961e;">⚙ gp/wk</b> fleet wage is shown in the summary bar — this includes star salaries and all regular crew at 2 gp/week each.
+</div>`
+  },
+  {
+    title: '⚓ Standby & All Aboard',
+    body: `<div style="font-size:12px;color:#8ab8d8;line-height:1.8;">
+Each ship has a <b style="color:#c8d8e8;">Standby</b> pool — regular crew reserved for this ship up to its crew cap.<br><br>
+<b style="color:#60b080;">All Aboard</b> — fills every open system and room pip from the crew pool, then tops up standby to cap with remaining crew. One click to fully staff a ship.<br><br>
+<b style="color:#60b080;">Pull from standby</b> — fills empty pips using standby crew only (no pool needed). Useful after combat casualties.<br><br>
+<b style="color:#c06060;">Disembark all</b> — returns every crew member and standby crew to the pool in one click.<br><br>
+When you remove a crew member from a pip, standby auto-fills that slot immediately — standby shrinks by 1 each time.
+</div>`
+  },
+  {
+    title: '💰 Trade Goods',
+    body: `<div style="font-size:12px;color:#8ab8d8;line-height:1.8;">
+Click <b style="color:#c8d8e8;">Trade Goods</b> in the topbar to manage cargo across your fleet.<br><br>
+The <b style="color:#c8d8e8;">Production</b> tab in Below Deck shows a summary of all active production rooms on a ship — what they produce, how much, and at what value per week.<br><br>
+Switch any production room between <span style="color:#c8961e;">🏪 Trade Goods</span> (sell the output for gp) and <span style="color:#40b0a0;">⚓ Crew Goods</span> (the crew consume it — benefits vary by room) using the toggle on each room card.
+</div>`
+  },
+  {
+    title: '⚔ Encounters & Saving',
+    body: `<div style="font-size:12px;color:#8ab8d8;line-height:1.8;">
+<b style="color:#c8d8e8;">Save / Load fleet</b> — Dockyard → Save current fleet. Downloads a <span style="background:#06101a;border:.5px solid #1a3a55;padding:1px 7px;border-radius:4px;color:#8ab8d8;">.json</span> file with your entire armada including all systems, rooms, and crew. Load it back any time.<br><br>
+<b style="color:#c8d8e8;">Duplicate a ship</b> — click the <span style="background:#06101a;border:.5px solid #1a3a55;padding:1px 7px;border-radius:4px;color:#60c890;">📋</span> copy icon on any water token to create an exact clone with all systems and rooms.<br><br>
+<b style="color:#c8d8e8;">Encounter generator</b> — Dockyard → Create unique encounter. Generates a balanced combat scenario based on your current fleet's tier and size.<br><br>
+<div style="margin-top:12px;background:#0a1e14;border:.5px solid #2a6a4a;border-radius:8px;padding:10px 12px;color:#60b080;font-size:11px;">
+  ✓ You're all set. Build your armada and sail into the Isles of Maro.
+</div>
+</div>`
+  },
+];
+
+let _tutIdx = 0;
+
+function openTutorial(e){
+  if(e) e.stopPropagation();
+  const dd = document.getElementById('dockyard-dropdown');
+  if(dd) dd.classList.remove('open');
+  _tutIdx = 0;
+  document.getElementById('tutorial-overlay').style.display='flex';
+  _renderTutStep();
+}
+function closeTutorial(){
+  document.getElementById('tutorial-overlay').style.display='none';
+}
+function tutStep(dir){
+  _tutIdx = Math.max(0, Math.min(TUTORIAL_STEPS.length-1, _tutIdx+dir));
+  _renderTutStep();
+}
+function _renderTutStep(){
+  const step = TUTORIAL_STEPS[_tutIdx];
+  const total = TUTORIAL_STEPS.length;
+
+  document.getElementById('tut-step-label').textContent = 'Step '+(_tutIdx+1)+' of '+total;
+  document.getElementById('tut-body').innerHTML =
+    '<div style="font-size:14px;font-weight:600;color:#c8d8e8;margin-bottom:14px;">'+step.title+'</div>'+
+    step.body;
+
+  // Dots
+  document.getElementById('tut-dots').innerHTML = TUTORIAL_STEPS.map(function(_,i){
+    const active = i===_tutIdx;
+    return '<div onclick="tutJump('+i+')" style="width:'+(active?'18':'8')+'px;height:8px;border-radius:4px;background:'+(active?'#3a7ab0':'#1a3a55')+';cursor:pointer;transition:all .2s;"></div>';
+  }).join('');
+
+  // Buttons
+  document.getElementById('tut-prev').style.opacity = _tutIdx===0?'0.3':'1';
+  document.getElementById('tut-prev').disabled = _tutIdx===0;
+  const nextBtn = document.getElementById('tut-next');
+  if(_tutIdx===total-1){
+    nextBtn.textContent = 'Done';
+    nextBtn.onclick = closeTutorial;
+  } else {
+    nextBtn.textContent = 'Next →';
+    nextBtn.onclick = function(){ tutStep(1); };
+  }
+}
+function tutJump(i){
+  _tutIdx = i;
+  _renderTutStep();
+}
+
 // Boot
 renderCat();renderDetail();updateStats();
 </script>
@@ -3314,6 +3734,27 @@ renderCat();renderDetail();updateStats();
       <button onclick="closeTradeModal()" style="background:none;border:none;color:#4a7a9a;cursor:pointer;font-size:20px;line-height:1;padding:0 2px;">×</button>
     </div>
     <div id="trade-modal-body" style="flex:1;overflow-y:auto;padding:14px 16px;"></div>
+  </div>
+</div>
+
+<div id="tutorial-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:600;align-items:center;justify-content:center;">
+  <div style="background:#0d1e30;border:1px solid #2a5a80;border-radius:14px;width:560px;max-width:96vw;max-height:86vh;display:flex;flex-direction:column;box-shadow:0 12px 60px rgba(0,0,0,.8);">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 12px;border-bottom:.5px solid #1a3a55;">
+      <div>
+        <div style="font-size:16px;font-weight:600;color:#e0d8c8;">Broadsides! — How to use</div>
+        <div style="font-size:10px;color:#4a7a9a;margin-top:2px;" id="tut-step-label">Step 1 of 8</div>
+      </div>
+      <button onclick="closeTutorial()" style="background:none;border:none;color:#4a7a9a;cursor:pointer;font-size:20px;line-height:1;">×</button>
+    </div>
+    <!-- Step content -->
+    <div id="tut-body" style="flex:1;overflow-y:auto;padding:20px 22px;"></div>
+    <!-- Footer nav -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:.5px solid #1a3a55;">
+      <button id="tut-prev" onclick="tutStep(-1)" style="background:#0d1e30;border:.5px solid #1a3a55;border-radius:6px;color:#8ab8d8;cursor:pointer;padding:6px 16px;font-size:11px;">← Back</button>
+      <div style="display:flex;gap:5px;" id="tut-dots"></div>
+      <button id="tut-next" onclick="tutStep(1)" style="background:#2a5a80;border:.5px solid #3a7ab0;border-radius:6px;color:#e0e8f0;cursor:pointer;padding:6px 16px;font-size:11px;font-weight:500;">Next →</button>
+    </div>
   </div>
 </div>
 </body>
