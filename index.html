@@ -349,7 +349,39 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
 <div id="tooltip"></div>
 <div id="room-tip"></div>
 
-<script>
+<script>const UPG_CATEGORIES = {
+  'hateful_eye':'offense','poisoncraft':'offense','killing_deck':'offense',
+  'wrathbone_prow':'offense','stormcaller_mast':'offense','storm_array':'offense',
+  'ghost_cannon':'offense','predator_wake':'offense','boarding_spike_battery':'offense',
+  'drowning_bell':'offense','the_render':'offense','depth_charge_rack':'offense',
+  'greek_fire_station':'offense','chain_web_launcher':'offense','pitch_cauldron':'offense',
+  'anima_overcharge_rig':'offense','the_bleeder':'offense','pact_swords':'offense','marines':'offense',
+  'veilshroud':'defense','the_cradle':'defense','mirror_hull':'defense',
+  'iron_web':'defense','ghost_rigging':'defense','ironbone_hull':'defense',
+  'conduit_plating':'defense','magnetic_hull_plating':'defense',
+  'anti_boarding_net':'defense','wrathskin_plating':'defense',
+  'pressure_bones':'defense','lantern_ward':'defense',
+  'iron_jaw':'defense','deepwalker_keel':'defense','resonant_keel':'defense',
+  'volt_keel':'defense','leech_keel':'defense','coral_weave_hull':'defense',
+  'tidebreaker_spine':'defense','zadelian_depth_anchor':'defense',
+  'iron_heart':'generators','scorched_heart':'generators','brine_core':'generators',
+  'still_flame':'generators','anima_core_vessel':'generators','arc_battery':'generators',
+  'brine_core_mk2':'generators','arcane_battery':'generators',
+  'brine_mk2_overclock':'generators','brine_mk2_shield':'generators',
+  'arcane_battery_tap':'generators','arcane_battery_reserve':'generators',
+  'long_ear':'utility','oracle_deck':'utility','rail_booster':'utility',
+  'tide_anchor':'utility','twin_helm_assembly':'utility','fog_bellows':'utility',
+  'decoy_launchers':'utility','bilge_pump_array':'utility',
+  'deep_recovery_crane':'utility','fast_assault_davit':'utility',
+  'dead_reckoning_frame':'utility','widows_eye':'utility',
+  'tideforged_chart':'utility','resonance_hull':'utility','gloomveil_shroud':'utility',
+  'spectral_lantern_array':'utility','memory_lattice':'utility',
+  'soulwarden':'utility','the_stage':'utility','sirens_perch':'utility',
+  'salt_feed_lines':'utility','black_flag_signal':'utility','crimson_wake_paint':'utility',
+  'cartographers_table':'trade','brokers_booth':'trade','the_dead_drop':'trade','menagerie_cage':'trade',
+};
+function getUpgCat(upg){ return UPG_CATEGORIES[upg.id]||'utility'; }
+
 // ── Data ─────────────────────────────────────────────────────────────────────
 
 function crewCap(ship){
@@ -658,9 +690,9 @@ const SYSTEMS = {
     {id:'helm_zad_resonance',name:'Resonance Helm',tier:2,cost:8000,desc:"Morale die d8. Speed +2 sq. Turn cost -1 sq. Command DC 11. HP 120 / AC ship+2. Zadelian.\nLeyline read: the helm interfaces with local ley currents — captain sees exact position, speed, heading, and installed systems of every ship within 8 sq regardless of fog, darkness, or magical concealment. Shared with captain as free action each round.\nHarmonic command (1/combat): issue a command that does not consume the ship action — the ley current carries the order.\nCommands:\nAll standard T2 commands, plus Ley Drift — move 3 sq in any direction as a free action ignoring wind and current."},
     {id:'helm_zad_memory',name:'Memory Helm',tier:3,cost:22000,desc:"Morale die d10. Speed +2 sq. Turn cost -1 sq. Command DC 10. HP 160 / AC ship+3. Zadelian.\nEncoded history: the helm records every combat round in memory crystal. After the first round, captain gains +2 to all Command DCs from predictive tactical data.\nEcho command (1/combat): replay any command used earlier this combat as a free action — the helm executes a perfect copy, no roll required.\nCascade morale: when this ship succeeds a morale check, all allied ships within 5 sq may immediately reroll their own morale checks this round.\nCommands:\nAll standard T3 commands."},
     {id:'helm_zad_sovereign',name:'Sovereign Helm',tier:4,cost:60000,desc:"Morale die d12. Speed +3 sq. Turn cost -2 sq. Command DC 8. HP 200 / AC ship+4. Zadelian.\nLey dominion: while active, all Zadelian mounts and upgrades on this ship ignore their engine requirements — the helm feeds them directly from the leyline grid.\nFleet imprint: allied ships within 10 sq may use this ship Command DC and morale die for their own checks if lower than their own.\nTidal authority (1/long rest): declare one ship within range to be permanently friendly until destroyed or session ends. No save.\nCommands:\nAll standard T3 commands plus all T2 commands."},
-    {id:'helm_elec_arc',name:'Arc Helm',tier:2,cost:10000,desc:"Morale die d8. Speed +3 sq (engine active) / +1 sq (engine offline). Turn cost -1 sq. Command DC 11. HP 100 / AC ship+2. Requires: Oil Engine or Brine Engine.\nEngine-driven speed: while engine is active this helm adds +3 sq speed. If engine goes offline drops to +1 sq only.\nVoltaic command (1/combat): issue a command that also discharges a pulse through the ship — all crew gain +1d6 to their next action roll from the electric surge.\nEmergency override: if engine is disabled the helm draws from any Arc Battery installed to function normally for 2 rounds.\nCommands:\nAll standard T2 commands."},
-    {id:'helm_elec_surge',name:'Surge Helm',tier:3,cost:24000,desc:"Morale die d10. Speed +3 sq (engine active) / +1 sq (engine offline). Turn cost -2 sq. Command DC 10 (active) / 13 (offline). HP 160 / AC ship+3. Requires: Oil Engine or Brine Engine.\nOvercharge (1/combat): surge the engine through the helm — this ship may take two full move actions this round instead of one. Afterward Speed -1 sq for the remainder of the round.\nElectric wake: any ship that ends its turn within 2 sq of this ship while engine is active takes 1d10 lightning hull damage, no attack roll.\nCommands:\nAll standard T3 commands."},
-    {id:'helm_elec_dynamo',name:'Dynamo Helm',tier:2,cost:11000,desc:"Morale die d8. Speed +2 sq. Turn cost -1 sq. Command DC 11. HP 100 / AC ship+2. Requires: Oil Engine or Brine Engine.\nPower feed: this helm feeds excess engine output to one mount of the captain choice each round — that mount deals +1d10 damage on its next attack at no cost.\nDynamo spin (1/long rest): for 3 rounds all electric mounts fire with no reload required — the dynamo charges them directly from the helm circuit.\nDRAWBACK: if engine is disabled this helm provides no speed bonus and Command DC rises to 14 until engine is restored.\nCommands:\nAll standard T2 commands."},
+    {id:'helm_elec_arc',name:'Arc Helm',tier:2,cost:10000,desc:"Morale die d8. Speed +3 sq (engine active) / +1 sq (engine offline). Turn cost -1 sq. Command DC 11. HP 100 / AC ship+2. Requires: Electric Generator.\nEngine-driven speed: while engine is active this helm adds +3 sq speed. If engine goes offline drops to +1 sq only.\nVoltaic command (1/combat): issue a command that also discharges a pulse through the ship — all crew gain +1d6 to their next action roll from the electric surge.\nEmergency override: if engine is disabled the helm draws from any Arc Battery installed to function normally for 2 rounds.\nCommands:\nAll standard T2 commands."},
+    {id:'helm_elec_surge',name:'Surge Helm',tier:3,cost:24000,desc:"Morale die d10. Speed +3 sq (engine active) / +1 sq (engine offline). Turn cost -2 sq. Command DC 10 (active) / 13 (offline). HP 160 / AC ship+3. Requires: Electric Generator.\nOvercharge (1/combat): surge the engine through the helm — this ship may take two full move actions this round instead of one. Afterward Speed -1 sq for the remainder of the round.\nElectric wake: any ship that ends its turn within 2 sq of this ship while engine is active takes 1d10 lightning hull damage, no attack roll.\nCommands:\nAll standard T3 commands."},
+    {id:'helm_elec_dynamo',name:'Dynamo Helm',tier:2,cost:11000,desc:"Morale die d8. Speed +2 sq. Turn cost -1 sq. Command DC 11. HP 100 / AC ship+2. Requires: Electric Generator.\nPower feed: this helm feeds excess engine output to one mount of the captain choice each round — that mount deals +1d10 damage on its next attack at no cost.\nDynamo spin (1/long rest): for 3 rounds all electric mounts fire with no reload required — the dynamo charges them directly from the helm circuit.\nDRAWBACK: if engine is disabled this helm provides no speed bonus and Command DC rises to 14 until engine is restored.\nCommands:\nAll standard T2 commands."},
     {id:'helm_anima',name:'Anima Helm',tier:4,cost:40000,desc:"Morale die d12. Speed +4 sq. Turn cost -2 sq. Command DC 8. HP 200 / AC ship+4. Requires: Anima Core Housing upgrade.\nAnima interface: the helm is directly wired to the Anima Stone core — the captain steers by intent. Helm checks auto-succeed on a roll of 5 or higher, no modifier needed.\nCore command (1/long rest): channel through the command structure — every allied ship on the battlefield may act on this ship initiative count for 1 round and all allied ships gain +2d6 force damage on all attacks. Roll Crack check on the Anima Stone after use.\nLiving intuition: this ship cannot be surprised, ambushed, or flanked. Captain always acts on the highest initiative count among all combatants.\nDRAWBACK: if the Anima Stone detonates from a Crack (caused by Anima mount discharge), the captain is at the epicenter and must DC 18 Dex save or be instantly reduced to 0 HP in addition to the normal detonation."},
   ],
   cannon:[
@@ -716,7 +748,7 @@ const SYSTEMS = {
     {id:'reapers_roost',name:"Reaper's Roost",tier:3,cost:6000,desc:"Range ×4 multiplier. Hit bonus +2. All cover ignored. 2 spotter slots. HP 160 / AC ship+4.\nKill bonus: every crew member killed drops enemy morale by 1 immediately.\nNatural 20: morale drops 2 AND one other enemy crew member must pass DC 13 Wis or spend their action frozen in shock."},
   
     {id:'nest_zad_spire',name:'Resonance Spire',tier:3,cost:18000,desc:"Range x4 multiplier. Hit bonus +2. All cover ignored. 1 spotter slot. HP 80 / AC ship+2. Zadelian.\nLeyline sight: the spire taps into local leylines — the lookout sees exact position, speed, heading, and all installed systems of every ship within 12 sq regardless of fog, darkness, or magical concealment. Shared with captain as free action each round.\nHarmonic mark (1/combat): designate one target ship — all mounts on this ship gain +3 to hit against that target for 3 rounds.\nConduit warning (passive): if any ship within 8 sq activates a magical ability or spell, the spire detects it before the effect resolves — granting one free reaction to any crew member."},
-    {id:'nest_elec_spotter',name:'Arc Spotter',tier:2,cost:9000,desc:"Range x3 multiplier. Hit bonus +2. Half cover ignored. 1 spotter slot. HP 70 / AC ship+2. Requires: Oil Engine or Brine Engine.\nElectromagnetic scan: powered sensors detect all metal-hulled ships within 10 sq even through complete darkness or fog. Non-metal hulls detected within 6 sq.\nTargeting relay: while engine is active the lookout feeds live targeting data to all electric mounts — they gain +2 to hit and ignore partial cover.\nDischarge warning (passive): if any electric mount on this ship would miss, the spotter may spend a reaction to re-roll the attack once per round using electromagnetic lock."},
+    {id:'nest_elec_spotter',name:'Arc Spotter',tier:2,cost:9000,desc:"Range x3 multiplier. Hit bonus +2. Half cover ignored. 1 spotter slot. HP 70 / AC ship+2. Requires: Electric Generator.\nElectromagnetic scan: powered sensors detect all metal-hulled ships within 10 sq even through complete darkness or fog. Non-metal hulls detected within 6 sq.\nTargeting relay: while engine is active the lookout feeds live targeting data to all electric mounts — they gain +2 to hit and ignore partial cover.\nDischarge warning (passive): if any electric mount on this ship would miss, the spotter may spend a reaction to re-roll the attack once per round using electromagnetic lock."},
     {id:'nest_anima_eye',name:'Anima Eye',tier:4,cost:28000,desc:"Range unlimited (within 1 mile). Hit bonus +3. All cover, concealment, and illusion ignored. 1 spotter slot. HP 100 / AC ship+3. Requires: Anima Core Housing upgrade.\nArcane omniscience: the Anima core feeds pure leyline awareness through the nest — the lookout perceives all ships, creatures, and objects within 1 mile. No concealment, invisibility, illusion, or dimensional effect blocks this sight.\nLock on (passive): Anima Eye feeds targeting data so precisely that all Anima mounts on this ship automatically hit any target the lookout designates each round — no attack roll required.\nOverwatch (1/long rest): the lookout channels a burst of arcane awareness — for 1 round every ally on the battlefield knows exact position and remaining HP of every enemy, and all allies gain advantage on all attacks this round."},
   ],
   rigger:[
@@ -735,9 +767,9 @@ const SYSTEMS = {
     {id:'rig_zad_conduit',name:'Conduit Kit',tier:2,cost:9000,desc:"4 charges/long rest. Repair die d10. All HP repairs x10. Zadelian.\nKit actions:\nConduit patch (1 ch) — repair hull and reroute one system simultaneously: hull heals Repair Die HP and one disabled system is restored instantly · Ley stabilise (1 ch) — suppress any one ongoing magical effect on this ship for 2 rounds without ending it · Overload drain (free, 1/combat) — if any system on this ship would be destroyed this round, drain the overload through the conduit: system drops to 1 HP instead of being destroyed."},
     {id:'rig_zad_lattice',name:'Lattice Kit',tier:3,cost:20000,desc:"5 charges/long rest. Repair die d12. All HP repairs x10. Zadelian.\nKit actions:\nLattice rebuild (2 ch) — restore a destroyed system entirely: the lattice crystallises replacement components from ambient ley energy in 1 round · Resonant reinforce (1 ch) — coat the hull in a lattice shell for 1 round: immune to all damage-reduction-bypassing effects (phase shots, leyline piercing) · Memory repair (free, 1/long rest) — the lattice recalls the ship state from the start of combat and repairs all damage dealt this round as a reaction."},
     {id:'rig_zad_anchor',name:'Anchor Kit',tier:4,cost:45000,desc:"6 charges/long rest. Repair die 2d10. All HP repairs x10. Zadelian.\nKit actions:\nLey anchor (1 ch) — pin the ship to the leyline grid: cannot be moved by any forced movement and gains resistance to all damage for 1 round. Speed 0 while anchored · Grid pulse (2 ch) — send a pulse through the leyline: all Zadelian and Anima-powered systems on enemy ships within 6 sq go offline for 1 round. No save · Structural imprint (passive) — while this kit is installed the ship regenerates 10 HP at the start of each ship turn from passive ley flow."},
-    {id:'rig_elec_shock',name:'Shock Kit',tier:2,cost:8000,desc:"4 charges/long rest. Repair die d10. All HP repairs x10. Requires: Oil Engine or Brine Engine.\nKit actions:\nShock restart (1 ch) — apply a high-voltage pulse to a disabled or destroyed system: it comes back online instantly at 50% HP. Works on electric mounts regardless of engine status · Live wire trap (1 ch) — electrify a section of hull until next turn: any creature touching it takes 2d10 lightning and must DC 13 Str save or be knocked prone · Engine bypass (free, 1/combat) — if engine goes offline use this kit to keep all electric systems running for 1 round at full capacity."},
-    {id:'rig_elec_coil',name:'Coil Kit',tier:3,cost:18000,desc:"5 charges/long rest. Repair die d12. All HP repairs x10. Requires: Oil Engine or Brine Engine.\nKit actions:\nCoil surge (2 ch) — supercharge all electric mounts: for 2 rounds every electric mount deals maximum damage dice. No additional rolls needed · Grounding repair (1 ch) — repair hull using electrical discharge: heals Repair Die x10 HP · Capacitor bank (passive) — this kit stores 1 charge automatically at the start of each combat even if fully expended from the previous encounter."},
-    {id:'rig_elec_volt',name:'Volt Kit',tier:2,cost:7500,desc:"4 charges/long rest. Repair die d8. All HP repairs x10. Requires: Oil Engine or Brine Engine.\nKit actions:\nVolt patch (1 ch) — emergency hull repair using a focused discharge: heals Repair Die x10 HP and stuns any boarders on that section (DC 13 Con save or lose action next round) · Chain ground (1 ch) — run a grounding wire to an adjacent ship: redirect the next source of electrical damage this ship takes to that adjacent ship instead. Full damage, no save · Discharge on destruction (passive) — if this kit is destroyed it releases a burst: 2d10 lightning to all adjacent ships, no roll."},
+    {id:'rig_elec_shock',name:'Shock Kit',tier:2,cost:8000,desc:"4 charges/long rest. Repair die d10. All HP repairs x10. Requires: Electric Generator.\nKit actions:\nShock restart (1 ch) — apply a high-voltage pulse to a disabled or destroyed system: it comes back online instantly at 50% HP. Works on electric mounts regardless of engine status · Live wire trap (1 ch) — electrify a section of hull until next turn: any creature touching it takes 2d10 lightning and must DC 13 Str save or be knocked prone · Engine bypass (free, 1/combat) — if engine goes offline use this kit to keep all electric systems running for 1 round at full capacity."},
+    {id:'rig_elec_coil',name:'Coil Kit',tier:3,cost:18000,desc:"5 charges/long rest. Repair die d12. All HP repairs x10. Requires: Electric Generator.\nKit actions:\nCoil surge (2 ch) — supercharge all electric mounts: for 2 rounds every electric mount deals maximum damage dice. No additional rolls needed · Grounding repair (1 ch) — repair hull using electrical discharge: heals Repair Die x10 HP · Capacitor bank (passive) — this kit stores 1 charge automatically at the start of each combat even if fully expended from the previous encounter."},
+    {id:'rig_elec_volt',name:'Volt Kit',tier:2,cost:7500,desc:"4 charges/long rest. Repair die d8. All HP repairs x10. Requires: Electric Generator.\nKit actions:\nVolt patch (1 ch) — emergency hull repair using a focused discharge: heals Repair Die x10 HP and stuns any boarders on that section (DC 13 Con save or lose action next round) · Chain ground (1 ch) — run a grounding wire to an adjacent ship: redirect the next source of electrical damage this ship takes to that adjacent ship instead. Full damage, no save · Discharge on destruction (passive) — if this kit is destroyed it releases a burst: 2d10 lightning to all adjacent ships, no roll."},
   ],
 
 // ── Anima Stone Mounts ──────────────────────────────────────────────────────
@@ -814,36 +846,36 @@ zadelian_focus:[
 
 electric_cannon:[
   {id:'elec_arc_cannon',name:'Arc Cannon',tier:2,cost:15000,
-   desc:"4d10 x10 hull damage only. Range 7 sq / 14 sq long. Hit +2. Reload 1 round. HP 100 / AC ship+2. Crew 2.\nRequires: Oil Engine or Brine Engine upgrade. Non-functional if engine disabled.\nChain arc: on a hit, lightning jumps to any metal-hulled ship within 2 sq of the target — secondary ship takes 2d10x10 lightning hull damage (no attack roll needed)."},
+   desc:"4d10 x10 hull damage only. Range 7 sq / 14 sq long. Hit +2. Reload 1 round. HP 100 / AC ship+2. Crew 2.\nRequires: Electric Generator. Non-functional if generator disabled.\nChain arc: on a hit, lightning jumps to any metal-hulled ship within 2 sq of the target — secondary ship takes 2d10x10 lightning hull damage (no attack roll needed)."},
 
   {id:'elec_voltaic_bombard',name:'Voltaic Bombard',tier:2,cost:13000,
-   desc:"3d10 x10 hull damage only. Range 6 sq / 12 sq long. Hit +1. Reload 1 round. HP 90 / AC ship+2. Crew 2.\nRequires: Oil Engine or Brine Engine upgrade. Non-functional if engine disabled.\nVoltaic burst: each consecutive round hitting the same target, damage increases +1d10x10 (max +3d10x10) as charge accumulates in the hull. Resets on miss or target change.\nCrew shock: on a hit, crew aboard the target performing metal-contact tasks (boarding, manning metal mounts) must DC 13 Dex save or be stunned 1 round."},
+   desc:"3d10 x10 hull damage only. Range 6 sq / 12 sq long. Hit +1. Reload 1 round. HP 90 / AC ship+2. Crew 2.\nRequires: Electric Generator. Non-functional if generator disabled.\nVoltaic burst: each consecutive round hitting the same target, damage increases +1d10x10 (max +3d10x10) as charge accumulates in the hull. Resets on miss or target change.\nCrew shock: on a hit, crew aboard the target performing metal-contact tasks (boarding, manning metal mounts) must DC 13 Dex save or be stunned 1 round."},
 
   {id:'elec_tempest_rail',name:'Tempest Rail',tier:3,cost:20000,
-   desc:"5d10 x10 hull damage only. Range 12 sq / 24 sq long. Hit +3. Reload 2 rounds. HP 120 / AC ship+3. Crew 2.\nRequires: Oil Engine or Brine Engine upgrade. Non-functional if engine disabled.\nRail velocity: ignores all partial cover. Deals +1d10x10 per sq of range beyond the first 6 sq (max +3d10x10 at max range).\nPenetrating shot: if the target is sunk, the shot continues and may hit a second ship directly behind at half damage."},
+   desc:"5d10 x10 hull damage only. Range 12 sq / 24 sq long. Hit +3. Reload 2 rounds. HP 120 / AC ship+3. Crew 2.\nRequires: Electric Generator. Non-functional if generator disabled.\nRail velocity: ignores all partial cover. Deals +1d10x10 per sq of range beyond the first 6 sq (max +3d10x10 at max range).\nPenetrating shot: if the target is sunk, the shot continues and may hit a second ship directly behind at half damage."},
 
   {id:'elec_lodestone_cannon',name:'Lodestone Cannon',tier:2,cost:16000,
-   desc:"4d10 x10 hull damage only. Range 8 sq. Hit +2. Reload 1 round. HP 100 / AC ship+2. Crew 2.\nRequires: Oil Engine or Brine Engine upgrade. Magnet-powered.\nMagnetic pull (free action before firing): metal-hulled ships within 3 sq are drawn 1 sq closer each round (no save).\nFerrous devastation: +2d10x10 damage against metal-hulled ships (Giff ironclads, Geobukseon, iron-plated hulls)."},
+   desc:"4d10 x10 hull damage only. Range 8 sq. Hit +2. Reload 1 round. HP 100 / AC ship+2. Crew 2.\nRequires: Electric Generator. Magnet-powered.\nMagnetic pull (free action before firing): metal-hulled ships within 3 sq are drawn 1 sq closer each round (no save).\nFerrous devastation: +2d10x10 damage against metal-hulled ships (Giff ironclads, Geobukseon, iron-plated hulls)."},
 
   {id:'elec_polarity_driver',name:'Polarity Driver',tier:3,cost:18000,
-   desc:"4d10 x10 hull damage only. Range 8 sq. Hit +2. Reload 2 rounds. HP 110 / AC ship+3. Crew 2.\nRequires: Oil Engine or Brine Engine upgrade. Magnet-powered.\nPolarity switch (choose mode each round): Attract — pull target 2 sq toward this ship before damage. Repel — push target 3 sq away after damage (DC 15 Str resists).\nMetal disruption (Repel mode): metal-armoured crew aboard the target must DC 14 Str save or be knocked prone."},
+   desc:"4d10 x10 hull damage only. Range 8 sq. Hit +2. Reload 2 rounds. HP 110 / AC ship+3. Crew 2.\nRequires: Electric Generator. Magnet-powered.\nPolarity switch (choose mode each round): Attract — pull target 2 sq toward this ship before damage. Repel — push target 3 sq away after damage (DC 15 Str resists).\nMetal disruption (Repel mode): metal-armoured crew aboard the target must DC 14 Str save or be knocked prone."},
 ],
 
 electric_harpoon:[
   {id:'elec_electric_lance',name:'Electric Lance',tier:2,cost:12000,
-   desc:"3d10 x10 impact. Range 6 sq. 1 line. HP 90 / AC ship+2. Crew 2.\nRequires: Oil Engine or Brine Engine upgrade. Non-functional if engine disabled.\nShock delivery (while tethered): crew of the target performing metal-contact tasks must DC 13 Dex save each round or take 1d6 lightning and drop what they are holding.\nCurrent pulse (1/combat): discharge full current through the line — all crew of the target take 2d10 lightning, no save."},
+   desc:"3d10 x10 impact. Range 6 sq. 1 line. HP 90 / AC ship+2. Crew 2.\nRequires: Electric Generator. Non-functional if generator disabled.\nShock delivery (while tethered): crew of the target performing metal-contact tasks must DC 13 Dex save each round or take 1d6 lightning and drop what they are holding.\nCurrent pulse (1/combat): discharge full current through the line — all crew of the target take 2d10 lightning, no save."},
 
   {id:'elec_voltaic_anchor',name:'Voltaic Anchor',tier:2,cost:14000,
-   desc:"3d10 x10 impact. Range 7 sq. 1 line. HP 95 / AC ship+2. Crew 2.\nRequires: Oil Engine or Brine Engine upgrade. Non-functional if engine disabled.\nPowered retrieval: engine drives the winch — target is automatically pulled 2 sq toward this ship at start of each round (DC 16 Str to resist). No crew action needed.\nArc burst: when pulled to an adjacent square, target takes 4d10x10 hull damage and all deck crew must DC 14 Dex save or be knocked prone."},
+   desc:"3d10 x10 impact. Range 7 sq. 1 line. HP 95 / AC ship+2. Crew 2.\nRequires: Electric Generator. Non-functional if generator disabled.\nPowered retrieval: engine drives the winch — target is automatically pulled 2 sq toward this ship at start of each round (DC 16 Str to resist). No crew action needed.\nArc burst: when pulled to an adjacent square, target takes 4d10x10 hull damage and all deck crew must DC 14 Dex save or be knocked prone."},
 
   {id:'elec_storm_chain',name:'Storm Chain',tier:3,cost:18000,
-   desc:"4d10 x10 impact. Range 7 sq. 1 line. HP 110 / AC ship+3. Crew 2.\nRequires: Oil Engine or Brine Engine upgrade. Non-functional if engine disabled.\nStorm chain: while 2+ ships are simultaneously tethered via chain, lightning arcs between all tethered ships dealing 2d10x10 hull damage to each every round automatically — no action required.\nThunderclap release (1/combat): release all tethers simultaneously — each previously tethered ship takes 5d10x10 lightning hull damage and is pushed 3 sq away."},
+   desc:"4d10 x10 impact. Range 7 sq. 1 line. HP 110 / AC ship+3. Crew 2.\nRequires: Electric Generator. Non-functional if generator disabled.\nStorm chain: while 2+ ships are simultaneously tethered via chain, lightning arcs between all tethered ships dealing 2d10x10 hull damage to each every round automatically — no action required.\nThunderclap release (1/combat): release all tethers simultaneously — each previously tethered ship takes 5d10x10 lightning hull damage and is pushed 3 sq away."},
 
   {id:'elec_magnetic_grapple',name:'Magnetic Grapple',tier:2,cost:13000,
-   desc:"2d10 x10 impact. Range 7 sq. 1 line. HP 90 / AC ship+2. Crew 1.\nRequires: Oil Engine or Brine Engine upgrade. Magnet-powered.\nMagnetic lock: attaches to any metal surface automatically — no attack roll needed against metal-hulled ships. Against non-metal hulls, roll normally. Lock cannot be physically severed; only cutting engine power or destroying the mount releases it.\nPull and lock: engine-powered winch pulls both ships together at 2 sq per round automatically. No crew action needed."},
+   desc:"2d10 x10 impact. Range 7 sq. 1 line. HP 90 / AC ship+2. Crew 1.\nRequires: Electric Generator. Magnet-powered.\nMagnetic lock: attaches to any metal surface automatically — no attack roll needed against metal-hulled ships. Against non-metal hulls, roll normally. Lock cannot be physically severed; only cutting engine power or destroying the mount releases it.\nPull and lock: engine-powered winch pulls both ships together at 2 sq per round automatically. No crew action needed."},
 
   {id:'elec_iron_widow',name:'Iron Widow',tier:3,cost:17000,
-   desc:"3d10 x10 impact. Range 6 sq. 1 line. HP 110 / AC ship+3. Crew 2.\nRequires: Oil Engine or Brine Engine upgrade. Magnet-powered.\nFerrous cage: deploys a web of magnetic cables around the target — metal weapons aboard the target have disadvantage on all melee attacks; metal armour wearers have speed halved.\nWidow's grip (bonus action while tethered): impose Restrained on the entire target ship — it cannot move in any direction while this ship's engine has power."},
+   desc:"3d10 x10 impact. Range 6 sq. 1 line. HP 110 / AC ship+3. Crew 2.\nRequires: Electric Generator. Magnet-powered.\nFerrous cage: deploys a web of magnetic cables around the target — metal weapons aboard the target have disadvantage on all melee attacks; metal armour wearers have speed halved.\nWidow's grip (bonus action while tethered): impose Restrained on the entire target ship — it cannot move in any direction while this ship's engine has power."},
 ],
 
   utility:[
@@ -855,7 +887,7 @@ electric_harpoon:[
 const UPGRADES = [
   {id:'iron_heart',name:'The Iron Heart',type:'Engine',cost:12000,desc:"Coal/oil combustion engine. Permanent always-on power — cannot be shut down mid-combat.\n+1d10 ×10 weapon damage · Turn cost –1 sq\nDRAWBACK: Cannot stealth — massive black smoke visible 10+ miles. Pollution trail lasts 1 hour.\nCleansing: each cleanse drops engine one level (Full → Reduced → Minimal → Shutdown). Shutdown requires 2,000 gp port overhaul.\nIncompatible: Ghost Rigging · Dead Men's Lanterns · Veilshroud · Mirror Hull"},
   {id:'scorched_heart',name:'The Scorched Heart',type:'Engine MkII',cost:20000,desc:"Refined alchemical coal engine. Upgraded Iron Heart — replaces its bonuses.\n+5 sq Speed · +2d10 ×10 weapon damage · Turn cost –1 sq\nCleansing to 500 ft does NOT cost an engine level (only full shutdown does).\nOverdrive: Captain may declare +3 sq one round — roll d6 after: on 1–2, engine takes 20 damage and may cascade.\nREQUIRES Iron Heart installed first. Incompatible: Ghost Rigging · Brine Core"},
-  {id:'brine_core',name:'The Brine Core',type:'Brine Engine',cost:35000,desc:"Crystallized mana engine. Wires the entire ship — all systems benefit simultaneously.\n+6 sq Speed · +2d10 ×10 all weapons · +1 spell level all focus tiers · +30 HP all systems\nMELTDOWN: any system hits 0 HP — roll d6. On 1–2: cascade begins (5d10 ×10/turn for 3 turns, DC 18 Int to stabilize).\nCATASTROPHIC: natural 1 to stabilize = ship destroyed. Ship takes 200+ dmg in one hit = immediate meltdown check.\nCrystal consumed each session (2,000 gp/crystal). 3-day installation at specialist port."},
+  {id:'brine_core',name:'The Brine Core',type:'Brine Engine',cost:35000,desc:"Crystallized mana engine. Wires the entire ship — all systems benefit simultaneously.\n+2d10 ×10 all weapons · +1 spell level all focus tiers · +30 HP all systems\nMELTDOWN: any system hits 0 HP — roll d6. On 1–2: cascade begins (5d10 ×10/turn for 3 turns, DC 18 Int to stabilize).\nCATASTROPHIC: natural 1 to stabilize = ship destroyed. Ship takes 200+ dmg in one hit = immediate meltdown check.\nCrystal consumed each session (2,000 gp/crystal). 3-day installation at specialist port."},
   {id:'still_flame',name:'The Still Flame',type:'Brine Stabilizer',cost:12000,desc:"Containment lattice and dampening field fitted around the Brine Core. Requires Brine Core installed.\nMeltdown trigger: reduced to 1-in-6 only (d6, fail on 1) · Cascade damage: 3d10 ×10 (down from 5d10) · Stabilize DC: 14 (down from 18)\nCrystal consumption: every 2 sessions (not 1). 5-day installation.\nCANNOT prevent catastrophic meltdown on nat 1 stabilize — just makes it far less likely."},
   {id:'hateful_eye',name:'The Hateful Eye',type:'Offense',cost:6000,desc:"Arcane targeting array — network of lenses feeding targeting data to every station.\n+2 to hit all cannon and harpoon attacks · Long-range disadvantage removed · System targeting: 1-die only (roll twice, take lower)\nDRAWBACK: Critical hull hit shuts array dark for 1 round. Crow's nest disabled = lose half bonuses.\nIncompatible: Ghost Rigging · Veilshroud"},
   {id:'poisoncraft',name:'Poisoncraft Hold',type:'Offense',cost:7000,desc:"Alchemical munitions bay. 6 special shots/session. Captain designates ammo type as free action.\nVenomshot — crew in 1-sq radius DC 13 Con or poisoned (disadv attacks 1 round) · Blindflash — crew DC 12 Dex or blinded 1 round · Shattershot — +1d10 ×10 system damage, hull dmg halved\nDeclare before attack roll. Miss = shot wasted.\nDRAWBACK: Hold is flammable — if ship catches fire, hold explodes 2d10 ×10 internal damage on 2nd burn round."},
@@ -882,15 +914,15 @@ const UPGRADES = [
   {id:'iron_web2',name:'The Iron Web',type:'Hull',cost:8000,desc:"Same as Iron Web."},
 
   // ── New upgrades ─────────────────────────────────────────────────────
-  {id:'anima_core_vessel',name:'Anima Core Housing',type:'Engine',category:'Anima',cost:0,desc:"The ship hull has been fitted with a live Anima Stone core at its keel — the ship generates its own arcane power permanently.\nAnima engine: counts as Oil Engine and Brine Engine for all weapon and system requirements. Cannot be disabled, disrupted, or cleansed.\nCore pulse (passive): all mounts deal +1d6 force damage per attack at no cost.\nCrack risk: the core is still an Anima Stone. Once per session the DM rolls d20 in secret — on a 1, the core gains a Crack. At 3 Cracks the ship detonates (40 ft, 12d10 force, DC 16 Dex half, centered on the ship).\nDRAWBACK: Cannot be removed once installed. Cannot install any other engine upgrade. If the core detonates, the ship is destroyed and all crew fall to 0 HP.\nRequires: 1 Anima Stone. Cannot be purchased — must be installed at a Zadelian or arcane dry-dock."},
+  {id:'anima_core_vessel',name:'Anima Core Housing',type:'Engine',category:'Anima',cost:0,desc:"The ship hull has been fitted with a live Anima Stone core at its keel. The ship generates its own arcane power permanently. Generates electricity passively.\nAnima engine: counts as an Electric Generator for all system requirements. Cannot be disabled, disrupted, or cleansed.\nCore pulse (passive): all mounts deal +1d6 force damage per attack at no cost.\nElectric output (passive): all electric mounts and systems function with any Electric Generator installed or Brine Core.\nCrack risk: the core is still an Anima Stone. Once per session the DM rolls d20 in secret -- on a 1, the core gains a Crack. At 3 Cracks the ship detonates (40 ft, 12d10 force, DC 16 Dex half).\nDrawback: Cannot be removed once installed. Cannot install any other engine upgrade. If the core detonates, the ship is destroyed and all crew fall to 0 HP.\nRequires: 1 Anima Stone. Cannot be purchased -- must be installed at a Zadelian or arcane dry-dock."},
   {id:'zad_resonant_keel',name:'Resonant Keel',type:'Hull',category:'Zadelian',cost:85000,desc:"The keel has been replaced with a Zadelian harmonic lattice — the ship resonates with leyline flow.\nHarmonic repair: regenerates 20 HP at the start of each ship turn automatically.\nLeyline speed: +2 sq base speed. Speed bonus doubles while traveling along a known leyline route.\nPhase resistance: the first time each combat this ship would take hull damage, roll d6 — on 4+ the hit is deflected entirely by a momentary phase shift.\nDRAWBACK: The resonance is detectable by Zadelian mounts and Anima-powered systems — this ship shows as a leyline node on any harmonic scanner within 5 miles."},
   {id:'zad_memory_lattice',name:'Memory Lattice',type:'Utility',category:'Zadelian',cost:60000,desc:"Zadelian memory crystals embedded throughout the hull encode tactical data across every engagement.\nCombat memory: after the first round of combat, all crew gain +1 to attack rolls, saves, and skill checks for the remainder of the fight.\nHarmonic echo: any system or upgrade that has been used this combat can be used once more as a free action — once per long rest.\nDRAWBACK: The lattice requires 1 hour of silence between combats to consolidate. Back-to-back encounters with less than 1 hour gap — neither bonus applies."},
   {id:'zad_conduit_plating',name:'Conduit Plating',type:'Defense',category:'Zadelian',cost:70000,desc:"The hull has been lined with Zadelian conduit metal that redirects incoming energy into structural reinforcement.\nEnergy absorption: any time this ship takes fire, lightning, cold, or force damage, reduce that damage by 30 (before x10). The absorbed energy heals the ship 10 HP per damage type reduced.\nConduit surge: once per combat, release stored energy as a burst — all ships within 3 sq take 3d10x10 force.\nDRAWBACK: Increases ship mass — Speed -1 sq permanently. Cannot be combined with Ghost Rigging or any stealth upgrade."},
-  {id:'elec_arc_battery',name:'Arc Battery',type:'Engine',category:'Electric',cost:22000,desc:"A high-capacity electrical storage cell — all electric mounts draw from this reserve rather than the engine directly.\nBattery reserve: electric mounts can fire for 3 rounds after the engine is disabled before the battery depletes.\nOvercharge: once per combat as a bonus action, surge the battery — all electric mounts deal +2d10x10 this round only. After the surge, all electric mounts must reload for 1 extra round.\nRequires: Oil Engine or Brine Engine installed.\nDRAWBACK: If the battery is targeted (AC 14, HP 80) and destroyed, all electric mounts go offline for the remainder of combat."},
-  {id:'elec_magnetic_hull',name:'Magnetic Hull Plating',type:'Defense',category:'Electric',cost:18000,desc:"Electromagnets embedded in the hull plating repel ferrous projectiles and boarding equipment.\nProjectile deflection: cannon shots from non-magical, non-electric sources have a 25% chance (roll d4, on 1) of being deflected — no damage.\nBoarding repulsion: every round a creature attempts to board, DC 15 Str save or be thrown back 10 ft and take 1d6 bludgeoning.\nRequires: Oil Engine or Brine Engine installed.\nDRAWBACK: Crew with metal weapons on this ship have disadvantage on attack rolls in the first round they attack. Deactivating the hull takes 1 action."},
-  {id:'elec_storm_array',name:'Storm Array',type:'Offense',category:'Electric',cost:25000,desc:"A network of lightning rods, capacitors, and discharge ports covering the upper deck.\nStorm harvest: in rain, fog, or stormy conditions all electric mounts deal +1d10x10 and gain advantage on attack rolls.\nLightning surge (1/combat): charge for 1 round (no mounts fire), then discharge — every ship within 4 sq takes 4d10x10 lightning, no roll or save.\nRequires: Oil Engine or Brine Engine installed.\nDRAWBACK: In calm clear weather the array produces nothing. Cannot stealth while active — the ship crackles with visible electricity."},
-  {id:'elec_volt_keel',name:'Volt Keel',type:'Hull',category:'Electric',cost:16000,desc:"The keel has been electrified — contact with the hull deals damage to anything touching the ship in the water.\nElectric skin: any creature or ship attempting to board by water contact must DC 13 Dex save or take 2d10 lightning and be Stunned 1 round.\nSubmarine shock: any underwater creature within 2 sq takes 1d10 lightning at the start of each round automatically.\nRam bonus: ram attacks deal +3d10x10 lightning in addition to normal ram damage.\nRequires: Oil Engine or Brine Engine installed.\nDRAWBACK: Crew cannot swim alongside or repair the hull while active — they take the same damage. Deactivating takes 1 action."},
-  {id:'elec_rail_booster',name:'Rail Booster',type:'Utility',category:'Electric',cost:14000,desc:"Electromagnetic rail segments along the ship length allow mounts to be repositioned rapidly and projectiles to be accelerated.\nMount repositioning: once per round as a free action, any mount on this ship can be moved to any other empty mount slot.\nProjectile boost: any cannon or harpoon gains +2 sq range and +1 to hit from electromagnetic acceleration.\nRequires: Oil Engine or Brine Engine installed.\nDRAWBACK: The rail system is exposed on the hull — if targeted (AC 13, HP 60) and destroyed, repositioning and boost are both lost for the rest of combat."},
+  {id:'elec_arc_battery',name:'Arc Battery',type:'Engine',category:'Electric',cost:22000,desc:"A high-capacity electrical storage cell — all electric mounts draw from this reserve rather than the engine directly.\nBattery reserve: electric mounts can fire for 3 rounds after the engine is disabled before the battery depletes.\nOvercharge: once per combat as a bonus action, surge the battery — all electric mounts deal +2d10x10 this round only. After the surge, all electric mounts must reload for 1 extra round.\nRequires: Electric Generator installed.\nDRAWBACK: If the battery is targeted (AC 14, HP 80) and destroyed, all electric mounts go offline for the remainder of combat."},
+  {id:'elec_magnetic_hull',name:'Magnetic Hull Plating',type:'Defense',category:'Electric',cost:18000,desc:"Electromagnets embedded in the hull plating repel ferrous projectiles and boarding equipment.\nProjectile deflection: cannon shots from non-magical, non-electric sources have a 25% chance (roll d4, on 1) of being deflected — no damage.\nBoarding repulsion: every round a creature attempts to board, DC 15 Str save or be thrown back 10 ft and take 1d6 bludgeoning.\nRequires: Electric Generator installed.\nDRAWBACK: Crew with metal weapons on this ship have disadvantage on attack rolls in the first round they attack. Deactivating the hull takes 1 action."},
+  {id:'elec_storm_array',name:'Storm Array',type:'Offense',category:'Electric',cost:25000,desc:"A network of lightning rods, capacitors, and discharge ports covering the upper deck.\nStorm harvest: in rain, fog, or stormy conditions all electric mounts deal +1d10x10 and gain advantage on attack rolls.\nLightning surge (1/combat): charge for 1 round (no mounts fire), then discharge — every ship within 4 sq takes 4d10x10 lightning, no roll or save.\nRequires: Electric Generator installed.\nDRAWBACK: In calm clear weather the array produces nothing. Cannot stealth while active — the ship crackles with visible electricity."},
+  {id:'elec_volt_keel',name:'Volt Keel',type:'Hull',category:'Electric',cost:16000,desc:"The keel has been electrified — contact with the hull deals damage to anything touching the ship in the water.\nElectric skin: any creature or ship attempting to board by water contact must DC 13 Dex save or take 2d10 lightning and be Stunned 1 round.\nSubmarine shock: any underwater creature within 2 sq takes 1d10 lightning at the start of each round automatically.\nRam bonus: ram attacks deal +3d10x10 lightning in addition to normal ram damage.\nRequires: Electric Generator installed.\nDRAWBACK: Crew cannot swim alongside or repair the hull while active — they take the same damage. Deactivating takes 1 action."},
+  {id:'elec_rail_booster',name:'Rail Booster',type:'Utility',category:'Electric',cost:14000,desc:"Electromagnetic rail segments along the ship length allow mounts to be repositioned rapidly and projectiles to be accelerated.\nMount repositioning: once per round as a free action, any mount on this ship can be moved to any other empty mount slot.\nProjectile boost: any cannon or harpoon gains +2 sq range and +1 to hit from electromagnetic acceleration.\nRequires: Electric Generator installed.\nDRAWBACK: The rail system is exposed on the hull — if targeted (AC 13, HP 60) and destroyed, repositioning and boost are both lost for the rest of combat."},
   {id:'tide_anchor',name:'Tide Anchor',type:'Utility',cost:8000,desc:"A massive arcane anchor that locks the ship using tidal resonance — cannot be moved while anchored, even by forced movement.\nAnchor lock: deploy as 1 action — immune to all movement effects including ram, harpoon pull, gravitational abilities, and dimensional effects. Speed drops to 0.\nCurrent read: while anchored, the captain gains perfect knowledge of all ships within 6 sq — exact positions, speeds, and facing.\nDRAWBACK: Pulling up the anchor takes 2 full rounds during which the ship remains anchored. If the anchor chain is severed (AC 16, HP 80) the ship lurches 2d6 sq in a random direction."},
   {id:'ghost_cannon',name:'Ghost Cannon',type:'Offense',cost:12000,desc:"A specially constructed cannon that fires projectiles treated with a phasing compound — the shot passes through hull sections before detonating inside.\nPhase shot: applies to one designated cannon mount. Its shots ignore all damage reduction, magical hull hardening, and conduit plating — full damage always applies.\nInternal burst: on a critical hit, the round detonates inside the hull — +4d10x10 bonus damage bypassing all reductions.\nDRAWBACK: Each shot costs 200 gp in phasing compound materials. Running out mid-combat means the mount reverts to normal shots."},
   {id:'ironbone_hull',name:'Ironbone Hull',type:'Hull',cost:15000,desc:"The internal ribbing has been replaced with wrought iron bones — dramatically increasing structural integrity at the cost of agility.\nIronbone: all hull damage reduced by 25 (before x10). The ship cannot be sunk in a single round — minimum 1 HP survives until the next round.\nImpact resistance: this ship takes no self-damage from ramming. Ram attacks deal double damage.\nDRAWBACK: Speed permanently -2 sq. Turn cost permanently +1 sq. Cannot be installed on any T1 ship."},
@@ -907,12 +939,93 @@ const UPGRADES = [
   {id:'chain_web_launcher',name:'Chain Web Launcher',type:'Utility',cost:2000,desc:"Launches a spread of weighted chain-mesh that expands to a 3 sq radius on impact at a target area within 6 sq.\n2 crew to operate · 4 uses per long rest.\nAny ship in the impact zone must DC 16 Str save or be Slowed to half speed for 3 rounds. On a failed save by 5+, the ship is fully Stopped (speed 0) for 1 round.\nEngine-powered ships lose their speed bonuses from Oil Engine and Brine Engine for the full duration — the chains foul the propulsion.\nAlternative use: deploy the web defensively around this ship instead, creating a 2 sq zone of difficult terrain."},
   {id:'pitch_cauldron',name:'Pitch Cauldron',type:'Utility',cost:1200,desc:"Heated cauldron of ship's pitch mounted for rapid deck deployment.\n1 crew to operate · 5 uses per long rest.\nEach use (1 action) — choose one:\n· Pour onto this ship's deck: 10 ft radius of burning pitch lasting 10 minutes, any creature moving through it takes 2d10 fire and is Slowed.\n· Apply to any active harpoon tether: the line burns, dealing 3d10 fire to the tethered ship per round and severing the tether after 2 rounds.\n· Throw as a bomb (30 ft): 3d6 fire, 10 ft radius, DC 13 Dex half.\n· Ignite on the water surface: burning patch that drifts with current 1 sq per round."},
   {id:'deep_recovery_crane',name:'Deep Recovery Crane',type:'Utility',cost:3600,desc:"Heavy-lift winch with 200 ft reinforced cable and depth-rated hooks.\n2 crew to operate.\nRecovers items or creatures from up to 200 ft depth — 1 item per 15 minutes. Can raise a full dive team in an emergency.\nDeploying or recovering a dinghy takes 1 round instead of 5.\nOnce per combat: swing the crane arm into one adjacent ship — 3d10×10 bludgeoning (1 action, 2 crew).\nWeekly at sea: roll a d20 — on 17+ the crane hooks something unexpected (DM determines from the deep)."},
-  {id:'fast_assault_davit',name:'Fast Assault Davit',type:'Utility',cost:3300,desc:"Dual-arm davit system carrying two armed assault skiffs fitted with rams.\n2 crew to operate.\nBoth skiffs deploy simultaneously on the captain's command — no action required, cannot be intercepted.\nEach skiff: 120 HP, AC 14, Speed 10 sq, deals 4d10×10 on a ram.\nSkiffs launch from unexpected arcs and can create flanking attacks in the same round they deploy.\nRetrieving a skiff takes 3 rounds.\nSkiff replacement: if a skiff is destroyed, a replacement costs 400 gp in materials and 1 week of work at a port with a carpenter. At sea without a Shipwright's Corner room: cannot be rebuilt.\nDRAWBACK: Each skiff requires 4 crew to operate — deploying both pulls 8 crew off the main ship. If skiffs are destroyed while crewed, those crew members are lost. Skiffs have no ranged weapons — must close to ram range to deal damage."}
+  {id:'fast_assault_davit',name:'Fast Assault Davit',type:'Utility',cost:3300,desc:"Dual-arm davit system carrying two armed assault skiffs fitted with rams.\n2 crew to operate · Max 8 crew total (4 per skiff).\nBoth skiffs deploy simultaneously on the captain's command — no action required, cannot be intercepted.\nEach skiff: 120 HP, AC 14, Speed 10 sq, deals 4d10×10 on a ram.\nSkiffs launch from unexpected arcs and can create flanking attacks in the same round they deploy.\nRetrieving a skiff takes 3 rounds.\nSkiff replacement: if a skiff is destroyed, rebuilding one costs 1,650 gp (half the upgrade cost) in materials and can be completed during a long rest at sea if a Shipwright's Corner room is installed, or at any port with a carpenter.\nDRAWBACK: Deploying both skiffs pulls all 8 crew off the main ship. If skiffs are destroyed while crewed, those crew members are lost. Skiffs have no ranged weapons — must close to ram range to deal damage."}
+,
+
+  // ── New upgrades batch 2 ─────────────────────────────────────────────────
+  {id:'leech_keel',name:'Leech Keel',type:'Hull',cost:2400,desc:"The hull beneath the waterline is coated in pressure-reactive brine membrane.\nEach round this ship moves at least 4 sq, it stores 1 Leech charge (max 5).\nSpend charges 1-for-1 to: add 1d10\xd710 to any single weapon attack; reduce incoming damage from one hit by 1d10\xd710; or grant a rigger +1 charge without spending an action.\nCharges reset to 0 at end of combat."},
+  {id:'wrathskin_plating',name:'Wrathskin Plating',type:'Defense',cost:3200,desc:"When this ship takes 500 or more hull damage from a single hit, it immediately returns 2d10\xd710 damage to the attacker \u2014 automatically, no action, no save.\nDoes not apply to environmental damage, flooding, or fire.\nDRAWBACK: Speed reduced by 1 sq permanently."},
+  {id:'widows_eye',name:"The Widow's Eye",type:'Utility',cost:1800,desc:"Mana-crystal lens array at the bow reads wake and pressure signatures.\nThis ship always knows the exact HP, speed, and heading of every ship within 6 sq \u2014 regardless of fog, darkness, or invisibility.\nCannot be surprised by any ship within 6 sq, even ships using Veilshroud or Ghost Rigging."},
+  {id:'dead_reckoning_frame',name:'Dead Reckoning Frame',type:'Utility',cost:1200,desc:"Gyroscopic bronze frame mounted to the keel maintains heading through any disorienting effect.\nThis ship is immune to forced heading changes \u2014 effects that spin, reverse, or randomise direction have no effect.\nNavigation checks while blinded or in magical darkness are made at normal (not disadvantage)."},
+  {id:'pressure_bones',name:'Pressure Bones',type:'Hull',cost:2800,desc:"Depth-forged alloy ribs that flex under crushing load rather than shatter.\nThis ship cannot be instantly destroyed by any single hit \u2014 always survives to at least 1 HP from any single source.\nCan operate at crushing depth (up to 200 ft) without pressure damage.\nDRAWBACK: Rigger charges that restore HP are halved on this ship."},
+  {id:'tidebreaker_spine',name:'Tidebreaker Spine',type:'Hull',cost:1600,desc:"Serrated fin array runs the keel, cutting through current and wake.\nThis ship ignores all movement penalties from difficult water terrain, currents, and chain web effects.\nForced movement and push effects from other ships have no effect.\nLeaves no wake \u2014 cannot be tracked by pressure sensing or wake reading."},
+  {id:'boarding_spike_battery',name:'Boarding Spike Battery',type:'Offense',cost:2600,desc:"Spring-loaded spike launchers fire tethered boarding spikes into adjacent ships.\n3 crew to operate \xb7 3 uses per combat.\n1 action: fire spikes at one ship within 2 sq \u2014 target Grappled (DC 17 Str to break each round). Your crew may board without a helmsman manoeuvre \u2014 walk across the spike lines.\nSpike lines: 120 HP, AC 14 each. Up to 3 sets simultaneously."},
+  {id:'drowning_bell',name:'The Drowning Bell',type:'Offense',cost:3000,desc:"Massive resonance bell emits a focused subsonic pulse through water.\n2 crew to operate \xb7 1 use per combat.\n1 action: all ships within 5 sq take 4d10\xd710 bludgeoning. All crew on those ships DC 15 Con or Stunned until start of next turn.\nShips with The Long Ear or Oracle Deck take double hull damage.\nDRAWBACK: This ship's crew also DC 13 Con or Stunned. The 2 crew are automatically Stunned 1 round."},
+  {id:'spectral_lantern_array',name:'Spectral Lantern Array',type:'Utility',cost:2200,desc:"Mana-fed lanterns project a false visual profile of a different ship type.\n1 crew to operate \xb7 Sustained effect.\nWhile staffed, this ship appears as a chosen ship class. Any ship that has not boarded must succeed DC 17 Investigation to detect the disguise.\nDisguise fails if this ship fires a weapon or takes weapon damage. Reactivating costs 1 action."},
+  {id:'the_render',name:'The Render',type:'Offense',cost:3800,desc:"Massive anchor-weight on a reinforced chain swung as a ship-scale flail.\n4 crew to operate \xb7 2 uses per long rest.\n1 action: swing at one ship within 2 sq \u2014 8d10\xd710 bludgeoning. On hit roll d6: 1-2 target helm takes 200 HP directly; 3-4 one random mount disabled 2 rounds; 5-6 target knocked 2 sq away, cannot approach until spending a full move.\nDRAWBACK: This ship cannot move next round. The 4 crew cannot act the round after."},
+  {id:'depth_charge_rack',name:'Depth Charge Rack',type:'Offense',cost:2000,desc:"Stern-mounted rack of pressure-fused explosive canisters dropped into this ship's own wake.\n2 crew to operate \xb7 4 charges per long rest.\nFree action: drop a charge at this ship's current position. Detonates start of next round \u2014 any ship in that square takes 6d10\xd710 force, DC 15 Dex half. Full-speed ships take double.\nUp to 4 charges active simultaneously in different squares."},
+  {id:'the_bleeder',name:'The Bleeder',type:'Utility',cost:2800,desc:"Sealed mana-tap array that draws energy from a wounded ship's hull.\n2 crew to operate \xb7 Sustained + 3 uses per long rest.\nWhile staffed and within 3 sq of any ship below 50% HP: this ship regenerates 30 HP per round.\n3 uses: drain 100 HP from one ship within 3 sq below 50% HP, restore that HP to this ship.\nDRAWBACK: Works on allied ships as well as enemies. It does not distinguish."},
+  {id:'sirens_perch',name:"Siren's Perch",type:'Utility',cost:1400,desc:"Elevated bow platform with mana-resonant sound horn \u2014 amplifies voice and music across 1 mile of open water.\n2 crew to operate \xb7 Out of combat or pre-combat only.\nLure: DC 14 Performance \u2014 hold a ship within 6 sq in place for 1 round. Fails if any hostile action has been taken this combat.\nIntimidate: before initiative, DC 15 Intimidation forces one ship's crew to make a morale check immediately.\nParley: Persuasion or Deception while active and no weapons fired gains advantage."},
+  {id:'the_stage',name:'The Stage',type:'Utility',cost:1800,desc:"Raised hardwood performance deck amidships with rigging-mounted lighting and instrument storage.\n1 crew to operate \xb7 Long rest benefit.\nWhen a performer uses the Stage during a long rest, all crew gain advantage on their first morale check of the next combat.\nRegular crew resting near an active Stage recover 1 extra hit die during long rests.\nIf a Bard is assigned to this ship, the morale benefit extends to all allied ships within 4 sq during combat."},
+  {id:'cartographers_table',name:"The Cartographer's Table",type:'Utility',cost:2200,desc:"Copper-inlaid chart table with live-ink instruments that log depth, current, and mana density as the ship moves.\nAfter each week at sea, produces one navigational chart of its current route.\nChart value: known route 20 gp \xb7 minor uncharted 60 gp \xb7 major uncharted 200 gp \xb7 pre-Storm Zadelian 500 gp \xb7 deep ocean trenches 800+ gp.\nHelmsman gains advantage on all Navigation checks. Routes previously sailed cannot get lost again."},
+  {id:'brokers_booth',name:"The Broker's Booth",type:'Utility',cost:2600,desc:"Sealed glass-and-copper booth on the main deck \u2014 a mobile trading post operable while at anchor or underway.\n1 crew to operate.\nWhile staffed: trade at any port without the captain going ashore. Buy price -5%, sell price +5%.\nAt sea: hail and trade with passing merchant ships without boarding (DC 12 Persuasion).\nDRAWBACK: Ships with the Broker's Booth are 50% more likely to be targeted by pirates as a primary objective."},
+  {id:'menagerie_cage',name:'The Menagerie Cage',type:'Utility',cost:1600,desc:"Reinforced iron-and-driftwood cage housing one large or up to four medium sea creatures alive.\n1 crew to operate.\nLive creatures sell to collectors, alchemists, and naturalists for 2-10x the value of their parts. Live T1 sea creature: 200-800 gp.\nCombat release (1 action): release caged creature adjacent to any ship within 2 sq \u2014 acts on its own initiative with no allegiance.\nIsles of Maro Naturalist Society pays 500 gp standing bounty for any unknown live specimen."},
+  {id:'the_dead_drop',name:'The Dead Drop',type:'Utility',cost:1000,desc:"Series of hidden sealed compartments throughout the hull \u2014 300 lbs concealed cargo capacity.\nCannot be found by any search short of dismantling the ship: DC 28 Investigation, even with magical assistance. Port inspections always fail.\nMessage relay: waterproofed document cache retrievable by diver without boarding in under 5 minutes.\nContraband stored here does not trigger port tariffs or confiscation."}
+
+,
+
+  // ── World-grounded upgrades ───────────────────────────────────────────────
+  {id:'salt_feed_lines',name:'Salt Feed Lines',type:'Utility',cost:3200,desc:"Pressurised brine-salt reservoirs routed through copper lines to crew stations.\n2 crew to operate · 4 doses per long rest.\nBonus action: administer a 1-portion Brine Surge to every crew member assigned to one chosen section (helm, mounts, or rigger). Affected crew gain standard 1-portion Brine Surge benefits for 1 hour. Crash and addiction check apply individually to each crew member.\nDRAWBACK: Addiction spreads through a crew faster than captains expect. Each crew member rolls their own addiction check after each dose. After 2 sessions active, the DM may introduce withdrawal behaviour between combats."},
+  {id:'zadelian_depth_anchor',name:'Zadelian Depth Anchor',type:'Zadelian',cost:4800,desc:"A recovered Zadelian harmonic anchor pylon re-fused to the keel. Requires Anima Core or Brine Core installed.\nWhile active, this ship cannot be moved by any forced movement effect — ram, harpoon, gravity, tides, wave, or dimensional shift. It occupies its square absolutely.\nAnchor pulse (1/combat): releases a subsonic harmonic in 4 sq radius — all ships in range DC 17 Str save or Stopped (speed 0) for 1 round. This ship is unaffected.\nDRAWBACK: While anchor is active, this ship also cannot move — speed 0. Deactivating costs 1 action. The anchor reactivates automatically unless a crew member is assigned to hold the release. This was designed to be permanent."},
+  {id:'tideforged_chart',name:'Tideforged Chart',type:'Utility',cost:2600,desc:"A living chart from the Tideforged Collegium written in tide-ink that updates as conditions change. Passive — no crew required.\nThe helmsman always knows exact position, heading, and speed of every ship within 10 sq — including ships under Veilshroud, Ghost Rigging, or magical concealment.\nProbability window (1/combat): before initiative is rolled, identify the single most likely hostile action the nearest enemy ship will take this round. DM confirms if correct — if yes, advantage on all saves or checks related to that action this round.\nDRAWBACK: The Navigators Guild retains access to this chart's data. Everything the helmsman sees, the Collegium also sees. This is not in the purchase agreement."},
+  {id:'lantern_ward',name:'Lantern Ward',type:'Utility',cost:1800,desc:"Lightning lanterns of the Lantern Faith mounted at every arc, burning contained storm-light. Passive — no crew required.\nThis ship is immune to hauntings, storm-dead boarding, and wraith attacks. Undead cannot willingly enter within 2 sq while lanterns burn. Lantern Faith priests receive free passage — this is a sanctified vessel.\nStorm-dead ward: when passing waters containing storm-dead or wraiths, those entities do not attack — they follow at distance, drawn to the light.\nSilent Armada: causes Armada vessels to hold at 4 sq range rather than closing. They do not flee. They wait.\nDRAWBACK: Lanterns cannot be extinguished in combat without destroying the upgrade (AC 12, HP 60). Always visible at night — visible from 2 miles in clear conditions."},
+  {id:'coral_weave_hull',name:'Coral Weave Hull',type:'Hull',cost:3400,desc:"Living Coralborn coral grown directly into the hull planking. Passive — no crew required.\nThis ship regenerates 30 HP at the start of each ship turn automatically. Stationary for 1 hour in saltwater: regeneration increases to 80 HP per minute.\nDepth memory: this ship cannot be helmed into waters it has previously identified as lethal — the hull resists (DC 18 Str to override).\nIncompatible: Greek Fire Station and any sustained heat-producing upgrade — the coral dies.\nDRAWBACK: Coralborn consider unauthorised coral harvest a serious offense. A ship that harms a living reef without Coralborn permission will find passage blocked and a delegation arriving. What the coral weave remembers, something vast and slow eventually notices."},
+  {id:'resonance_hull',name:'Resonance Hull',type:'Utility',cost:2800,desc:"Hull lined with Songkeeper-calibrated resonance chambers amplifying voice with precise emotional targeting.\n1 crew to operate · Sustained effect.\nWhile staffed, any Charisma-based check made by this ship's captain against enemy crew automatically gains advantage — the resonance makes words feel reasonable regardless of content.\nMorale strike (1/combat): targeted resonance pulse at one enemy ship within 4 sq — that ship makes a morale check immediately as if it took 25% hull damage. DC 16 Wis save negates.\nDRAWBACK: The Songkeepers know this was reverse-engineered from their methods. Any ship with a Resonance Hull is on their list to monitor. They will not act immediately. They will act eventually."},
+  {id:'anima_overcharge_rig',name:'Anima Overcharge Rig',type:'Anima',cost:5000,desc:"Bypass rig channelling the Anima Stone's discharge directly through weapon systems unfiltered. Requires Anima Core Housing installed.\n2 crew to operate · 2 uses per long rest.\n1 action: all weapon attacks this ship makes this round deal maximum damage — no roll, every die reads its maximum value. Lasts 1 round.\nAfter each use, roll the Anima Stone Structural Integrity Check (d20 — 9 or lower adds 1 Crack). At 3 Cracks the stone explodes: 30 ft radius, 10d10 force, DC 15 Dex half.\nThe rig cannot be deactivated mid-use.\nDRAWBACK: Each use triggers a Crack check. Replacement Anima Stones cost 8,000-15,000 gp and require political access to deposits."},
+  {id:'black_flag_signal',name:'Black Flag Signal',type:'Utility',cost:1000,desc:"Genuine Black Flag Council signal kit — authenticated flag codes, registered vessel identification, Council recognition. Not forged.\nThis ship is recognized as Black Flag within the Isles of Maro.\nCouncil truce: no Black Flag ship can attack another without violating Council pact — violators are hunted by every Pirate Lord.\nStorm zone recognition: in waters claimed by any of the Ten, invoke Council neutrality once per session — hostile action paused for 1 round of parley.\nPort access: automatic entry at Redwake Atoll, Iron Shoals, Leviathan's Grave, Dicehold, and other Pirate Lord capitals.\nDRAWBACK: Every Pirate Lord now has an opinion about this ship. Flying the Black Flag is not neutrality — it is a declaration of relevance."},
+  {id:'crimson_wake_paint',name:'Crimson Wake Paint',type:'Utility',cost:1200,desc:"Hull painted in original Crimson Corsair red — chromatic reef pigment mixed with storm-salt. Passive — no crew required.\nEnemy ships that have not yet engaged must make a DC 13 morale check when this ship comes within 4 sq — the sight alone triggers doubt in crews raised on Corsair stories.\nThe Remnants' recognition: Duke Karros Bloodwake and the Crimson Corsair Remnants treat this ship as a named ally — never hostile, always extended harbour at Corsair's Hold.\nCannot be combined with Spectral Lantern Array or any active disguise upgrade.\nDRAWBACK: Every merchant ship, naval patrol, and lawful port treats this vessel as a known threat on sight. Automatic wanted status in Rodarian Dominion and Golden Throne waters."},
+  {id:'gloomveil_shroud',name:'Gloomveil Shroud',type:'Utility',cost:3600,desc:"Illusory mist generators sourced exclusively from the Gloomveil Syndicate — the same technology cloaking the Veilmarket ghost-fleet.\n1 crew to operate · 2 uses per long rest.\n1 action: this ship and all ships within 3 sq become completely invisible to magical detection, scrying, and Tideforged Charts for 10 minutes. Ranged attacks cannot cross the shroud boundary in either direction. Ships inside can still detect each other within 1 sq by sound and proximity.\nCannot be countered by the Widow's Eye, Long Ear, or Oracle Deck.\nDRAWBACK: The Gloomveil Syndicate knows when this is used. At some point a representative of Varasha Veilhand will appear to discuss a favour. The nature of the favour is not disclosed at purchase. This is standard."}
+
+,
+
+  // -- New engines --
+  {id:'brine_core_mk2',name:'Brine Core MkII',type:'Brine Engine',cost:60000,desc:'Refined second-generation crystallized mana engine. Same Brine Core architecture rebuilt with tighter resonance chambers and a dedicated electric output conduit. Generates electricity.\nBrine engine: counts as an Electric Generator for all system requirements.\nElectric generator (passive): all electric mounts and systems on this ship function with any Electric Generator installed.\nSpeed bonus: +4 sq Speed permanently.\nWeapon enhancement: all weapons deal +2d10x10 damage.\nSystem hardening: +30 HP to all systems.\nFocus amplification: +1 spell level to all focus tiers.\nMeltdown risk: any system hitting 0 HP triggers a meltdown check (d6 -- on 1-2 cascade begins, 5d10x10 per turn for 3 turns, DC 18 Int to stabilize). Natural 1 to stabilize means ship destroyed.\nDrawback: Crystal consumed each session (3,000 gp). 5-day installation at specialist port. Cannot install any other engine upgrade.'},
+
+  {id:'arcane_battery',name:'Arcane Battery',type:'Engine',cost:45000,desc:'Twelve spellcasters wired into the ship arcane conduit network, their magical potential continuously drained and converted into raw electricity. The most powerful electric generator in the Isles. Generates electricity.\nElectric generator: all electric mounts and systems on this ship function with any Electric Generator installed.\nOverload capacity: all electric mounts deal +3d10x10 damage on top of normal output -- the casters fuel them directly.\nArcane reserves: 3 times per combat, redirect stored arcane energy to any one system -- restore that system to full HP instantly.\nThe cost: once per week, one of the 12 casters dies from total arcane depletion. They must be replaced or the generator drops to 8 casters (-1d10x10 to electric damage, -1 arcane reserve use) and continues degrading by 2 casters per week until shutdown.\nDrawback: requires 12 spellcaster crew assigned at all times (tracked in Misc). Cannot be disabled without losing those casters.'},
+
+  // -- Upgrades for new engines --
+  {id:'brine_mk2_overclock',name:'Brine MkII Overclock Rig',type:'Engine',cost:8000,desc:'Push-rig that bypasses the MkII resonance limiters for one round of maximum output. Requires Brine Core MkII installed.\n2 crew to operate -- 2 uses per long rest.\n1 action: all weapons deal maximum damage this round AND the ship moves at double speed. Roll d6 at end of round -- on 1-2 a meltdown check triggers immediately.\nDrawback: all weapon damage reduced by 1d10x10 the round after use as the chambers re-stabilize.'},
+
+  {id:'brine_mk2_shield',name:'Brine MkII Surge Shield',type:'Engine',cost:6000,desc:'Redirects the MkII electric conduit output into a temporary hull field. Requires Brine Core MkII installed.\nPassive -- always active while MkII is installed.\nOnce per combat: when this ship would take damage that triggers a meltdown check (any system to 0 HP), the surge shield absorbs it -- the system survives at 1 HP and no meltdown check occurs. Recharges after 2 rounds.\nElectric resistance: all lightning and electric damage dealt to this ship is reduced by half while the shield is charged.'},
+
+  {id:'arcane_battery_tap',name:'Arcane Battery Tap',type:'Engine',cost:5000,desc:'Secondary output conduit that draws directly from the caster network for a concentrated arcane burst. Requires Arcane Battery installed.\n1 crew to operate -- 3 uses per long rest.\n1 action: release a burst of raw arcane electricity -- 6d10x10 lightning to all ships within 3 sq, no attack roll needed.\nDrawback: cannot distinguish targets -- all ships in range are hit including allies. Each use has a 1-in-6 chance of accelerating the weekly caster death to this session.'},
+
+  {id:'arcane_battery_reserve',name:'Arcane Battery Emergency Reserve',type:'Engine',cost:4000,desc:'Sealed arcane capacitor that accumulates excess caster output. Requires Arcane Battery installed.\nPassive -- 1 activation per long rest.\nWhen caster count drops to 6 or fewer, the Reserve activates automatically -- restoring effective output to full 12-caster level for 3 rounds.\nEmergency HP: if the ship is reduced to 0 HP while the reserve is charged, it activates to restore 2,000 HP immediately. Uses the activation for that long rest.'}
 ];
 
 const TYPE_COLORS = {helm:'#5a9abc',cannon:'#c85040',focus:'#9060c0',harpoon:'#40b080',nest:'#b08040',rigger:'#60b060',upgrade:'#b0802a',anima:'#9060d0',zadelian_cannon:'#2a6090',zadelian_harpoon:'#2a6090',zadelian_focus:'#2a6090',electric_cannon:'#20a0c0',electric_harpoon:'#20a0c0',utility:'#3a8a60'};
 const TIER_COLOR = {0:'#808080',1:'#a09060',2:'#c89030',3:'#c86050',4:'#9060c8'};
 
+const UPG_CREW_PIPS={
+  'decoy_launchers':1,
+  'bilge_pump_array':2,
+  'greek_fire_station':2,
+  'chain_web_launcher':2,
+  'pitch_cauldron':1,
+  'deep_recovery_crane':2,
+  'fast_assault_davit':8,
+  'marines':8,
+  'twin_helm':2,
+  'long_ear':1,
+  'oracle_deck':1,
+  'boarding_spike_battery':3,
+  'drowning_bell':2,
+  'spectral_lantern_array':1,
+  'the_render':4,
+  'depth_charge_rack':2,
+  'the_bleeder':2,
+  'sirens_perch':2,
+  'the_stage':1,
+  'brokers_booth':1,
+  'menagerie_cage':1,
+  'salt_feed_lines':2,
+  'zadelian_depth_anchor':0,
+  'resonance_hull':1,
+  'anima_overcharge_rig':2,
+  'gloomveil_shroud':1,
+  'arcane_battery':12,
+  'brine_mk2_overclock':2
+};
 let armada=[], selectedUid=null, tierFilter='all', catFilter='all', sysCat='helm', dragSrc=null, dragSrcType=null, draggingToken=null, tokenOffX=0, tokenOffY=0;
 // Global crew pool — {id, type, name, salary, shipId:null|uid}
 let globalCrew=[], _crewSeq=1;
@@ -1111,13 +1224,17 @@ function selectShip(uid){selectedUid=uid;renderWater();renderDetail();}
 
 // Upgrade stat effects — what each upgrade adds/changes to ship stats
 const UPG_EFFECTS = {
-  iron_heart:    {speed:+4, turnBonus:-1},
-  scorched_heart:{speed:+5, turnBonus:-1},
-  brine_core:    {speed:+6, hpBonus:0},
-  widows_mantle: {speed:-1},
-  killing_deck:  {speed:-1},
-  wrathbone_prow:{turnPenalty:+1},
-  iron_web:      {speed:-1, hpBonus:300},
+  iron_heart:        {turnBonus:-1},
+  scorched_heart:    {speed:+5, turnBonus:-1},
+  brine_core:        {hpBonus:0},
+  brine_core_mk2:    {speed:+4, hpBonus:0},
+  stormcaller_mast:  {speed:+3},
+  widows_mantle:     {speed:-1},
+  killing_deck:      {speed:-1},
+  wrathskin_plating: {speed:-1},
+  zad_conduit_plating:{speed:-1},
+  wrathbone_prow:    {turnPenalty:+1},
+  iron_web:          {speed:-1, hpBonus:300},
 };
 
 function computeStats(inst, ship){
@@ -1136,11 +1253,38 @@ function computeStats(inst, ship){
     if(fx.hpBonus){hp+=fx.hpBonus; hpMods.push((fx.hpBonus>0?'+':'')+fx.hpBonus);}
     if(fx.acBonus){ac+=fx.acBonus; acMods.push((fx.acBonus>0?'+':'')+fx.acBonus);}
   });
+  // Build tooltip strings for orange stats
+  const speedTip = speedMods.map(function(m,i){
+    const uid=(inst.upgrades||[]).filter(Boolean).find(function(u){const fx=UPG_EFFECTS[u];return fx&&fx.speed;});
+    const u=UPGRADES.find(function(x){return x.id===uid;});
+    return (u?u.name:'Upgrade')+' '+m;
+  }).join(', ');
+  const hpTip = hpMods.length ? 'HP modified by upgrades' : '';
+  const acTip = acMods.length ? 'AC modified by upgrades' : '';
+  // Better: collect all upgrade name+bonus pairs
+  const speedTips=[]; const hpTips=[]; const acTips=[];
+  (inst.upgrades||[]).forEach(function(uid){
+    if(!uid) return;
+    const fx=UPG_EFFECTS[uid]; if(!fx) return;
+    const u=UPGRADES.find(function(x){return x.id===uid;});
+    const nm=u?u.name:uid;
+    if(fx.speed) speedTips.push(nm+' '+(fx.speed>0?'+':'')+fx.speed);
+    if(fx.hpBonus) hpTips.push(nm+' '+(fx.hpBonus>0?'+':'')+fx.hpBonus);
+    if(fx.acBonus) acTips.push(nm+' '+(fx.acBonus>0?'+':'')+fx.acBonus);
+  });
+  function makeOrangeStat(val, tips, base){
+      if(!tips.length) return val;
+      if(!window._statTips) window._statTips={};
+      var sid = "st" + Math.random().toString(36).slice(2,8);
+      var rows=(base?[base]:[]).concat(tips); window._statTips[sid]=rows.join("<br>");
+      var onenter = "showStatTip(event,'" + sid + "')";
+      return '<span style="color:#c8961e;cursor:help;" onmouseenter="' + onenter + '" onmouseleave="hideTip()">' + val + '</span>';
+    }
   return {
     speed, hp, ac, turn,
-    speedStr: speedMods.length ? ship.speed+'<span style="color:#c8961e;font-size:10px;"> ('+speedMods.join(' ')+' upgrades)</span>' : ship.speed+' sq',
-    hpStr: hpMods.length ? hp.toLocaleString()+'<span style="color:#c8961e;font-size:10px;"> (base '+ship.hp.toLocaleString()+')</span>' : hp.toLocaleString(),
-    acStr: acMods.length ? ac+'<span style="color:#c8961e;font-size:10px;"> (base '+ship.ac+')</span>' : String(ac),
+    speedStr: speedTips.length ? makeOrangeStat(speed+' sq', speedTips, 'Base: '+ship.speed+' sq') : speed+' sq',
+    hpStr: hpTips.length ? makeOrangeStat(hp.toLocaleString(), hpTips, 'Base: '+ship.hp.toLocaleString()) : hp.toLocaleString(),
+    acStr: acTips.length ? makeOrangeStat(String(ac), acTips, 'Base: '+ship.ac) : String(ac),
   };
 }
 
@@ -1479,12 +1623,34 @@ function renderSimpleSystems(inst,ship){
   </div>`;
 }
 
+function removeMiscCrewPip(upgId,wi){
+  const inst=armada.find(i=>i.uid==selectedUid); if(!inst)return;
+  if(!inst.roomCrew)inst.roomCrew={};
+  const k='misc_'+upgId;
+  if(!inst.roomCrew[k])inst.roomCrew[k]=[];
+  const cid=inst.roomCrew[k][wi];
+  if(cid){
+    const c=globalCrew.find(x=>x.id==cid);
+    if(c)c.shipId=null;
+    inst.roomCrew[k][wi]=null;
+  } else {
+    inst.roomCrew[k][wi]=null;
+  }
+  renderDetail();
+}
 function removeSysCrewPip(key,idx){
   const inst=armada.find(i=>i.uid==selectedUid); if(!inst)return;
   if(!inst.roomCrew)inst.roomCrew={};
   const k='sys_'+key;
   if(!inst.roomCrew[k])inst.roomCrew[k]=[];
-  inst.roomCrew[k][idx]=null;
+  const cid=inst.roomCrew[k][idx];
+  if(cid){
+    const c=globalCrew.find(x=>x.id==cid);
+    if(c)c.shipId=null;
+    inst.roomCrew[k][idx]=null;
+  } else {
+    inst.roomCrew[k][idx]=null;
+  }
   renderDetail();
 }
 
@@ -1544,6 +1710,15 @@ function doAssignPip(slotKey, slotIdx, crewId){
   const ship=SHIPS.find(s=>s.id===inst.shipId);
   const cap=crewCap(ship);
   const c=globalCrew.find(x=>x.id==crewId); if(!c)return;
+  if(!inst.roomCrew)inst.roomCrew={};
+  if(!inst.roomCrew[slotKey])inst.roomCrew[slotKey]=[];
+  while(inst.roomCrew[slotKey].length<=slotIdx)inst.roomCrew[slotKey].push(null);
+  // Evict whoever is currently in this slot
+  const prevId=inst.roomCrew[slotKey][slotIdx];
+  if(prevId!=null && prevId!=crewId){
+    const prev=globalCrew.find(x=>x.id==prevId);
+    if(prev)prev.shipId=null;
+  }
   // Assign to ship if not already on it
   if(!c.shipId){
     if(_shipCrew(inst.uid).length>=cap){
@@ -1553,9 +1728,6 @@ function doAssignPip(slotKey, slotIdx, crewId){
     }
     c.shipId=inst.uid;
   }
-  if(!inst.roomCrew)inst.roomCrew={};
-  if(!inst.roomCrew[slotKey])inst.roomCrew[slotKey]=[];
-  while(inst.roomCrew[slotKey].length<=slotIdx)inst.roomCrew[slotKey].push(null);
   inst.roomCrew[slotKey][slotIdx]=crewId;
   closeModal(); _refreshCrewModal(); renderDetail();
 }
@@ -1747,7 +1919,58 @@ function renderBelowDeck(inst,ship,slots){
     (rooms.length<slots?'<button class="room-add-btn" onclick="openRoomPicker()"><i class="ti ti-plus"></i> Add room ('+rooms.length+'/'+slots+' used)</button>':'')+
   '</div>';
 
-  return sysSection + crewHTML + roomHTML;
+  // ── Misc section — upgrades that require crew ─────────────────────────────
+  const miscEntries=(inst.upgrades||[]).filter(Boolean).reduce(function(arr,uid){
+    if(UPG_CREW_PIPS[uid]){
+      const u=UPGRADES.find(function(x){return x.id===uid;});
+      if(u) arr.push({id:uid,name:u.name,slots:UPG_CREW_PIPS[uid]});
+    }
+    return arr;
+  },[]);
+
+  let miscHTML='';
+  if(miscEntries.length>0){
+    if(!inst.roomCrew)inst.roomCrew={};
+    const miscId='misc-'+inst.uid;
+    let miscPipsHTML='';
+    miscEntries.forEach(function(entry){
+      const k='misc_'+entry.id;
+      if(!inst.roomCrew[k])inst.roomCrew[k]=[];
+      while(inst.roomCrew[k].length<entry.slots)inst.roomCrew[k].push(null);
+      const pips=Array.from({length:entry.slots},function(_,wi){
+        const cid=inst.roomCrew[k][wi];
+        if(cid!=null){
+          const c=globalCrew.find(x=>x.id==cid);
+          const t=c?c.type:'crew'; const n=c?(c.type==='crew'?'Crew':c.name||c.type):'';
+          return '<div class="cpip '+t+'" onclick="removeMiscCrewPip(\'' +entry.id+ '\','+wi+')" title="'+n+' — click to unassign">'+crewIcon(c||{type:t})+'</div>';
+        }
+        const atCapNow=_shipCrew(inst.uid).length>=crewCap(ship);
+        return atCapNow
+          ?'<div class="cpip" style="opacity:.25;cursor:default;" title="Ship at crew cap">–</div>'
+          :'<button class="cpip-add" onclick="openCrewPicker(\'' +k+ '\','+wi+')" title="Assign crew">+</button>';
+      }).join('');
+      miscPipsHTML+='<div class="room-slot filled" style="margin-bottom:6px;">'+
+        '<div class="room-slot-head">'+
+          '<div class="room-slot-name">'+entry.name+'</div>'+
+          '<span class="room-slot-cat" style="background:#1a1000;color:#c89030;">⚙ Upgrade</span>'+
+        '</div>'+
+        '<div class="room-slot-meta">'+entry.slots+' worker'+(entry.slots!==1?'s':'')+' · '+
+          (entry.id==='fast_assault_davit'?'min 4 per skiff · ':'')+
+          'max '+entry.slots+' crew</div>'+
+        '<div class="room-slot-workers"><span class="room-slot-workers-label">Staff:</span>'+
+          '<div class="crew-pip-row">'+pips+'</div></div>'+
+      '</div>';
+    });
+    miscHTML='<div class="below-section">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:8px 0 6px;border-bottom:.5px solid #1a3a55;margin-bottom:8px;" onclick="toggleMiscSection(\'' +miscId+ '\')">'+
+        '<div class="rooms-title">Misc <span style="font-size:10px;font-weight:400;color:#4a7a9a;">(upgrade crew)</span></div>'+
+        '<span id="'+miscId+'-arr" style="color:#3a6a8a;font-size:11px;">▾</span>'+
+      '</div>'+
+      '<div id="'+miscId+'">'+miscPipsHTML+'</div>'+
+    '</div>';
+  }
+
+  return sysSection + crewHTML + roomHTML + miscHTML;
 }
 
 function toggleNormCrew(){
@@ -1809,16 +2032,10 @@ function removeRoomCrewPip(roomIdx,workerIdx){
   if(!inst.roomCrew[k])inst.roomCrew[k]=[];
   const cid=inst.roomCrew[k][workerIdx];
   if(cid){
-    // return to standby rather than pool if standby exists
+    // Always free the removed crew back to pool first
+    const c=globalCrew.find(x=>x.id==cid);
+    if(c)c.shipId=null;
     inst.roomCrew[k][workerIdx]=null;
-    _initStandby(inst);
-    // try to fill from standby immediately
-    _autoFillSlot(inst,k,workerIdx);
-    // if we did pull from standby, the removed crew goes back to pool
-    if(inst.roomCrew[k][workerIdx]!==cid){
-      const c=globalCrew.find(x=>x.id===cid);
-      if(c){c.shipId=null;}
-    }
   } else {
     inst.roomCrew[k][workerIdx]=null;
   }
@@ -2299,6 +2516,13 @@ function addRigger(){
 
 // Tooltip
 const TIP=document.getElementById('tooltip');
+function showStatTip(e,id){
+  var tips=window._statTips&&window._statTips[id];
+  if(!tips) return;
+  TIP.innerHTML=tips;
+  TIP.style.display='block';
+  moveTip(e);
+}
 function showTip(e,txt){
   if(!txt) return;
   TIP.innerHTML=txt;
@@ -2364,9 +2588,10 @@ function formatTip(s){
 function formatUpgTip(u){
   if(!u) return '';
   const typeColors={
-    'Engine':'#c86050','Engine MkII':'#c86050','Brine Engine':'#9060c0','Brine Stabilizer':'#9060c0',
+    'Engine':'#c86050','Engine MkII':'#c86050','Brine Engine':'#9060c0',
+    'Brine Stabilizer':'#9060c0','Anima':'#9060c0',
     'Offense':'#c85040','Defense':'#5a9abc','Utility':'#60b060','Crew':'#c89030',
-    'Magic':'#9060c0','Hull':'#8ab8d8'
+    'Magic':'#9060c0','Hull':'#8ab8d8','Zadelian':'#b060c0'
   };
   const tc=typeColors[u.type]||'#8ab8d8';
   let h='<b style="color:#e0d8c8;font-size:12px;">'+u.name+'</b>';
@@ -2374,18 +2599,22 @@ function formatUpgTip(u){
   h+='<span style="color:#3a6a8a;font-size:10px;"> &middot; '+u.cost.toLocaleString()+' gp</span>';
   h+='<div style="border-top:0.5px solid #1e3a55;margin:5px 0 3px;"></div>';
   const desc=(u.desc||'');
-  var parts=desc.split(/\.\s+(?=[A-Z+\-])/);
-  parts.forEach(function(part,i){
+  // Split on newlines first; fall back to sentence split for legacy descs
+  const rawParts = desc.split('\n').length>1 ? desc.split('\n') : desc.split(/[.]\s+(?=[A-Z+])/);
+  rawParts.forEach(function(part,i){
     var p=part.trim(); if(!p) return;
-    var txt=p+(p.slice(-1)==='.'?'':'.');
-    var isDanger=(p.indexOf('MELTDOWN')===0||p.indexOf('cascade')>-1||p.indexOf('Natural 1')===0||p.indexOf('Requires')===0);
+    var txt=p+(p.slice(-1)==='.'||p.slice(-1)===':'?'':'.');
+    var isDanger=(p.match(/^(MELTDOWN|CATASTROPHIC|DRAWBACK|Drawback|Natural 1|Requires:|The cost:)/)||p.indexOf('cascade')>-1||p.indexOf('dies from')>-1);
     var isStatBonus=(p.charAt(0)==='+');
+    var isAbility=(/^[A-Z][a-zA-Z ]{1,40}:/.test(p) && !isDanger);
     if(isDanger){
       h+='<div style="color:#c86050;font-size:10px;line-height:1.5;margin-top:3px;">&#9888; '+txt+'</div>';
     } else if(isStatBonus){
       h+='<div style="color:#60c890;font-size:10px;line-height:1.5;padding-left:8px;">&#9658; '+txt+'</div>';
     } else if(i===0){
       h+='<div style="color:#c8d8e8;font-size:10px;line-height:1.6;font-style:italic;">'+txt+'</div>';
+    } else if(isAbility){
+      h+='<div style="color:#c8d8e8;font-size:10px;line-height:1.5;margin-top:2px;"><b>'+p.replace(/^([A-Z][^:]+:)/,function(m){return m;})+'</b></div>';
     } else {
       h+='<div style="color:#7aaac8;font-size:10px;line-height:1.5;">'+txt+'</div>';
     }
@@ -2851,6 +3080,24 @@ function fillFromPool(){
     }
   }
 
+  // Fill misc upgrade slots — separate pass using same normAvail
+  if(!inst.roomCrew)inst.roomCrew={};
+  Object.keys(UPG_CREW_PIPS).forEach(function(upgId){
+    if((inst.upgrades||[]).indexOf(upgId)===-1)return;
+    const slots=UPG_CREW_PIPS[upgId];
+    const k='misc_'+upgId;
+    if(!inst.roomCrew[k])inst.roomCrew[k]=[];
+    while(inst.roomCrew[k].length<slots)inst.roomCrew[k].push(null);
+    for(let i=0;i<slots;i++){
+      if(inst.roomCrew[k][i])continue;
+      if(!normAvail.length)break;
+      if(_shipCrew(inst.uid).length-(inst.standby||[]).length>=cap)break;
+      const c=normAvail.shift();
+      c.shipId=inst.uid;
+      inst.roomCrew[k][i]=c.id;
+    }
+  });
+
   // Then fill standby up to cap
   _refillStandby(inst, ship);
 
@@ -2913,10 +3160,17 @@ function openPicker(acceptType, arrayKey, slotIdx){
 
   if(isUpg){
     window._upgCat = 'all';
-    tabsHtml = '<div class="room-filter-tabs" style="margin-bottom:10px;" id="upg-cat-bar">'
+    window._upgCatGroup = 'all';
+    tabsHtml = '<div class="room-filter-tabs" style="margin-bottom:4px;" id="upg-cat-bar">'
       + ['all','standard','anima','zadelian','electric'].map(function(k){
           const lbl = k==='all' ? 'All' : k[0].toUpperCase()+k.slice(1);
           return '<button class="rft'+(k==='all'?' active':'')+'" data-upgcat="'+k+'" onclick="upgCatTab(this)">'+lbl+'</button>';
+        }).join('')
+      + '</div>'
+      + '<div class="room-filter-tabs" style="margin-bottom:10px;" id="upg-group-bar">'
+      + ['all','offense','defense','generators','utility','trade'].map(function(k){
+          const lbl = k==='all'?'All':k[0].toUpperCase()+k.slice(1);
+          return '<button class="rft'+(k==='all'?' active':'')+'" data-upggroup="'+k+'" onclick="upgGroupTab(this)">'+lbl+'</button>';
         }).join('')
       + '</div>';
   } else if(isFlex){
@@ -3085,11 +3339,18 @@ function buildPickerGrid(filterCat, isUpg){
 
   if(isUpg){
     const _uc = window._upgCat||'all';
+    const _ug = window._upgCatGroup||'all';
     (UPGRADES||[]).filter(function(u){
-      if(_uc==='all') return true;
-      const cat = (u.category||'standard').toLowerCase();
-      return cat===_uc;
-    }).forEach(u=>items.push({id:u.id,name:u.name,tier:null,cat:'upgrade',desc:u.desc||'',cost:u.cost}));
+      const typeCat = (u.category||'standard').toLowerCase();
+      const groupCat = getUpgCat(u);
+      const typeOk = _uc==='all' || typeCat===_uc;
+      const groupOk = _ug==='all' || groupCat===_ug;
+      return typeOk && groupOk;
+    }).sort(function(a,b){
+      const ga=getUpgCat(a)==='generators'?0:1;
+      const gb=getUpgCat(b)==='generators'?0:1;
+      return ga-gb;
+    }).forEach(function(u){ const isGen=['anima_core_vessel','arc_battery','arcane_battery','brine_core','brine_core_mk2','iron_heart','scorched_heart'].indexOf(u.id)!==-1; items.push({id:u.id,name:(isGen?'⚡ ':'')+u.name,tier:null,cat:'upgrade',desc:u.desc||'',cost:u.cost}); });
   } else if(filterCat==='all'){
     ['cannon','harpoon','focus',
      'anima','zadelian_cannon','zadelian_harpoon','zadelian_focus',
@@ -3353,24 +3614,24 @@ function renderTradeModal(){
 
 function formatSpecial(text){
   if(!text||text==='Basic coastal vessel. No special trait.') return text;
-  // Split on pattern: word(s) followed by colon — these are ability names
-  // Handle: "Bold name:" or "Bold name (sub):"
-  // Split into segments at each ability boundary
-  // Boundary: sentence-end (. or ·) followed by a Title Case word and colon
-  // OR start of string followed by Title Case word and colon
-  const parts = text.split(/(?<=[\.\·\!])\s+(?=[A-Z][^:]{2,40}:)/g);
-  if(parts.length <= 1){
-    // Single ability — just bold the first "Word(s):" part
-    return text.replace(/^([A-Z][^:]{2,50}:)/, '<b>$1</b>');
-  }
-  return parts.map(p=>{
-    return p.trim().replace(/^([A-Z][^\:]{2,60}(?:\s\([^)]+\))?:)/, '<b>$1</b>');
-  }).join('<br>');
+  const lines = text.split('\n');
+  return lines.map(function(line){
+    line = line.trim();
+    if(!line) return '';
+    return line.replace(/^([A-Z][^:]{1,60}:)/, '<b>$1</b>');
+  }).filter(function(l){return l!=='';}).join('<br>');
 }
 
 function upgCatTab(btn){
   window._upgCat = btn.dataset.upgcat||'all';
   const bar = document.getElementById('upg-cat-bar');
+  if(bar) bar.querySelectorAll('button').forEach(function(b){b.classList.toggle('active',b===btn);});
+  const grid = document.getElementById('picker-grid');
+  if(grid) grid.innerHTML = buildPickerGrid('upgrade', true);
+}
+function upgGroupTab(btn){
+  window._upgCatGroup = btn.dataset.upggroup||'all';
+  const bar = document.getElementById('upg-group-bar');
   if(bar) bar.querySelectorAll('button').forEach(function(b){b.classList.toggle('active',b===btn);});
   const grid = document.getElementById('picker-grid');
   if(grid) grid.innerHTML = buildPickerGrid('upgrade', true);
@@ -3553,6 +3814,21 @@ function pullFromStandby(uid){
       inst.roomCrew[sec.key][i]=cid;
     }
   }
+  // Pull into misc upgrade slots from standby
+  Object.keys(UPG_CREW_PIPS).forEach(function(upgId){
+    if((inst.upgrades||[]).indexOf(upgId)===-1)return;
+    const slots=UPG_CREW_PIPS[upgId];
+    const k='misc_'+upgId;
+    if(!inst.roomCrew[k])inst.roomCrew[k]=[];
+    while(inst.roomCrew[k].length<slots)inst.roomCrew[k].push(null);
+    for(let i=0;i<slots;i++){
+      if(inst.roomCrew[k][i])continue;
+      if(!inst.standby.length)break;
+      if(countSlotted(inst.roomCrew)>=cap)break;
+      const cid=inst.standby.shift();
+      inst.roomCrew[k][i]=cid;
+    }
+  });
   renderDetail(); _refreshCrewModal();
 }
 function toggleStandby(id){
@@ -3713,6 +3989,14 @@ function tutJump(i){
   _renderTutStep();
 }
 
+function toggleMiscSection(id){
+  const el=document.getElementById(id);
+  const arr=document.getElementById(id+'-arr');
+  if(!el)return;
+  const open=el.style.display!=='none';
+  el.style.display=open?'none':'block';
+  if(arr)arr.textContent=open?'▾':'▴';
+}
 // Boot
 renderCat();renderDetail();updateStats();
 </script>
