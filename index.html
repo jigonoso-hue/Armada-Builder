@@ -287,9 +287,7 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
   <button class="menu-btn" onclick="openTradeModal()" style="margin-right:4px;">
     <i class="ti ti-coins" aria-hidden="true"></i> Trade Goods
   </button>
-  <button class="menu-btn" onclick="openCombatRules()" style="margin-right:4px;background:#7a3a00;border-color:#c86020;color:#f0a040;">
-    <i class="ti ti-sword" aria-hidden="true"></i> Combat Rules
-  </button>
+
   <div id="dockyard-btn">
     <button class="menu-btn" onclick="toggleDockyard()">
       <i class="ti ti-anchor" aria-hidden="true"></i> Dockyard <i class="ti ti-chevron-down" aria-hidden="true"></i>
@@ -306,6 +304,9 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
       <div class="dd-item" style="opacity:.5;cursor:default;"><i class="ti ti-book" aria-hidden="true"></i> How to use <span style="font-size:9px;color:#c8961e;">WIP</span></div>
     </div>
   </div>
+  <button class="menu-btn" onclick="openCombatRules()" style="margin-left:8px;background:#7a3a00;border-color:#c86020;color:#f0a040;">
+    <i class="ti ti-sword" aria-hidden="true"></i> Combat Rules
+  </button>
 </div>
 
 <div id="app">
@@ -1241,8 +1242,10 @@ const UPG_EFFECTS = {
   killing_deck:      {speed:-1},
   wrathskin_plating: {speed:-1},
   zad_conduit_plating:{speed:-1},
-  wrathbone_prow:    {turnPenalty:+1},
+  wrathbone_prow:    {turnBonus:+1},
   iron_web:          {speed:-1, hpBonus:300},
+  zad_resonant_keel: {speed:+2},
+  ironbone_hull:     {speed:-2, turnBonus:+1},
 };
 
 const HELM_EFFECTS = {
@@ -1340,10 +1343,10 @@ function computeStats(inst, ship){
   }
   (inst.upgrades||[]).forEach(function(uid){
     if(!uid) return;
-    const fx=UPG_EFFECTS[uid]; if(!fx||!fx.turnBonus) return;
+    const fx=UPG_EFFECTS[uid]; if(!fx) return;
     const u=UPGRADES.find(function(x){return x.id===uid;});
     const nm=u?u.name:uid;
-    turnTips.push(nm+' '+(fx.turnBonus>0?'+':'')+fx.turnBonus);
+    if(fx.turnBonus) turnTips.push(nm+' '+(fx.turnBonus>0?'+':'')+fx.turnBonus);
   });
   return {
     speed, hp, ac, turn,
