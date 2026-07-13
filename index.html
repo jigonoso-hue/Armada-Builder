@@ -25,6 +25,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .dd-label{padding:4px 14px 2px;font-size:10px;color:#3a6a8a;text-transform:uppercase;letter-spacing:.06em;}
 
 /* three-pane layout */
+#mob-nav{display:none;}
+#mob-menu-btn{display:none;}
+#mob-menu-dropdown{display:none;}
+#mob-detail-overlay{display:none;}
 #app{display:flex;flex:1;overflow:hidden;}
 
 /* catalogue */
@@ -64,6 +68,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* ship tokens */
 .ship-token{position:absolute;background:transparent;border:none;border-radius:0;padding:0;cursor:pointer;user-select:none;}
+#sel-box{position:absolute;border:1.5px dashed #c8961e;background:rgba(200,150,30,0.08);pointer-events:none;z-index:50;display:none;}
+.ship-token.multi-sel>div{outline:2px solid #c8961e;outline-offset:2px;border-radius:4px;}
 .ship-token:hover{border-color:#c8961e;}
 .ship-token.selected{border-color:transparent;box-shadow:none;}
 .st-tier{font-size:9px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1px;}
@@ -172,7 +178,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 @keyframes pulse20{from{opacity:.5}to{opacity:1}}
 
 /* modal */
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;display:flex;align-items:center;justify-content:center;}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1100;display:flex;align-items:center;justify-content:center;}
 .modal{background:#0d1e30;border:1px solid #2a5a80;border-radius:12px;padding:20px;min-width:340px;max-width:480px;width:90%;}
 .modal h2{font-size:14px;font-weight:500;color:#e0d8c8;margin-bottom:12px;}
 .modal textarea{width:100%;height:120px;background:#06101a;border:0.5px solid #1a3a55;border-radius:6px;color:#8ab8d8;font-family:monospace;font-size:11px;padding:8px;resize:vertical;}
@@ -299,12 +305,16 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
 
 /* ── MOBILE ─────────────────────────────────────── */
 @media(max-width:700px){
-  #topbar{padding:5px 10px;gap:6px;flex-wrap:wrap;}
-  #topbar h1{font-size:12px;}
-  .menu-btn{font-size:10px;padding:4px 7px;}
+  #topbar{padding:5px 10px;gap:6px;flex-wrap:nowrap;position:relative;}
+  #topbar h1{font-size:12px;flex:1;}
+  .menu-btn{display:none;}
+  #dockyard-btn{display:none;}
   .stat-chip{display:none;}
+  #mob-menu-btn{display:flex;}
+  #mob-menu-dropdown{display:none;position:absolute;top:calc(100% + 4px);right:6px;background:#0d1e30;border:1px solid #2a5a80;border-radius:10px;min-width:200px;z-index:600;padding:6px 0;flex-direction:column;}
+  #mob-menu-dropdown.open{display:flex;}
 
-  #app{flex-direction:column;height:calc(100vh - 42px - 46px);}
+  #app{flex-direction:column;height:calc(100vh - 42px - 46px);overflow:hidden;}
 
   #catalogue{
     width:100%!important;
@@ -324,27 +334,75 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
   }
   #water-area.mob-active{display:block;}
 
-  #detail{
-    width:100%!important;
-    height:100%;
-    border-left:none!important;
-    border-top:1px solid #1a3a55;
-    display:none;
-    flex-direction:column;
-  }
-  #detail.mob-active{display:flex;}
+  #detail{display:none;}
 
   #mob-nav{display:flex;}
+  #mob-detail-overlay #detail{display:flex!important;flex-direction:column;flex:1;width:100%;overflow-y:auto;height:0;}
 
   .room-picker-grid{grid-template-columns:1fr 1fr;}
   .modal{min-width:unset;width:96vw;max-width:96vw;}
   #tooltip{max-width:240px;}
 }
 @media(min-width:701px){
+  #mob-menu-btn{display:none;}
+  #mob-menu-dropdown{display:none;}
   #mob-nav{display:none!important;}
-  #catalogue{display:flex!important;}
-  #water-area{display:block!important;}
-  #detail{display:flex!important;}
+  #mob-detail-overlay{display:none!important;}
+  #catalogue{display:flex!important;width:220px!important;height:auto!important;}
+  #water-area{display:block!important;width:auto!important;height:auto!important;}
+  #detail{display:flex!important;width:400px!important;height:auto!important;}
+}
+
+/* ── BATTLE MODE ─────────────────────────────────── */
+#battle-overlay{display:none;position:fixed;inset:0;z-index:1000;background:#050f1a;flex-direction:column;}
+#battle-overlay.active{display:flex;}
+#battle-topbar{background:#060e14;border-bottom:1px solid #1a3a55;padding:8px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+#battle-topbar h2{font-size:13px;color:#40e080;font-weight:600;letter-spacing:.06em;flex:1;}
+#battle-status{font-size:10px;color:#4a7a9a;padding:3px 10px;background:#0a1820;border:1px solid #1a3a55;border-radius:5px;}
+#battle-main{display:flex;flex:1;overflow:hidden;gap:0;}
+#battle-my-panel{width:340px;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid #1a3a55;background:#050f1a;}
+#battle-center{flex:1;display:flex;flex-direction:column;background:#060e14;min-width:0;}
+#battle-opp-panel{width:340px;flex-shrink:0;display:flex;flex-direction:column;border-left:1px solid #1a3a55;background:#050f1a;}
+.battle-panel-hdr{padding:8px 12px;border-bottom:1px solid #1a3a55;font-size:10px;font-weight:700;letter-spacing:.08em;flex-shrink:0;}
+.battle-fleet-list{flex:1;overflow-y:auto;padding:6px;}
+.battle-ship-row{padding:7px 10px;border-radius:7px;margin-bottom:4px;cursor:pointer;border:1px solid #1a3a55;background:#06101a;transition:border-color .15s;}
+.battle-ship-row:hover{border-color:#c8961e;}
+.battle-ship-row.selected{border-color:#40e080;background:#0a1a10;}
+.battle-ship-row.targeting{border-color:#c85040;background:#1a0808;}
+.battle-ship-row.sunk{opacity:.4;cursor:default;}
+.bsr-name{font-size:11px;font-weight:600;color:#c8d8e8;}
+.bsr-hp-bar{height:4px;background:#0a1a2a;border-radius:2px;margin-top:4px;overflow:hidden;}
+.bsr-hp-fill{height:100%;border-radius:2px;transition:width .3s;}
+.bsr-stats{font-size:9px;color:#4a7a9a;margin-top:3px;display:flex;gap:8px;}
+#battle-log-area{flex:1;overflow-y:auto;padding:10px 14px;font-size:10px;font-family:monospace;line-height:1.6;}
+.blog-entry{margin-bottom:2px;border-left:2px solid #1a3a55;padding-left:8px;}
+.blog-hit{border-left-color:#40e080;color:#40e080;}
+.blog-miss{border-left-color:#c85040;color:#c85040;}
+.blog-dmg{border-left-color:#c8961e;color:#c8961e;}
+.blog-sys{border-left-color:#4a7a9a;color:#8ab8d8;}
+.blog-info{color:#3a6a8a;}
+#battle-action-bar{padding:10px 14px;border-top:1px solid #1a3a55;display:flex;flex-direction:column;gap:8px;flex-shrink:0;background:#060e14;}
+#battle-dice-area{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.battle-roll-btn{padding:5px 14px;border-radius:6px;border:1px solid #2a5a80;background:#0a1820;color:#8ab8d8;font-size:11px;cursor:pointer;}
+.battle-roll-btn:disabled{opacity:.35;cursor:default;}
+.battle-roll-btn.hit-btn{border-color:#40e080;color:#40e080;background:#0a1a10;}
+.battle-roll-btn.dmg-btn{border-color:#c8961e;color:#c8961e;background:#1a1000;}
+#battle-result{font-size:13px;font-weight:700;padding:4px 12px;border-radius:5px;display:none;}
+#battle-result.hit{background:#0a2a10;color:#40e080;border:1px solid #40e08060;display:block;}
+#battle-result.miss{background:#2a0808;color:#c85040;border:1px solid #c8504060;display:block;}
+.topmenu-item{background:none;border:none;width:100%;text-align:left;padding:9px 16px;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .15s,text-shadow .15s;}
+.topmenu-orange{color:#f0a040!important;}
+.topmenu-green{color:#40e080!important;}
+.topmenu-purple{color:#c8a0f0!important;}
+.topmenu-orange:hover{background:rgba(240,160,64,0.1);text-shadow:0 0 8px #f0a04099;}
+.topmenu-green:hover{background:rgba(64,224,128,0.1);text-shadow:0 0 8px #40e08099;}
+.topmenu-purple:hover{background:rgba(200,160,240,0.1);text-shadow:0 0 8px #c8a0f099;}
+.battle-conn-box textarea{background:#0a1820;border:1px solid #1e3a55;border-radius:6px;color:#c8d8e8;font-size:10px;padding:8px;resize:vertical;font-family:monospace;}
+.battle-conn-box button{padding:7px 16px;border-radius:6px;cursor:pointer;font-size:11px;}
+@media(max-width:700px){
+  #battle-my-panel,#battle-opp-panel{width:100%;border:none;}
+  #battle-main{flex-direction:column;}
+  #battle-center{min-height:200px;}
 }
 </style>
 </head>
@@ -379,12 +437,32 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
       <div class="dd-item" style="opacity:.5;cursor:default;"><i class="ti ti-book" aria-hidden="true"></i> How to use <span style="font-size:9px;color:#c8961e;">WIP</span></div>
     </div>
   </div>
-  <button class="menu-btn" onclick="openCombatRules()" style="margin-left:8px;background:#7a3a00;border-color:#c86020;color:#f0a040;">
-    <i class="ti ti-sword" aria-hidden="true"></i> Combat Rules
-  </button>
-  <button class="menu-btn" onclick="openBestiary()" style="margin-left:8px;background:#3a1a55;border-color:#9060c0;color:#c8a0f0;">
-    <i class="ti ti-book" aria-hidden="true"></i> Bestiary
-  </button>
+  <!-- ☰ Dropdown: Combat Rules, Battle, Bestiary -->
+  <div style="position:relative;margin-left:8px;" id="topbar-menu-wrap">
+    <button onclick="toggleTopMenu()" id="topbar-menu-btn" class="menu-btn" style="gap:5px;">
+      <i class="ti ti-menu-2"></i> Menu
+    </button>
+    <div id="topbar-menu-dd" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#060e14;border:1px solid #2a5a80;border-radius:10px;min-width:180px;z-index:600;padding:6px 0;flex-direction:column;">
+      <button onclick="openCombatRules();closeTopMenu()" class="topmenu-item topmenu-orange"><i class="ti ti-sword"></i> Combat Rules</button>
+      <button onclick="openBattleModal();closeTopMenu()" id="battle-btn" class="topmenu-item topmenu-green"><i class="ti ti-sword-off"></i> Battle</button>
+      <button onclick="openBestiary();closeTopMenu()" class="topmenu-item topmenu-purple"><i class="ti ti-book"></i> Bestiary</button>
+    </div>
+  </div>
+
+  <!-- Mobile only: single ☰ menu -->
+  <button id="mob-menu-btn" onclick="toggleMobMenu()" style="background:none;border:1px solid #2a5a80;border-radius:6px;color:#8ab8d8;padding:5px 10px;font-size:16px;cursor:pointer;flex-shrink:0;">☰</button>
+  <div id="mob-menu-dropdown">
+    <button class="mob-dd-item" onclick="openCrewPool();closeMobMenu()"><i class="ti ti-users"></i> Crew Pool</button>
+    <button class="mob-dd-item" onclick="openTradeModal();closeMobMenu()"><i class="ti ti-coins"></i> Trade Goods</button>
+    <div class="mob-dd-sep"></div>
+    <button class="mob-dd-item" onclick="saveFleet();closeMobMenu()"><i class="ti ti-download"></i> Save Fleet</button>
+    <button class="mob-dd-item" onclick="openLoadModal();closeMobMenu()"><i class="ti ti-upload"></i> Open Fleet</button>
+    <div class="mob-dd-sep"></div>
+    <button class="mob-dd-item" onclick="openEncounterModal();closeMobMenu()"><i class="ti ti-swords"></i> Create Encounter</button>
+    <div class="mob-dd-sep"></div>
+    <button class="mob-dd-item" onclick="openCombatRules();closeMobMenu()" style="color:#f0a040;"><i class="ti ti-sword"></i> Combat Rules</button>
+    <button class="mob-dd-item" onclick="openBestiary();closeMobMenu()" style="color:#c8a0f0;"><i class="ti ti-book"></i> Bestiary</button>
+  </div>
 </div>
 
 <div id="app">
@@ -422,6 +500,8 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
   <div id="water-area">
     <div class="water-grid"></div>
     <div id="water-drop" ondragover="wDragOver(event)" ondrop="wDrop(event)">
+      <div id="sel-box"></div>
+      <button id="ship-scale-btn" onclick="toggleShipScale()" style="position:absolute;top:8px;left:8px;z-index:20;background:#0a1820cc;border:1px solid #2a5a80;border-radius:6px;color:#4a9abc;font-size:10px;padding:4px 10px;cursor:pointer;backdrop-filter:blur(4px);">⛵ Normal</button>
       <div id="water-hint"><i class="ti ti-ship" aria-hidden="true"></i><p>Drag ships here</p></div>
     </div>
     <button onclick="addEnemyShip()" title="Add enemy ship" style="position:absolute;bottom:14px;left:14px;background:#2a0808;border:1.5px solid #c85040;border-radius:8px;color:#c85040;font-size:11px;font-weight:600;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;z-index:10;letter-spacing:.04em;" onmouseenter="this.style.background='#3a0a0a'" onmouseleave="this.style.background='#2a0808'">
@@ -479,6 +559,12 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
   'alchemists_ballista':'offense',
   'deadweight_anchor_rig':'utility',
   'ghost_lanterns':'utility',
+  'swift_keel_trim':'utility',
+  'war_drums':'offense',
+  'overcharged_powder_hold':'offense',
+  'stripped_hull':'defense',
+  'leech_anchor':'utility',
+  'void_ballast':'generators',
 };
 function getUpgCat(upg){ return UPG_CATEGORIES[upg.id]||'utility'; }
 
@@ -724,25 +810,25 @@ const SHIPS = [
 ,
 
   {id:'zad_tidewatcher',name:'Tidewatcher',origin:'Zadelian — T1 resonant scout',tier:1,ac:19,hp:490,length:1,speed:20,turn:'1 sq',crew:'3–6',cost:80000,
-   mounts:{cannon:0,harpoon:0,focus:3,flex:false},fixed:{helm:true,nest:false,rigger:true},nestSlots:0,upgradeSlots:2,
+   mounts:{cannon:1,harpoon:1,focus:1,flex:false},fixed:{helm:true,nest:false,rigger:true},nestSlots:0,upgradeSlots:2,
    special:'Resonant engine (built-in): the hull itself vibrates at a leyline frequency — counts as both an Oil Engine and Brine Engine for all purposes. Cannot be disabled by Conduit Breacher or similar. Fastest vessel known: 20 sq base speed. Harmonic wake: this ship leaves no visible wake — advantage on Stealth checks at any speed. Phase slip: once per combat, briefly phase into the ley current — immune to all attacks for 1 round, cannot attack. Emerges anywhere within 8 sq.',unique:true},
   {id:'zad_pelagic_throne',name:'Pelagic Throne',origin:'Zadelian — T2 resonant cruiser',tier:2,ac:16,hp:2100,length:3,speed:10,turn:'2 sq',crew:'20–40',cost:280000,
-   mounts:{cannon:4,harpoon:2,focus:4,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:1,upgradeSlots:3,
+   mounts:{cannon:4,harpoon:3,focus:2,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:1,upgradeSlots:3,
    special:'Resonant engine (built-in): counts as Oil Engine and Brine Engine for all purposes. Cannot be disabled by conduit effects. Living crystal hull: this ship repairs 30 HP at the start of each round automatically as the crystalline structure self-anneals. Gravity anchor: once per combat, emit a gravitational resonance pulse — all ships within 5 sq have their speed reduced to 0 for 1 round and cannot use teleport or phase abilities. Leyline fortress: damage reduced by 20 (before x10).',unique:true},
   {id:'zad_abyssal_conduit',name:'Abyssal Conduit',origin:'Zadelian — T3 resonant warship',tier:3,ac:13,hp:3500,length:4,speed:12,turn:'2 sq',crew:'50–100',cost:700000,
-   mounts:{cannon:5,harpoon:3,focus:6,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:2,upgradeSlots:4,
+   mounts:{cannon:6,harpoon:4,focus:3,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:2,upgradeSlots:4,
    special:'Resonant engine (built-in): counts as Oil Engine and Brine Engine for all purposes. Cannot be disrupted. Leyline siphon: whenever any magical ability or spell targets this ship and fails, this ship heals 50 HP from the redirected energy. Harmonic broadside: once per combat, all 14 mounts fire simultaneously — no crew required for the volley, the ship channels ley energy through each mount. Resonant collapse: once per long rest, emit a catastrophic resonance wave — all ships within 6 sq take 6d10x10 force, all magical effects and upgrades aboard those ships are suppressed for 1d4 rounds. DC 18 Con save for half.',unique:true},
   {id:'zad_the_first_tide',name:'The First Tide',origin:'Zadelian — T4 prime conduit vessel',tier:4,ac:14,hp:6300,length:4,speed:14,turn:'2 sq',crew:'80–160',cost:1500000,
-   mounts:{cannon:6,harpoon:4,focus:8,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:2,upgradeSlots:4,
+   mounts:{cannon:8,harpoon:5,focus:4,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:2,upgradeSlots:4,
    special:'Resonant engine (built-in): the ship generates its own leyline — it IS a leyline node. Cannot be disabled, disrupted, or suppressed by any means. Semi-sentient hull: The First Tide acts on its own initiative at count 20 — it may fire any 3 mounts, move up to half speed, or activate one special ability without any crew action. Reality anchor: once per combat, choose any ongoing effect, ability, or movement within 2 miles — it simply stops. No save, no counter. Tidal memory: this ship records the harmonic signature of every ship it has ever encountered. All mounts auto-hit any previously encountered ship. Cascade: when this ship is reduced below 50% HP, it enters resonant cascade — all mounts deal double damage, all crew abilities cost no action, and the ship regenerates 100 HP per round for 3 rounds.',unique:true},
 
-  {id:'saltfang_cutter',name:'Saltfang Cutter',origin:'Brinecoil — T1 fast attack vessel',tier:1,ac:17,hp:640,length:1,speed:18,turn:'1 sq',crew:'6–12',cost:42000,mounts:{cannon:0,harpoon:0,focus:2,flex:false},fixed:{helm:true,nest:false,rigger:true},nestSlots:0,upgradeSlots:2,special:'Native Brine Engine (passive): counts as Oil Engine and Brine Engine at all times. Cannot be disabled.\nArc Discharge (1/combat): all ships within 3 sq take 3d10×10 lightning, no attack roll. This ship takes 1d10×10 feedback.\nSaltfang sprint: once per combat move double speed in a straight line as a free action.\nDESTRUCTION: detonates 4d10×10 lightning in 5 sq radius, DC 14 Dex half.',unique:true},
-  {id:'coil_skiff',name:'Coil Skiff',origin:'Brinecoil — T1 escort and flanker',tier:1,ac:18,hp:560,length:1,speed:20,turn:'1 sq',crew:'4–8',cost:32000,mounts:{cannon:0,harpoon:0,focus:1,flex:false},fixed:{helm:true,nest:false,rigger:true},nestSlots:0,upgradeSlots:2,special:'Native Brine Engine (passive): always active, cannot be disabled.\nContainment Protocol (1/combat): when any Brinecoil ship within 4 sq is destroyed, use reaction to absorb detonation — AOE reduced to 1 sq. This ship takes 6d10×10 lightning.\nCharge transfer: once per combat transfer Arc Discharge to an allied Brinecoil ship within 3 sq.\nDESTRUCTION: detonates 3d10×10 lightning in 4 sq radius, DC 13 Dex half.',unique:true},
+  {id:'saltfang_cutter',name:'Saltfang Cutter',origin:'Brinecoil — T1 fast attack vessel',tier:1,ac:17,hp:640,length:1,speed:18,turn:'1 sq',crew:'6–12',cost:42000,mounts:{cannon:2,harpoon:0,focus:0,flex:false},fixed:{helm:true,nest:false,rigger:true},nestSlots:0,upgradeSlots:2,special:'Native Brine Engine (passive): counts as Oil Engine and Brine Engine at all times. Cannot be disabled.\nArc Discharge (1/combat): all ships within 3 sq take 3d10×10 lightning, no attack roll. This ship takes 1d10×10 feedback.\nSaltfang sprint: once per combat move double speed in a straight line as a free action.\nDESTRUCTION: detonates 4d10×10 lightning in 5 sq radius, DC 14 Dex half.',unique:true},
+  {id:'coil_skiff',name:'Coil Skiff',origin:'Brinecoil — T1 escort and flanker',tier:1,ac:18,hp:560,length:1,speed:20,turn:'1 sq',crew:'4–8',cost:32000,mounts:{cannon:1,harpoon:0,focus:0,flex:false},fixed:{helm:true,nest:false,rigger:true},nestSlots:0,upgradeSlots:2,special:'Native Brine Engine (passive): always active, cannot be disabled.\nContainment Protocol (1/combat): when any Brinecoil ship within 4 sq is destroyed, use reaction to absorb detonation — AOE reduced to 1 sq. This ship takes 6d10×10 lightning.\nCharge transfer: once per combat transfer Arc Discharge to an allied Brinecoil ship within 3 sq.\nDESTRUCTION: detonates 3d10×10 lightning in 4 sq radius, DC 13 Dex half.',unique:true},
   {id:'voltclaw_frigate',name:'Voltclaw Frigate',origin:'Brinecoil — T2 assault warship',tier:2,ac:15,hp:1400,length:2,speed:14,turn:'2 sq',crew:'20–40',cost:120000,mounts:{cannon:4,harpoon:0,focus:0,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:1,upgradeSlots:3,special:'Native Brine Engine (passive): always active, cannot be disabled.\nVoltclaw broadside (1/combat): all electric mounts fire simultaneously as one action, no crew required.\nChain arc (passive): whenever any electric mount hits a metal-hulled ship, lightning arcs to every other metal-hulled ship within 2 sq — 2d10×10 lightning each.\nDESTRUCTION: detonates 7d10×10 lightning in 5 sq radius, DC 16 Dex half.',unique:true},
   {id:'brinecage_galleon',name:'Brinecage Galleon',origin:'Brinecoil — T2 support and containment',tier:2,ac:13,hp:1600,length:3,speed:10,turn:'2 sq',crew:'25–50',cost:95000,mounts:{cannon:0,harpoon:3,focus:0,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:1,upgradeSlots:3,special:'Native Brine Engine (passive): always active, cannot be disabled.\nBrine cage (1/combat): electromagnetic containment field in 4 sq radius — all non-Brinecoil ships inside speed reduced to 0 for 2 rounds.\nDetonation buffer (passive): allied Brinecoil ships within 5 sq have destruction detonation radius reduced by 2 sq.\nDESTRUCTION: detonates 6d10×10 lightning in 5 sq radius, DC 15 Dex half.',unique:true},
   {id:'stormspine_dreadnought',name:'Stormspine Dreadnought',origin:'Brinecoil — T3 heavy assault platform',tier:3,ac:12,hp:3200,length:4,speed:10,turn:'2 sq',crew:'60–100',cost:380000,mounts:{cannon:6,harpoon:0,focus:0,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:2,upgradeSlots:4,special:'Native Brine Engine (passive): always active, cannot be disabled.\nOverload state (1/long rest): for 3 rounds all electric mounts deal maximum damage, chain arc hits every metal-hulled ship in 4 sq of any target, detonation radius expands to 8 sq. Takes 500 HP at end of 3rd round.\nSpine discharge (recharge 5-6): all ships within 4 sq take 5d10×10 lightning simultaneously.\nDESTRUCTION overload: 12d10×10, 8 sq, DC 18. Normal: 8d10×10, 5 sq, DC 17.',unique:true},
   {id:'arcvault_cruiser',name:'Arcvault Cruiser',origin:'Brinecoil — T3 fleet coordinator',tier:3,ac:12,hp:3600,length:3,speed:8,turn:'2 sq',crew:'50–90',cost:320000,mounts:{cannon:5,harpoon:0,focus:0,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:2,upgradeSlots:4,special:'Native Brine Engine (passive): always active, cannot be disabled.\nArcvault containment (passive): all Brinecoil ships within 6 sq have destruction radius reduced to 1 sq. This ship does not detonate when destroyed.\nFleet charge relay (1/combat): all allied Brinecoil ships within 8 sq may each use Arc Discharge this round as a free action simultaneously.',unique:true},
-  {id:'voltaic_throne',name:'The Voltaic Throne',origin:'Brinecoil — T4 supreme command vessel',tier:4,ac:11,hp:5800,length:5,speed:12,turn:'2 sq',crew:'100–180',cost:850000,mounts:{cannon:8,harpoon:0,focus:6,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:2,upgradeSlots:4,special:'Living Brine Engine (passive): hull IS the engine. Cannot be disabled. Allied ships within 6 sq count as having Brine Engine installed.\nTotal arc (1/long rest): every ship on battlefield takes 4d10×10 lightning. Allied Brinecoil immune. Metal hulls double.\nControlled detonation (passive): when an allied Brinecoil ship within 10 sq is destroyed, may redirect explosion as a 60 ft line rather than radius.\nChain sovereignty (passive): whenever chain arc triggers on any allied ship in range, adds 2d10×10 to that arc.\nDESTRUCTION: 15d10×10 lightning, 8 sq radius, DC 20.',unique:true},
+  {id:'voltaic_throne',name:'The Voltaic Throne',origin:'Brinecoil — T4 supreme command vessel',tier:4,ac:11,hp:5800,length:5,speed:12,turn:'2 sq',crew:'100–180',cost:850000,mounts:{cannon:8,harpoon:6,focus:0,flex:false},fixed:{helm:true,nest:true,rigger:true},nestSlots:2,upgradeSlots:4,special:'Living Brine Engine (passive): hull IS the engine. Cannot be disabled. Allied ships within 6 sq count as having Brine Engine installed.\nTotal arc (1/long rest): every ship on battlefield takes 4d10×10 lightning. Allied Brinecoil immune. Metal hulls double.\nControlled detonation (passive): when an allied Brinecoil ship within 10 sq is destroyed, may redirect explosion as a 60 ft line rather than radius.\nChain sovereignty (passive): whenever chain arc triggers on any allied ship in range, adds 2d10×10 to that arc.\nDESTRUCTION: 15d10×10 lightning, 8 sq radius, DC 20.',unique:true},
 
   {id:'bonecutter_sloop',name:'Bonecutter Sloop',origin:'Necro Fleet — T1 raider',tier:1,ac:16,hp:1100,length:1,speed:14,turn:'1 sq',crew:'8–16',cost:42000,mounts:{cannon:2,harpoon:0,focus:0,flex:false},fixed:{helm:true,nest:false,rigger:true},nestSlots:0,upgradeSlots:2,special:'Flesh hull (passive): regenerates 20 HP at the start of each ship turn.\nHarvest (passive): whenever an enemy crew member is killed on this ship or within 1 sq, heals 30 HP.\nBone ram: ram attacks deal +2d10×10 and heal this ship 50 HP on each hit.\nREVULSION: non-undead crew DC 12 Wis save when first assigned or refuse to board.',unique:true},
   {id:'marrow_barge',name:'The Marrow Barge',origin:'Necro Fleet — T1 support vessel',tier:1,ac:13,hp:1200,length:2,speed:10,turn:'2 sq',crew:'10–20',cost:35000,mounts:{cannon:0,harpoon:1,focus:0,flex:false},fixed:{helm:true,nest:false,rigger:true},nestSlots:0,upgradeSlots:2,special:'Flesh hull (passive): regenerates 15 HP per ship turn.\nMass harvest (passive): when an enemy ship is destroyed within 4 sq heals 200 HP. 20+ crew enemy: heals 400 HP.\nTransfer life (1/combat): expend up to 300 HP from this ship to heal any allied Necro Fleet ship within 3 sq.',unique:true},
@@ -805,12 +891,17 @@ const SYSTEMS = {
     {id:'jellyfish_cannon',name:'Jellyfish Cannon',tier:1,cost:3500,desc:"2d8 ×10 hull damage. Range 3 sq / 6 sq long. Hit +0. HP 120.\nFires a compressed jellyfish mass.\nOn hit: hull damage plus all crew on deck make DC 12 Con save or are stunned for one personal turn.\nReload: 2 rounds."},
     {id:'ink_cannon',name:'Ink Cannon',tier:2,cost:6000,desc:"2d10 ×10 hull damage. Range 4 sq / 8 sq long. Hit +1. HP 200.\nPressurised giant squid ink volley.\nOn hit: hull damage plus target ship has disadvantage on all ranged attacks for 2 rounds and Speed -1 sq as the sails lose shape."},
     {id:'urchin_cannon',name:'Urchin Cannon',tier:2,cost:7000,desc:"3d8 ×10 hull damage. Range 4 sq / 8 sq long. Hit +1. HP 200.\nFires barnacle-shelled urchin casings.\nOn hit: urchin spines embed in hull — crew attempting to board or work on the exterior take 1d8 piercing per round until removed (Rigger action, DC 13)."},
-    {id:'brine_cannon',name:'Brine Cannon',tier:3,cost:16000,desc:"5d10 ×10 hull damage. Range 5 sq / 10 sq long. Hit +3. HP 320.\nFires a pressurised deep-sea brine payload.\nOn hit: hull damage plus crew on deck make DC 15 Con save or are blinded for 1 round. Critical: all crew on deck must save, those who fail are also incapacitated that round."},
+    {id:'brine_cannon',name:'Brine Cannon',tier:3,cost:16000,desc:"5d10 ×10 hull damage. Range 5 sq / 10 sq long. Hit +3. HP 320.\nFires a pressurised deep-sea brine payload.\nOn hit: hull damage plus crew on deck make DC 15 Con save or are blinded for 1 round. Critical: all crew on deck must save, those who fail are also incapacitated that round. Additionally on a critical hit: pressurised brine forces through hull seams — inflicts one Flooding severity level."},
     // ── NECRO BIO-CANNONS
     {id:'kidney_stone_cannon',name:'Kidney Stone Cannon',tier:1,cost:4000,desc:"3d8 ×10 hull damage. Range 4 sq / 8 sq long. Hit +0. HP 120.\nNecrotic organ producing calcified projectiles — no reload required, fires every round.\nOn critical hit: jagged stones jam one random enemy system (disabled until Field Rebuild)."},
     {id:'bone_cannon',name:'Bone Cannon',tier:2,cost:6500,desc:"3d10 ×10 hull damage. Range 4 sq / 8 sq long. Hit +1. HP 200.\nRibcage mortar firing bone-fragment clusters in a high arc. Ignores cover.\nOn hit: hull save DC 12 or crew on deck take 2d6 fragment damage."},
-    {id:'stomach_acid_cannon',name:'Stomach Acid Cannon',tier:2,cost:6500,desc:"2d10 ×10 damage (systems only). Range 4 sq / 8 sq long. Hit +1. HP 200.\nAcid spray — deals no hull damage. Targets systems and deck crew only.\nOn hit: one system makes DC 14 Con save (captain rolls) or takes full damage.\nCritical hit: one system dissolved entirely regardless of HP."},
+    {id:'stomach_acid_cannon',name:'Stomach Acid Cannon',tier:2,cost:6500,desc:"2d10 ×10 damage (systems only). Range 4 sq / 8 sq long. Hit +1. HP 200.\nAcid spray — deals no hull damage. Targets systems and deck crew only.\nOn hit: one system makes DC 14 Con save (captain rolls) or takes full damage.\nCritical hit: one system dissolved entirely regardless of HP. Additionally inflicts one Flooding severity level as acid breaches the inner hull."},
     {id:'flesh_cannon',name:'Flesh Cannon',tier:3,cost:18000,desc:"5d12 ×10 hull damage. Range 5 sq / 10 sq long. Hit +3. HP 320.\nLaunches a compressed necrotic flesh-mass.\nOn hit: crew on deck make DC 15 Str save or knocked prone. The mass rots into the hull dealing 2d6 ×10 necrotic per round for 2 rounds.\nCleared by Rigger action (DC 14 Int)."},
+    // ── NEW STANDARD CANNONS T2-T3
+    {id:'chain_shot_cannon',name:'Chain Shot Cannon',tier:2,cost:6500,desc:"3d8 ×10 hull damage. Range 4 sq / 8 sq long. Hit +1. HP 200.\nFires two iron balls linked by chain that shreds rigging and helm.\nOn hit: target Speed -2 sq for 2 rounds and Hard About DC +3 for 2 rounds.\nReload: 1 round."},
+    {id:'incendiary_cannon',name:'Incendiary Cannon',tier:2,cost:7000,desc:"3d10 ×10 hull damage. Range 4 sq / 8 sq long. Hit +2. HP 200.\nFires pitch-packed shells that ignite on impact.\nOn hit: hull damage plus fire severity increases by one level. Stacks with existing fire.\nCritical hit: fire severity jumps two levels instead of one.\nReload: 1 round."},
+    {id:'grapeshot_cannon',name:'Grapeshot Cannon',tier:3,cost:12000,desc:"2d6 ×10 hull damage. Range 3 sq / 6 sq long. Hit +2. HP 320.\nFires a wide spray of iron shot. Reduced hull damage but devastating to crew.\nOn hit: all crew on enemy deck make DC 14 Con save or take 4d8 damage each.\nCritical hit: enemy loses their next station action as crew scatter.\nReload: 1 round."},
+    {id:'siege_mortar',name:'Siege Mortar',tier:3,cost:14000,desc:"6d10 ×10 hull damage. Range 2 sq / 6 sq long (arc fire). Hit +1. HP 320.\nHigh-arc mortar. Ignores line of sight blocking entirely — fires over intervening ships regardless of tier.\nMinimum range: cannot fire at targets within 1 sq.\nCritical hit: disables one random enemy system.\nReload: 2 rounds."},
   ],
   harpoon:[
     {id:'harp_t1',name:'Hand winch',tier:1,cost:400,desc:"2d6 ×10 impact. Range 4 sq / 8 sq long. Hit +0. HP 120.\nLine HP 40. Cut DC 12 (Str). Break free: enemy Captain DC 13 Str check, full move, no action.\nTethered ship: half Speed. On hit, choose each turn:\nReel in 1 sq — pull ships closer · Hold — enemy cannot move freely (moves ship with them if they sail) · Once line set, harpoonist switches roles next turn penalty-free"},
@@ -830,6 +921,11 @@ const SYSTEMS = {
     {id:'soulspike',name:'The Soulspike',tier:3,cost:9500,desc:"4d6 ×10 impact. Range 6 sq / 12 sq long. Hit +4. 1 line. Reel 2 sq/turn. HP 320.\nNecrotic lance: the line siphons 1d10 ×10 hull HP from the tethered ship each round it remains attached, healing this ship's hull for the same amount (max 100 HP per round).\nLine cannot be cut by physical means — requires a DC 17 Arcana check or Dispel Magic 4th level+.\nBreak free: DC 16 Con save (not Str — the line feeds on vitality, not force)."},
     {id:'stormtether',name:'Stormtether',tier:3,cost:8000,desc:"3d6 ×10 impact. Range 7 sq / 14 sq long. Hit +4. 1 line. Reel 2 sq/turn. HP 320.\nLightning line: while the line is attached, once per round the harpoonist crew may arc lightning through the tether — 2d10 lightning damage to 1d4 random crew on the tethered ship (DC 14 Dex save for half).\nLongest-range T3 harpoon tied with The Whispering Chain.\nLine HP 200. Cut DC 15. Break free: DC 16 Str check."},
     // ── AQUATIC BIO-HARPOONS
+    // ── NEW STANDARD HARPOONS T2-T3
+    {id:'anchor_harpoon',name:'Anchor Harpoon',tier:2,cost:7500,desc:"2d8 ×10 impact. Range 4 sq / 8 sq long. Hit +1. HP 200. 1 line. Reel 1 sq/turn. Cut DC 15. Break free: DC 16 Str check.\nHeavy barbed anchor-head harpoon that catches hull plating.\nOn hit: target cannot Drop Anchor or Pull Anchor while tethered — the anchor mechanism is fouled.\nHigher Break Free DC than standard T2."},
+    {id:'grapple_harpoon',name:'Grapple Harpoon',tier:2,cost:6500,desc:"2d6 ×10 impact. Range 3 sq / 8 sq long. Hit +2. HP 200. 2 lines. Reel 2 sq/turn. Cut DC 13. Break free: DC 14 Str check.\nMulti-pronged grapple that catches on anything.\nOn hit: crew may immediately cross the line as a free action this turn — no boarding check required.\nIdeal for aggressive boarding builds."},
+    {id:'explosive_harpoon',name:'Explosive Harpoon',tier:3,cost:15000,desc:"4d10 ×10 impact + 3d10 ×10 delayed. Range 5 sq / 10 sq long. Hit +3. HP 320. 1 line. Reel 2 sq/turn. Cut DC 17. Break free: DC 18 Str check.\nOn hit: deals impact damage immediately.\nAt the start of the next round: embedded charge detonates for 3d10 ×10 — whether or not the line is still attached. Break Free does not prevent the detonation.\nDetonation also inflicts one Flooding severity level — the internal explosion blows out hull planking below the waterline.\nReload: 2 rounds."},
+    {id:'net_harpoon',name:'Net Harpoon',tier:3,cost:13000,desc:"1d6 ×10 impact. Range 4 sq / 8 sq long. Hit +2. HP 320. Counts as 3 lines simultaneously. Reel 1 sq/turn. Cut DC 18 per strand. Break free: DC 20 Str check (all strands).\nFires a weighted net that wraps the hull. Minimal impact damage but extremely hard to remove.\nBreak Free DC 20 removes all strands at once. Each strand can be cut individually (DC 18 each, 3 cuts required).\nCannot be combined with other harpoon lines on the same ship."},
   ],
   focus:[
     {id:'focus_t1',name:'Runed lens',tier:1,cost:800,desc:"Max spell level: 2nd. Spell atk +0. Reaction cap: 1st level. 180° front arc. HP 120.\nAmplification: damage ×10, range ×10, AOE area ×10.\nEnemy Captain rolls all saves for ship-scale spells. No charm, domination, or concentration spells.\nSpell types: offensive (×5 dmg) · AOE (×10 area, ×5 dmg) · defensive (own ship, normal scale) · reactions up to 1st level"},
@@ -847,7 +943,7 @@ const SYSTEMS = {
     {id:'pufferfish_harpoon',name:'Pufferfish Harpoon',tier:1,cost:4500,desc:"2d4 ×10 impact. Range 3 sq / 6 sq long. Hit +0. 1 line. Reel 1 sq/turn. HP 120. Cut DC 12. Break free: DC 12 Str check.\nBarbed spine harpoon coated in neurotoxin.\nOn hit: target crew make DC 13 Con save or suffer disadvantage on all actions for 2 rounds. Toxin and tether apply simultaneously."},
     {id:'coral_harpoon',name:'Coral Harpoon',tier:2,cost:8000,desc:"3d6 ×10 impact. Range 4 sq / 8 sq long. Hit +2. 2 lines. Reel 2 sq/turn. HP 200. Cut DC 14. Break free: DC 15 Str check.\nLiving coral-tipped harpoon.\nOn critical hit: the tip breaks off and lodges permanently — cannot be cut, only broken free (DC 17 Str). Normal hits use standard Break Free DC."},
     // ── NECRO BIO-HARPOONS
-    {id:'bile_harpoon',name:'Bile Harpoon',tier:1,cost:4500,desc:"2d4 ×10 impact. Range 3 sq / 6 sq long. Hit +0. 1 line. Reel 1 sq/turn. HP 120. Cut DC 12. Break free: DC 12 Str check.\nBarbed necrotic spine coated in bile.\nOn hit: target hull takes 1d6 ×10 acid damage per round until the line is cut or Break Free succeeds. Damage stacks with multiple hits."},
+    {id:'bile_harpoon',name:'Bile Harpoon',tier:1,cost:4500,desc:"2d4 ×10 impact. Range 3 sq / 6 sq long. Hit +0. 1 line. Reel 1 sq/turn. HP 120. Cut DC 12. Break free: DC 12 Str check.\nBarbed necrotic spine coated in bile.\nOn hit: target hull takes 1d6 ×10 acid damage per round until the line is cut or Break Free succeeds. Damage stacks with multiple hits.\nOn critical hit: acid eats through the hull below the waterline — inflicts one Flooding severity level."},
     {id:'marrow_harpoon',name:'Marrow Harpoon',tier:3,cost:16000,desc:"4d8 ×10 impact. Range 5 sq / 10 sq long. Hit +4. 2 lines. Reel 3 sq/turn. HP 320. Cut DC 16. Break free: DC 17 Str check.\nHollow bone harpoon that shatters inside the hull on hit, releasing necrotic marrow.\nOn hit: target ship gains fire severity +1 (necrotic rot). Cannot be doused by water — must be cleared by Rigger action (DC 14)."},
   ],
   nest:[
@@ -953,7 +1049,7 @@ zadelian_focus:[
 leviathan_cannon:[
   {id:'bladefin_culverin',name:'Bladefin Culverin',tier:3,cost:28000,desc:"6d10 ×10 hull damage. Range 6 sq / 12 sq long. Hit +4. Reload 1 round. HP 320.\nForged from Makinagi Ancient blade-fins — ground to submicron sharpness and cast into rotating barrel rifling.\nFlood shot: every hit inflicts one Flooding severity (no damage threshold — the blade-fin vibration is baked into the projectile).\nFrenzy load (once/combat): fire twice in one action at the same target. Second shot hits automatically if first hit.\nRequires: Makinagi Ancient (T3). Multiple adults will not yield sufficient blade density.\nIncompatible: Ghost Rigging."},
   {id:'patriarch_node_gun',name:"Patriarch's Node Gun",tier:3,cost:32000,desc:"8d10 ×10 hull damage. Range 5 sq / 10 sq long. Hit +3. Reload 2 rounds. HP 200.\nForged from Hulkane Ancient calcified node plates — the densest biological material in Nyceria.\nDR bypass: ignores all damage reduction — Widow's Mantle, Iron Web, Ironbone Hull apply zero DR against it.\nSystem crack (on crit): disables one random system. No Rigger check — requires Field Rebuild.\nRequires: Hulkane Ancient (T3). The Patriarch's nodes only. Juvenile/Adult nodes shatter before cycling.\nIncompatible: Ley Dreadnought mounts."},
-  {id:'cavitation_mortar',name:'Cavitation Mortar',tier:3,cost:24000,desc:"5d10 ×10 hull damage. Range 7 sq / 14 sq long. Hit +4. Reload 1 round. HP 320.\nForged from Snapjaw Ancient claw actuator — collapse-spring mechanism rebuilt as a breech-loading mortar.\nShockwave shot: damage applies to all ships within 1 sq of target (DC 15 Str save for half, friend or foe).\nPressure wave: on any hit, target Helmsman DC 14 Con save or loses helm action this round.\nRequires: Snapjaw Ancient (T3).\nIncompatible: Ironclad Ram."},
+  {id:'cavitation_mortar',name:'Cavitation Mortar',tier:3,cost:24000,desc:"5d10 ×10 hull damage. Range 7 sq / 14 sq long. Hit +4. Reload 1 round. HP 320.\nForged from Snapjaw Ancient claw actuator — collapse-spring mechanism rebuilt as a breech-loading mortar.\nShockwave shot: damage applies to all ships within 1 sq of target (DC 15 Str save for half, friend or foe).\nPressure wave: on any hit, target Helmsman DC 14 Con save or loses helm action this round.\\nCavitation breach: on a critical hit, the implosion pressure tears hull planking below the waterline — inflicts one Flooding severity level.\nRequires: Snapjaw Ancient (T3).\nIncompatible: Ironclad Ram."},
   {id:'ignition_beam_array',name:'Ignition Beam Array',tier:3,cost:35000,desc:"4d10 ×10 hull damage. Range 6 sq / 12 sq long. Hit +5 (highest of any cannon). Reload 1 round. HP 320.\nForged from Glasswarden Ancient bioluminescence focusing organ.\nBeam shot: cannot be blocked by smoke, fog, illusions, Dead Lanterns, or Veilshroud.\nIgnition: every hit applies one Fire severity with no save. Second hit escalates fire one additional level.\nBlind shot (once/combat): target's exposed crew DC 16 Con save or Blinded 1 round.\nRequires: Glasswarden Ancient (T3). Only Ancient organ achieves coherence.\nIncompatible: Ghost Rigging."},
   {id:'thermal_vent_cannon',name:'Thermal Vent Cannon',tier:3,cost:22000,desc:"5d10 ×10 fire damage. Range 4 sq / 8 sq long. Hit +4. Reload 1 round. HP 320.\nForged from Skorcine Raider thermal gland — pressurized magma-fluid chamber.\nFire damage bypasses fire resistance. Ships with existing Fire severity take +2d10 ×10 per hit.\nMelt through: on crit, target hull AC reduced by 2 for rest of combat.\nHeat haze: all ranged attacks against this ship have disadvantage 1 round after firing.\nRequires: 3× Skorcine Raider thermal glands (T2 fixed creature, 3 specimens needed)."},
   {id:'galvanic_lance',name:'Galvanic Lance',tier:3,cost:29000,desc:"5d10 ×10 lightning damage. Range 6 sq / 12 sq long. Hit +4. Reload 1 round. HP 320.\nForged from Voltaic Gulper electroreceptive organ array — rebuilt as a rail-coil projector.\nChain discharge: on a hit, lightning arcs to all ships within 2 sq for 2d10 ×10 each (DC 13 Dex for half).\nSystem surge: ships with Electric Generator struck lose generator function for 1 round.\nDouble damage vs: aquatic leviathans, Zadelian ships, any ship with Brine Engine.\nRequires: 2× Voltaic Gulper electroreceptive organs (T2 fixed creature).\nIncompatible: Electric Generator on same ship."},
@@ -1130,6 +1226,12 @@ const UPGRADES = [
   {id:'alchemists_ballista',name:"Alchemist's Fire Ballista",type:'Offense',cost:6500,desc:"Replaces one cannon mount with a ballista firing alchemical bolts.\nAttack: +1 to hit · Damage: 2d10 x10 fire · Range: 5 sq / 10 sq\nOn hit: fire severity +1 per round until extinguished (station action, DC 13). Critical hit: fire severity +2.\nDRAWBACK: 2-round reload. Cannot fire chain shot."},
   {id:'deadweight_anchor_rig',name:'Deadweight Anchor Rig',type:'Utility',cost:3000,desc:"Spring-release deadweight anchor system.\nDrop Anchor now costs a free action instead of a Captain Command action. Pull Anchor still requires a Command action.\nThe ship may Drop Anchor and still issue a full Command in the same turn.\nDRAWBACK: Pull Anchor DC +2 in storm winds."},
   {id:'ghost_lanterns',name:'Ghost Lanterns',type:'Utility',cost:5000,desc:"Enchanted lanterns at bow, stern, and mast-tops that project false light and silhouette.\nOnce per combat: helmsman issues a decoy movement order as a free action. Enemies make DC 14 Perception or target the wrong position for one round.\nPierced automatically if the ship fires weapons or takes hull damage during the decoy round.\nIncompatible: Iron Heart · Scorched Heart. Stacks with Dead Men's Lanterns."},
+  {id:'swift_keel_trim',name:'Swift Keel Trim',type:'Utility',cost:4500,desc:"Hydrodynamic keel modification. +1 sq Speed permanently.\nNo drawback. Pure movement gain — the cleanest upgrade on the water."},
+  {id:'war_drums',name:'War Drums',type:'Offense',cost:6000,desc:"Massive war drums mounted on deck, beating a combat rhythm.\nAll crew +1 to attack rolls while morale is Steady or above.\nDRAWBACK: -2 to all morale saves — the drums announce your position and invite fire."},
+  {id:'overcharged_powder_hold',name:'Overcharged Powder Hold',type:'Offense',cost:8000,desc:"All cannon damage +1 die (3d10 becomes 4d10, etc). Massive offensive bonus.\nDRAWBACK: if this ship reaches Moderate fire severity, the hold detonates — 8d10 ×10 internal damage, no save, immediately. Incompatible with Pitch Reserves."},
+  {id:'stripped_hull',name:'Stripped Hull',type:'Hull',cost:12000,desc:"All non-essential weight stripped. +3 sq Speed. Hard About DC -2. HP reduced by 50%. AC -2.\nDRAWBACK: hull is structurally compromised. No defensive hull upgrades can be installed alongside this.\nIncompatible: Ironbone Hull · Reinforced Keel · Wrathskin Plating · Iron Web · Coral Weave Hull."},
+  {id:'leech_anchor',name:'Leech Anchor',type:'Utility',cost:9500,desc:"A tethered weight that drags the seabed when deployed.\nWhile anchored: completely immune to ram pushback AND all forced movement including storm drift. Cannot be moved by any external force.\nDRAWBACK: Pull Anchor costs a full round — both Captain Command AND helmsman action required. Cannot be combined with Deadweight Anchor Rig."},
+  {id:'void_ballast',name:'Void Ballast',type:'Engine',cost:35000,desc:"+2 sq Speed. Ship movement ignores wind entirely — no speed bonus or penalty from wind, immune to passive storm drift. Effective engine-tier movement without an engine.\nDRAWBACK: if driven at night, the ballast begins to seep. All crew on deck are subjected to Crown of Madness (DC 14 Wis save or affected) for the duration of night movement. Void material worsens — after 3 night combats without a long rest, the save DC increases by 2 per combat.\nIncompatible: Iron Heart · Scorched Heart · Brine Core."},
 ];
 
 const FIRE_STEPS  = ['None','Minor','Moderate','Severe'];
@@ -1172,6 +1274,9 @@ const UPG_CREW_PIPS={
 };
 const COMBAT_RULES_PDF='data:application/pdf;base64,JVBERi0xLjQKJeLjz9MKMSAwIG9iago8PAovUHJvZHVjZXIgKHB5cGRmKQo+PgplbmRvYmoKMiAwIG9iago8PAovVHlwZSAvUGFnZXMKL0NvdW50IDcKL0tpZHMgWyA0IDAgUiAxMCAwIFIgMTIgMCBSIDE4IDAgUiAyMCAwIFIgMjIgMCBSIDI0IDAgUiBdCj4+CmVuZG9iagozIDAgb2JqCjw8Ci9UeXBlIC9DYXRhbG9nCi9QYWdlcyAyIDAgUgo+PgplbmRvYmoKNCAwIG9iago8PAovQ29udGVudHMgNSAwIFIKL01lZGlhQm94IFsgMCAwIDYxMiA3OTIgXQovUmVzb3VyY2VzIDw8Ci9Gb250IDYgMCBSCi9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+Ci9Sb3RhdGUgMAovVHJhbnMgPDwKPj4KL1R5cGUgL1BhZ2UKL1BhcmVudCAyIDAgUgo+PgplbmRvYmoKNSAwIG9iago8PAovRmlsdGVyIFsgL0FTQ0lJODVEZWNvZGUgL0ZsYXRlRGVjb2RlIF0KL0xlbmd0aCAzNDA1Cj4+CnN0cmVhbQpHYXRtPWFgPy0sJyMiL21kWEBMI0dFWF8oUCk+V1oyRDVeZ2dFWStATV82PFsuJildVDdLSlo0P1UkM0UkNlZhIVo3SV5NMlgrXEYuYkZGIyZnIlVZajY7JldTRU9XWURyNWokcSkiWSsoSE5eNnMlVEU/PSx1VTFqJGpdJjRLPDoqKCZFSXVAXFxjVVEpKzVKLy50MnBgXWtOP1hqZWNtWzlWV24wbXMrcGlyZDxlckkmSyZObEwudURUTC1qYmQ0a2Ewb1xYNmJpdDFgbz9XMT4oRVpGSjA0IzskTEk7cjpGQGpNYUlQIztcaGtXKChMOEtJTG9NPT5NW21edTc6KU5jXjUkdTZmLGQvVC0/JFRxUyhcXnIoLXRfIiJOcks3NHJAaTlPRSdpXjo6VEhsYVdPU2t1YENlWjkyb1poO1YzaVxLVGpIVjhLLHMrPUElZyJcZ2JHRV0lUyxUPWBYYFE+aTssLmFGUD5sYypfbDowWHR0TmEyLXU2NnIubWlBPVJaMSdxZVg4QlB0PUYrU0JhTiZkVGEiWDU8TzgxZEg7YmxHREVMSmBoXEkjSCs8MCRPWk5rX2o7Rzk2LjRPayIsbzxqYGwpZEA0ay1DLj1KbCVeSTxEPz5kYD0zUkE8YipjJzNpNT9ITk8tVT9TcCFRbDFePTdxKVMpRz9BR1k4TE5ddDFUMC0/N1E/ZERPRj1pSXI0cGNgaixKcTIvKF5PalJPODFjcUU6V0FWdEtTOEUpKS1zPyIxMWlzJSVlQlZeRFcuLytfKWBMYztPRUxeJ1U3MkRcMTopciwqTk1NLyI7RVo5Jj5dMTdAZmB1M2hWMk5uY0BRJyJqTFRLRCpTSisvUEEzME0pNi9KUS86PDNOdC1SaixgLjJIK1hyUVgvTD9vbDJUPG42QSROKj1JJS1AMzIrbjxTLFFAOzdiYytwaUQuM0hFcWFNWEkiO1w7QyxgM0hpVTxVUlZCcik4NE1tUTVmZF1Lc2Arc2grZXI6UWQ2bidsamsuQyFWRyRNcGxzYmZhLU06TSRDITNWISZKVlo/NTAlQGU6KUxmTUxnLTdvZTNFP2FzXjtcWTcrVzUjYGJcNG5mST9uM2gvMVtRcFxvTUtJMDcoO1FgIldpSjdbbWs/PzszW0k8LnFhMWA3XEojdV46dSpSQCEsX0tQYTp1YzRJcFMnaz1zTmduWzs4L2JeQicoNWlXQXUzdFhJdFpkLi1tLVs0IW89W246NElWJ1l1IT9AayUkPihAIzlHQnE7LjRtPC8tXGQzPGRcPVBbN2I2OCxIVS1IL006XjlXMmNbK11PJiIzIjQ+ISIqZGFdR0U5MWdPQjBpTS5sa2ZTclZvRUNYXyg7TSdMbE4kIVNJdG9gLWo9NCdwOFFUaFJCci1aUnJLRXNuJlhWPE5aJT0kcm11OVJScjArbyFvNk1YaHMrUzQ7RGhGclFfaXJALz5jM2hjYjRvS2FkNERtJzxudEVOcTBDL2kzcV5iL3JuPU9AND8pVSZDVi1gSmZyWE1DQXBuLUtTRmssKU84ZWBVKGxwIk0pdE1KQmYuVHBRbXE9Z0FlYzxNMXBRbi1pMV5eO283aFkvN0haNC1uNkUwVVMrQ1VCbjZeJ2I6UkBGQS1DVzFmNXAoSkBEKTNebmFYVGYhajVtL2RiVUctR0JKbG5zZFZKIjdEU09wTTxFZVxuXjphZm1SZHA2LyRoVlJkb1phPmwiblVcNXQhOmhRM0N1cmghMlFiK0dRVVFuVlFxTiMmIzpRP29XNjQwP0NmNjAoS2ZdOiJoYSNTQFFdZTNJXWMyVigtYFdTXF51PCw8UUdTUD5JLT1IYyZqRmVPYi1GTDc1PUU2MGk5ZiFZQUZIYSwwJ11hYipCSXI8WU1sR1NOU3RsI05ycUVUImVGTW1DNl0xbytoQzRlM2E6UmRxJEpWYDInPCRdaF1bYStaQnVlIVFWcjpVPHJCISlmVT4hTERhYDdCX0p1ZHIiLCM1ZVNIRE86PWFBJytXIkE0dD5VZFlaOHBlKiRbRVZVSkg2OkMvakBzR1tGKmkkLnE8T3BsXHNUKD1yS1MtSTZHTTQoUi9bKk8pSWs9PWdIJEY+a0ttQFdYNHBXdFxgKm5XPUFbS3VmYjUvcC47LkVnKUFHWDU5UyhPVlwibHRvSzZJJ2U3MDBnNW5caUZbOEE8IXRGTyVFImMuW1guXGgiYjJIYG1HajAqRVIvRkQ+b3VbLjg8Wl1HRV8jWFZRSj9iU1IvRW9xQXJORmpuQzAhbG5EPlRpdWooPGttci9wUygudGdNVXA4MklmR2k+U1pnIlhdXmdQUjAvai5QNjMmOCZoVFc2JTAxQyZTZHRQQy4vIlsnUTFNUUlEUiRZM1taP2phLEw+ckk6PXVmOCJIJDo8cSpLKixgIzw9Zidjb2tQRWw3UmJXNDxAZmFPUWFpIzdmdCxHTUstPVwmJFwyK2lKYVM4Kko/XlFPTUFNYDpBaj4nKV91amZvME1rUSpOYToiUGEzX1FbOkdEQ2c2QTFEOj5oUStuWCQ+QjpvM05IP1QuITkpa1ItTy5UMT1MXj42WT9cOFhebTNTOEFcaSwzTWlNSG87MHNmSVlTU1FqUEFJNztXb0ozKWQraTVSdWwyaUVNXSkjR2Fja09hOiwhJjlHLSshQksiUzIuLTFZdTZvMSJTSU1YXlxaYltoTTJOSF89U3JlSFNnQWU/U2g4K1BOQ1REbkwoMmtqTFdrRCNTbzRta2cxX1BMRilHSThiS0NKMD1SUXAvZyphQTszNChhVjpHUiVXImVcSDQ8cTlsU2s4ajcsTSdnRmw0R3AmUkwxRjclW2FkQGZBJzhUOyxmVD10MjY2aEJyUTJCQU0zcWQxQ0csOFQqXkFTRXFLaU5gX18hNj89SzInZVJUQz4waVhwMm9yKk9wUykxUFtfdVg+NERWNWA/I211YDYmNjkqU2pdMDkhOzQvaGRCcyE5U2EvKjteXj5kbSdDNUVNMiNwaFw8LXQ9Ul5gVzVrNE9vNG1HPl5tIyM/VjAiMksvc11XXDE7VCxqLlc3RVF0PC1lXGFNRkQ6ZjY5I0A6VXQqUUImWXEzJV9ITENlQC8/OEY0byg1YGptajg2Vk8zUzVXbjgza3RHVDJxMis3X19mcDFIbU1qbmFfOyktUk4rYEU2MCkrRi45P1xOW09CJj1OKjAzcVNrVGtPVl1DY0hbbTNxTmhtNk8+MzhLMThEYCE5JGM4LFNIQFAjKmRLNCpLcjJgcE5YMGMzODN1ckI2MlRpaXQkWWJNSV0rWl1rLVw3XUhcUGplbUAmJEknQ15IYihlbylZc0dWNi5qK2w+ZzNSSScsRkJuMEZkOmsvQiwkcT8vaEhqOCZaKDhnTm5YOFhPNGFgdVFPNEBFZDVqRFBrKkBFTWIlZkhHcUNZKGFfL2NbMzZDIzI1TyUjNTRtOi4pbVYtYE0yMFhwO1AlYGMwVTtfcl5QY0JGRD44NCk0VWooLTVpc2xnbWppKktacWJIVCFfSy4/TExUUzdfWTIuN28uYkY2YlVYN11rLSlab2VNJGpRY0VdNV9rNWIqRGo5ZiQwX140WCpwJFdgOFYwUHNZYHNlOkRpbCRhOlE5N2siOlooaVgmbzFrJyZQVTVrM1I6OWMnZiE8aDg/bDgtM2VST3M0VVp1WSMtRCdTZGApYDFhQGBnZ1c7ODhyMyJVUE8xZjM1cm9pWl4pPTg+MUNrKi5VZ2F1Rm5abV8oQC11UiRFQjg2dTc+IWFtRF1wb19KOF9bY11FZCliNUspPjRQRHE+XVlvQV8ybF8qXEZCVmJQIkY5cyEsNSJiLnIzJzdoNl1eMnNeImdwLiQzSnVGdDRATidWVFdSQ1UmV09YKnBxZCs9PkYnSEBnaWsoTD1qT1FUSFMmLWZ1WyFzUEkzTSE7OzhKWEQtYyJwLik2VHFAIkQsNE5nPHJHZ0xuPF00JGZHaFckVUkjNDxoSypsK2dIRypENUk0U0k6Ml1pXz5Yb1JsYG06Uk9ZWz9STSgmIjkkRCM7LlhyaEknNUBgJllbP1EmS1dlTj1dQExLYzEtLVBYUjlaIywsQj9KZFspJXNMaVRHYj0hLl5pMTlDcDlzX19XVylpcHF1IiJsYFA9OEo9Ty5xMUJrWFE0aGorVXQ3cTJIaXAiS2Fpb3RfRmBHQU9SLUhnams7PlY4WzdmJGBOJDZpLCluMW10OVBRayVsO09hRmxmW3NQKVRQdE8wZkE3RS5MRzJSMUxOSTBtXmEhNXEzXT0jQjtXLEEmPGErSkpaTzRYcGpjMUBnakAyNyQoMlUqMklgJVtxIiUtYEhjPShWVk5jRFxVXlc5MDNhciZlWk0iTiwuWE5hKGw4aFcnbUJSNWkkYGI9NCguaVphUCgwLihYZW07TU5kQjY7Lm8jR2BVdDEhamFjWzxxdVUySzZPVyl1W3EhTl83Ty1DUlVUWFNdQkpka3NtJFQvSEg1PFxhNyk8cnIlQyRIXjwkWnJyXUtEKCEkfj4KZW5kc3RyZWFtCmVuZG9iago2IDAgb2JqCjw8Ci9GMSA3IDAgUgovRjIgOCAwIFIKL0YzIDkgMCBSCj4+CmVuZG9iago3IDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhCi9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nCi9OYW1lIC9GMQovU3VidHlwZSAvVHlwZTEKL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjggMCBvYmoKPDwKL0Jhc2VGb250IC9IZWx2ZXRpY2EtQm9sZAovRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovTmFtZSAvRjIKL1N1YnR5cGUgL1R5cGUxCi9UeXBlIC9Gb250Cj4+CmVuZG9iago5IDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLU9ibGlxdWUKL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcKL05hbWUgL0YzCi9TdWJ0eXBlIC9UeXBlMQovVHlwZSAvRm9udAo+PgplbmRvYmoKMTAgMCBvYmoKPDwKL0NvbnRlbnRzIDExIDAgUgovTWVkaWFCb3ggWyAwIDAgNjEyIDc5MiBdCi9SZXNvdXJjZXMgPDwKL0ZvbnQgNiAwIFIKL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4KL1JvdGF0ZSAwCi9UcmFucyA8PAo+PgovVHlwZSAvUGFnZQovUGFyZW50IDIgMCBSCj4+CmVuZG9iagoxMSAwIG9iago8PAovRmlsdGVyIFsgL0FTQ0lJODVEZWNvZGUgL0ZsYXRlRGVjb2RlIF0KL0xlbmd0aCAyNzY0Cj4+CnN0cmVhbQpHYXRVNT8kImMxJVhsWyw1YkU1MzhROldFWWhaXytFTFljdVJyN1JTSUU7aklkQy1LTFBZLHNvaGQ6ajZQK3EjKlBWbWZjZSFeQFs7P248RUp1QiVqcjhZcUxpc2FqbCJuK1hiaSVlRTpfPVxmajxoRWQpM2NjVlZTNFBDOmErXFBUUUhLRlRfUFQqblYxQTRcIlMhJDppXWYmaTIvNCRiTT1XJjQtR1Apc2tRPVxvNUpzVyVCYHEwam5TJ1NsPmc6TSRANi1oYiMvPU8maGQsJWhzMURKY2haLW5mIVxDaEYsS3UpNDQwUlcnNSMmdCI9VCY/JjVBOEJnKC4kaz1eO25HXT9obS5rbFg5VjMuaSRtRTlBUDtgVykiRWxKaWBLKi1oTSZFXkE/cSZNX2FCYVVtSGs6KDdBKF9caCYpKFRiPm5GQGw7PjhYdCxST0NWTGg5Ml48ZVpjODlpWVpPIUZXLikzQCk/LDVqZWUqIW1CVW5iZ0UwKGg9O21RWzwlNXMxcGJFZ1suTSJEQjIlbTluVkc0YHFyWDBRWl9HMV4hVFdAUERrTSNkP2k0T1F0RHIuIk5hOyJXWmZVUkRZZkBxNXVvc19zXSlkYzxbQXQ/R09ePUV0OmJPRF1RPiZdPCI/Oi1pNyIyXWhMIzVNbExxXT41VUs9KyUlLDs0bFFsXWNHWjgyWTFkbTUpOzw/VW89OipcYGFlbj1AQW5fKWUzZ0FaMFhTbzpCXSNFPGJTZSNDJGg1ZGZtNCYuP1Rea3AyMEwwOmNrdS9gMSRDZ1gmKjJuM2YwVigyRzhRVS41ckJdTGU6bEFbQ0hlX2J1YyxHSm1hTm07c0c2MllbKWBTMS5uRkJHNFVgVytgZzYraTdIS1BNRC89XWhoa2A/ITNjUCFhVWdRXnVOcmcmbFc+Xlw6IW9lRjIsZDpGWEExaGUoUiJMNUByb0smQFQ/RFRCKGdCdDNsKXFDU3BoZWwqaTNrKmNIL1NSSFlfcConYyIxc3VdRC4najImXkk3KnEiakpiWCNXImcxPCs3Xy47TlZkTz1gOyJhOl1DSENeMUNubT9sXToqTCgzQ0pOJVJKPGE4Y2RDLCxILGMuPkIlTWFYRjBdLihzXSxkXE4uSjdRKnI+SyNHKD90XjJVNCg0QyE+W1htcjQqQzE8QU1bVHNaUmhcOS5GTHE+X0NUOmInJXROPTVqJjU1SjdeT0clciMxc1lWKFZVVVFLTylHVU9dSWkjJClNTS4rZi00X2s8QWFBIisuT3IrIz9bUVwsaUFqcDFoLU5jbmxqTCUpXTZsTDUvbG5YPVYqK2Y6XWU9cCdzWU5XXyMkaWc0VD0yMCFjSWFKc1stPnU9NVVdTyNORV84O09QImBHMDI7UFNTLmZxJDk1cE1TW15RUWBKLEY6QCZQMDc4WVFlL2czYkApV14ybitzblRvc2JbU3AvLSFBWUdAOkRjW281LSZ1KS9iYT9oNUlfMCdqJClBRGY0KD9ON1MnXD5OcyI0OTduajIvVGEwamZfMThAZUdLbCFMT2hCTC1mTmIuLEIiJk5eKi8pO0UsQGpNdURCb3VjPEkqM1xpTVlJRT08Tm5vaWBTMjE6NV1bZ1hMRSNjQWpzajskLC9ANGNIOW1BYiNBUU8/OmR0ZEc+QDREaDpsV0ZWTUdPVUM/K01iMmg6TDw5STlkWCRqN1tWLmRFI1ZMYUVSS2JddDclcT9IbWZqJUFJMVJITT5COzpTMjd0KCRvVFFcNUJHQV10NyRrZDpZQElVUTgqZ2BPSzNrWiVlT1NBKSpZMlNXJVpuRTtYRXFJN2pJTTJbJmEqTSdpRixjamBNbiMwWU8xWyhzWSwvYFFYLFkvVj87UmBgZk9JaEZhRF0nJF1dQD1YaktoVzRndTtFU1UpKEAkSipeM0g7J0pFSS5jJjVzQFZTVS8+QmBTUklOZFdDLD0mL3EzVTVoQDxDYEw/biIidDxwPD1RM1QxMENZNCxbJlNCbTk4OiJQPFBvS3UnKmVkKVchXkkqY1xpXkFrSHA4WWAqPzklUTEwR2VfZlwqUzJQQSNUPDNZMEtubzkyZTYlOkcyPzsnbTQ5YDBRIWxKRTo5Zy9GZkQ7TG4rTC9NPGYkbytaOSk1QyoqSEReak0oQzVdYldGcFdRdDUsQ2cuNidjM1BfY280a0csXVk5KUdmTiQ8ZjRrRzdHXiVPI09ddDJtcGFyTlo1VjtiTDReIT9paTQvJ2taWUg7Yjc4TD9jaW1JcUxYcXBoJ0hlTCJDRWNAdFhARHVgKW1VLTwodWYtbSs4LzdPb1g0clBSTURXWm9ZRmRnJydrMzVKVFZRN2A9VlhAUUJFTT0mUzs/cWNtUG9SckwlYFxST3M/YW82UHFjIVQjdCcoKT1SL1cuTWteNy0jT1pqNzo2WlZtdW9lZGVsNmdjaUxGOF4pL1ZRWzM0IjRXYlcqYCpeL2QtPiRBV1UrNVlgLV5eSFksQE9IVFVAKSFFJTptQ0g8aSxOUGFvYGVeUlhGLS9EUFw0NkxcXjsyNEsuKTwicTRKKlVuOkBMTHBTYUtiRjMtbXQyWTNBVjRLWGRfYzcqLGZBM2YiOmFbaWhgbD9mNSljMWRTVzJXWFt1PDprSThScU8na0c7QXFlLS1ALjNJLS1Lb1g+dF1QLW8uODRUKm9ANDlZN2YwLT0rQ2ldUzQiM1JcXmhpPyhoLlkzNko0bSlWOjo3NGRecHRON3NbPGJWZCpRSio7XW8xSCJaXmdNOEhEUUpAOy0sLmRWZ0xbVk9tZkJKXDlUOGRbSlNUdClYPWJCaj5uTERMU3FUTyNjOCxqWDdYXV47Rj0xXC9AOXRYRmBhSV8iRlVtOEpkZCgmdEFmWlFXWU5eImowW1M5P15QVlg5Qi1hPTgvX0QpXlJgT2Y2RmhxPC1zZmgmPGZeQS9bR0JqUkVZJVA0RE5lWCQ2Tjk4NG11PEA+P1BlNGglRmcyNFVxVWBzWmola0VLMk5xJkBMTU8vU2VBInFEUV49JTsmRi9iZFVvNlFSOi4nNkNHZW9MTSlNWUxdLVVNMlpFXDNPdCQ3bnRvPkAjMk9IRjwnS0MiZyRzQ1BKKGBzQ0Q6P0tEbTNvUkNBZSRzLkZMJnRnL2tMWU1tZ0lxcU5ZbUtVMjw8SHMyTVJyIjs2OSVZQko3aTVsXUcmbUpSc2g1MFtHS1wpazRMcjUlLEJoLWh1YDpvbVpBZHNwVGo8Ji4xM1giNT1OLlpfJm1ySSYoaEYqM0paYWJQSU5uUm4wVEYmYFs2a28tKyhZM0stI0dUQkhvKGFbN00jT0FiOEJKMGBlYzFqcWckNTRqWElbTydcRGcqXVBMTDk7UTpNQS1gN2s7dDxcRUBRUFc4c1o+ZEozPmNpaCdZZDtyKGJpcUcvWGtGXTx1ZVs2LTU/ayM6O1g2XUBmbz5AXyQoUmRYSV8pQzldIU5tM04hTXMpJD0yRF9XRlUxYFE+WylIVmQ3aUU4RUNpPSF0KjFJaSFiZzguZENoQDVENkkzYFhSPzxJOTRYOCFhO3BOSXROYDxHMFpzOFg5TiwxSzspKilTSEE6JFU6YUMtPUZEK111K0REZFVMRmZVWSNJQj51JXBVKHA5OzB1Sys5ISxQZldMS0wia05OMUM5WVtdNzIkRG4pSitIWC4xXX4+CmVuZHN0cmVhbQplbmRvYmoKMTIgMCBvYmoKPDwKL0NvbnRlbnRzIDEzIDAgUgovTWVkaWFCb3ggWyAwIDAgNjEyIDc5MiBdCi9SZXNvdXJjZXMgPDwKL0ZvbnQgMTQgMCBSCi9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+Ci9Sb3RhdGUgMAovVHJhbnMgPDwKPj4KL1R5cGUgL1BhZ2UKL1BhcmVudCAyIDAgUgo+PgplbmRvYmoKMTMgMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdCi9MZW5ndGggMzgzNAo+PgpzdHJlYW0KR2F1YFY9YGA9VyZxOVNZa110aVEtOG0qP1UvSkQsLHAsLkUqJzdxTUcmIilVIWA+JnRLSF8tUGYoZS1ARzY8TEhNaiwyT1s4WCZcMFw/QjopaCEqSWQiV1ZAWmhaT2AhaD4+MW08XWRnI0tBUig0ai9LSjItYyw6WEldTXBjUUBbSzZVIV8rR3NIbWpySUcnXUtcOjkzaVpfKkk1O2xEVFdkYGtbU19NVihdRTQrZyJpQU9eJVNsRWE2YTIwNjdxN1wqZiJBTm9vX1YxaEtOST5cXCY2RDpWb3UtZzAqI1d0ITJEdXFKcj1HKiZMRGgnaWkuOzdqMCgwOU5UUCVOaVZUZT5cVzMqQE1qUi5WKW1vIlYuaFYwQWFncW9eWi8yc1tCPF5mS14oa2twOm9pRzg3UF4lRCg9VCYhVTZKOnNiXiNlOkJuOFNiXk1KZm8kRj1VKyZwTFsiODhFcmQrMDlxJFVVKE8uP0VnT2ZcQERLYjRyY01YLTxWcUBfJ3JYQEt0QGpDXDA1VyVTVk9oXSI8U0BKWFRWLCRwakZZPDonTUwlTXJvXUQ9LkJdYyguT2dVKSdRNm1MZFtoIV9ITWdzUTUxVSsvPWYvPU9EdGM6NyY4XUlkX21XWTk9VEo6YUI8ZmcpRlFXP1UobURLJ0RXP1NvNkEhYklMRi4nJCYtZ2IxbTgqPT1VQVhsVTJSOEJgNmVYUD1kPjtfIzQ8UFlSLHNmXzoxNyVjWnVAMVxsTTtlTmcmXlJLJEciPDpcO1thbixgbClhLFJOKV4mS2UmUm8oWytHaWRBKmo7RW1uLVo0ZkZoYC8wOTtkbXJHUGpiX21gbCNxWXFhKVoiLklTJjkub1I0bW1fYmdCXGE2ci9FcFRKNXExIjpCS0pCIXVgcUU6R3VraWwsOTk8KVRFaVhTZShTNVQ7W0slQXRtRCk0PTVlVC1MXUMsWUBeTUYvVVlGTCFrZDJkbWdzMSEtTUQpbWEtTnFaMUM5N21ITWtWZTZKOFNlJllmZiVzTlo7RVI6My1CQmo9YV1KKE1XSnRZJUkqLTNZazxTRkBtNiJtTm02UEZZInVbcWltLTJMOiFbI2dhO21KTWxIJj1nYDhVUChEZkRSNElYTzViS01VRDRDOS8uW19TdE1wW1FgW0BmTF5BQytBcS1KQV0hcVFiSjA+VUBBc1FHSkFtWFJKUFNrcXE3VzQ0NC1dRDY9PjcrPm9BPHAoIlVjQWNMKmlvI2E2XFU9MGlhU1lrRyJkSG5VQHE8VytCLGkrZXVLcCNgPzBQTSdeZjVgJD9zJkA3MkRWSllHQVg0Lz0xQWExJFU4blQ0S0ksVSphKF0/ZkQyJ2FyOS1CWWpXcWQ0SjklVkJfUDBkWlsyPjxjRC1qYycqUjY/KmgzQ2I4WXA5N140UkNdK19RQFM9VmxLPkJIXzVeZUhzPXFUL0EsNG0jXFtPLyVLaCJEYjk+I2MmZGJfN2dJOENhUUtqXjAwNCFaa0FUKm5ONDsrXEgmcFxaPSQqUEVwYCVxVlhIWi4wbEYnZHVrT2NJM0g1XFknOWQ4RTtsNE8nUD41U1xqUlYjTm48RGRBX3BgdWBQPWQ6N0dvZC5WNnApLitnPDgpcFdOQFFUVlImWykwbXBDOVtCMUNgZ2g8WiNSY2F0PzItW14lK0JcK3VTbjJRUGczJGZtVC0yMjl1YyxiO3EpUFJcJVwzRCcsUyY3ZnVaJ1E1OyhOWi9YUiRZKEZGMmlZOmZkKUVoPHVpXVAycUU8I2M+Jyg8aXRAJ0I5RV9GSk9bbGRmT2lBXSwwYDMyOnIvVWZsW1hlTEhpPklFMC0rYj9aI2IqOU1XaypMXDRoVjtdSEZZaGxqLDMtYEImMWQhNy5rVy1tY1REInFSS2MnRiY1XjNnZjQ2XFlQPWNnPWslRjJtXEhjS3ImPVlWQD1gST1pJlIxP1Y0YWQickFtXCJBMj4mNzZBMGooSCcxVlJjc0RjYG45ZFkiWyJRXjw6TkRZTDtNP2lHPkk4QlIoREZnbD5uWTZwMTA6NlgvWl9ATllWPitlQUFuVkorcD42cFpVZVFHSDZMYV1rVFZxRSJwMj1LL1ZmbyQ5YT9odE5PK3AqckBBKXRIT01AajNjSmhaY3JwVTNtMSRkQTxqXlg6LHRGMkttKEJUYj49V2I4WVdaWEhATzdjZCo9RSRUYVcuaVtQQ0hob1UqKm1NOFEiVk02ckJTMl0vWTBEOzRhbj5gTUZqVm89UltvUFY4bXUrMFxXLmxnM3NUVSwmTWo7LlVwbjcjQ05kZkgnK2IrOiFsPSFfLyMpLltHQF40PCEsJ2pVTV09SlBcJW1DWEdhMyhVZC0tTWwxKm9oXTRWZjV1Mzk/WDF1U25RLG4vZ291UUhdVjJXUEo/aDI+Q19IUmtoMEdkOyk4Ulh0Uzk8aDBnQlB0PUVHY0RBZTE7UFlzSHR0TkpgYzIpPlZLL1wxYzBWM3FkUUQjcFZPRjdlMk1UNWcnJl1KKk1eNkpIWWcwN1pXWFNlUkpmPjknOVQiSEpFanFnbyhFQGs6Xm9qclpuRS9tLEIoWDsnWU5MWmpLXSxLb1s9QD5vbFpvWXFpXCElLyoiU21wR1hjVEo6aFpCQjotSDdvaSskJCtLO2hzTkVUL1c2JyM/RkdObk4iMTVHaFJAOE1JOWE1N29zbkBldFU1TU5lbjNhVFNwVVkqaWQrUjxGMFlcKnAjZW09Q3JOcjRRREljRkM3bTFpYmNmZFkiM1Q7b0M7JmdUNClRNmkmUWNXUFIrJTI7T0RvJT81UEROaCNSazI7TGNTQT0ncWwqTkBwU0Y1RVNJMTgoOWxsc1JVYGUzZGRjVDxtY1g2V0pjbWBjZTk4TD87RXAvcS0qY1g6JzZJb1MyKGpnLSlhYkRXKSYoI0s6bSQ1L110I246cGQ2YS03I0UzLUk/WjBmNVknQEteNTZxLCRHamE6LlBKJD1sXFUsblNNblBLOGojbCFpNzBfbS5zNVE4TDQhTXU1bDxMaDduOkpBIS9XNmk7UUxlV2JWI2FPcig/OiZXKi87MVBaNC0kZih0VzlpY29WXWBCNVVnQ05oZVVXblxnQWlccVtmS0NsRFpFWzpjMGZJRERJXj1rUGZjaEtGPz9vVFZJdVtZRm4/WUtVVXBQNz9dWmhvXm91IWI8QVlFal9kKixCYzVfWUlSWHRMR1knZ2Q1MEk+cC4hY0wnRz48NU0mI1lRM0VMb1RHRS1eQStzQ09aMlUnIUBaKCZKaVdNa2xoKyg3Py9LPSZkYkVaYzhiU0tfQ1k8Lj9zYjdXbXFTSi0hMWZSJCZTaTUkMElFVXRjWjBqZVNfYypaSkV1SiM1LnBjNXFnOjZZXSFmVFtlRzolLmk3YEttPStwIzdTbilPXDB1cVEvWWFXWS0rTlInL1hcZGNjVFdSdW8tIlclNzhcYTBiVmpQYHUrSDdhPS5EREB0RVtfJCdVTW51LS1jYjdGbj1kTWBLWzdzQDcvRy0/XkktX0dwUmRXSmMkOkRXSF5hQk9FW0BIPywoX3MzbkRMWUokZzdURTw+WS4hYFRJYSY8IVJLUT1uU0w9aVVXXnFYRGQ1Xi1UY2tRQS1aPmdycy8yY09mRyspYGJEZ0Q8aFVbW1ZFb0U4K3RYX1VOZzMxYyldSHEoRGxNT0BYaT0oWGxpSzMzZiZJTk89JlQjYCtMOXVOZnNSYlQyZExTdGcrYWktNmVYOFoqUXNYaTJEZzJzWmAyLUFlNl1WLVtjbVc2Si9TVCc1KU9gUUZiM0EvNFxiPmI7RzlnS11cLTVHQWAoc2ltVT4ybyEvPDY2SFRcTXVlcGYsNEVsJlQ+akZobU1PVjhZPTxkYHRdbUokdGE+T2A9ISsyZ1pFVF5XT1dTKSdjbTojUyFIbm9dM2dUMiFzS1glRE8ubS1aQj1INipBZTNHckxmaVpoTV0wTFdXMjJiVTJMYDJQNWwwPShub1BcR0NNVUc+b21QZzhFWEdUXCkuOysuQkRRVUZlLDg+MCIhXzJTSUQ6ZikiZG1XZkphOi9zbElOVHRSVUFzVVglKT9ea2ZHYGEzTi4waGUwM0A2T3VfLUswcTtqZ0s7O191UVJqdCpWQVpbQTJqJldfTERTNmhqdWtQTyJsNT1ZLzxwNWJeNSNqdSZaXjBGck5PMSkoY3FnYiFdRiZgQV5UcEJIbiUrbW1OZTZJRGY8SCk2WT1OTWdTKkZRSVZnPDVedS9fIj5XaWBwMzUxJ1gxRz8jSldgbkZmST9rLFUpNz1jLi0yJFxeaig1WFFaQk1MOV0sQlIoST9ESWtENEJMbWdGZFBDIVc6MmpmLEZSc25kU0BTJ29NX1whJjRFLmAlZydRJko4SDM6QFteZmZrZTI8dWZLa2lPRCVUcWlmSXNcMFZZIkkrMFklPztmJiVBXycqIUI8YUlXOkJSNExwWzouV2NxXVQxLjlPLTknSj1FY0hvVzlnLDpGNlUoVm1yZmI8IihhPmN1XGZiIzVJUCpWKFNMSkc5MDIxNipnSlpnR2g3XmM6ZkEyT3ItI2AnZTlBXDFVUUZzM3NALkoyP18vM2F0Py80cihXdSsnSyU7MmBmR1VPWXElQUF0Y0JhSyJVKTpUODRmR04rPjtzSyFwPjwzMGtTcjYhNkBjbF0oSjYiRydDQ0M1IkFxMylHZStbcVI7VVQtM2xJKzouJz1yMnEzPz8qb0ZeZkJhWSZaKj8jNVMsWlhlcCU6SEtZU1sjaldFVy0sQ1tXSmRQNFk5P28rZ1JVTCQsXi5HIzZtQlxWOmBKZCxCMUgmWERXRE0kUVRMO15YRjspLGg5LUVMTk82PGM+SkEyak4kbl1XVTMuYVBIR08jbmFyWkk4U25PMWVcWyUtc29Cbj1zI14/ZFFvMil1aCdOQzo4aSxfRGtlSEdNT1g+TFdpJzJoVWU6VlxyIl4iZFlFRU1Hb1VKQURQI1dEIjk7RShVQTFuImI8VHEiTDYlU0M7Lz9XXjE0KVVTVC5sLWc6aFJXNkBbSU1YXSk/NiFbM0EhcTdFRk1wSWhIPzxEazhNQGNpK2tDKGEhaDlqWmY+Sik7QmcwYH4+CmVuZHN0cmVhbQplbmRvYmoKMTQgMCBvYmoKPDwKL0YxIDE1IDAgUgovRjIgMTYgMCBSCi9GMyAxNyAwIFIKPj4KZW5kb2JqCjE1IDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhCi9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nCi9OYW1lIC9GMQovU3VidHlwZSAvVHlwZTEKL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjE2IDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQKL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcKL05hbWUgL0YyCi9TdWJ0eXBlIC9UeXBlMQovVHlwZSAvRm9udAo+PgplbmRvYmoKMTcgMCBvYmoKPDwKL0Jhc2VGb250IC9IZWx2ZXRpY2EtT2JsaXF1ZQovRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovTmFtZSAvRjMKL1N1YnR5cGUgL1R5cGUxCi9UeXBlIC9Gb250Cj4+CmVuZG9iagoxOCAwIG9iago8PAovQ29udGVudHMgMTkgMCBSCi9NZWRpYUJveCBbIDAgMCA2MTIgNzkyIF0KL1Jlc291cmNlcyA8PAovRm9udCA2IDAgUgovUHJvY1NldCBbIC9QREYgL1RleHQgL0ltYWdlQiAvSW1hZ2VDIC9JbWFnZUkgXQo+PgovUm90YXRlIDAKL1RyYW5zIDw8Cj4+Ci9UeXBlIC9QYWdlCi9QYXJlbnQgMiAwIFIKPj4KZW5kb2JqCjE5IDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXQovTGVuZ3RoIDI5ODEKPj4Kc3RyZWFtCkdiIWwhOTJqa0EnIypyZkVfYihIJTJyNTxRPU0zNSE4KFwmQyJkJ0RAVV86KyNjVldVZCkyVktlKk85cVhHOj8+Vy9NWVlfc1R1YUBvPDRULyRnX2tiRC4zSmldZVc5InByKkAhZS5nLjVVXDFMNV0iPm1gPTdiQjd0c1VPMEYncyEjaXIlXTwocTZCanBpaiQlJG5ZSUxrUVpOSWg1IXVQajsuc1pWMU45LylXUChKQENlPjs3LF86P29ZJS5rOT5qNWgoL2U5KFApbT8zMWtVWilwUFFWajd1SU4tUlNvY0ZnUV5YL0BrTEpcPmw5Ykk+I1MzWWtXcHFDbCZ1Oy9Bbm8wLEE2O0YodF5FVlwrN3M4aWo7XTVpLEk0UEtEJi00ZyZvNnRMRUtbM0kwcyd0cSlfM3BUOEpkWGRbOVZnbz46V2guIjlsLUs1VlNNaV5nMDxcZlA1LVpYIzdpbihGOlhpN2EybkZZT2NPbS8kIV40RFddcFhZX0hGYWQtTVNtLTRrO2lYcS5jJy5sYV9KNlUhYkBbUGMlXTgiQEsoYElXQzhkRSk5ZTZ0bS88MW9nXkBFZnBVPFwnS1IiKFJmJThmVDhTMCkwR1lQbzI6TEsvR2JaLSo3JUhLIWg1Uz05NkJxVidUWSRtZig0ZUVxIl06YjBvOGRJcF89SFZsKSZcKj5HZU81PWFvTShgKm1CWFlsXj1UaS1BQXFnZ1E9NmhlNSdvYTBUaE48W1Ymbm4xalFRSmZOPClFYF9pT0o7KGFfLDgpcV90cTVkcko/cColUFkrXTMwQjlwYzA1OykwTyV1XVRjXnBYNk5mTixHIkhoSFNoXk5iOlYzNW1DTTxAKjh0QV9QM11HN0kxOTBaXXBzRC4xRHE8TzhJP1pFIj9mT0dwJ0M3JVBCPVBvNFNpLks6K2tDJC9dPyNrLSI3b15FYGxmWTlnOydrPCxIMF5zJ3FUIVgubTZXRWhOMFI9SnVOKV1DVFRWQUtMOT9tSyxQazBbbmdwQSIuYSJDJG88L2Q3aExBTEUvaUksYWhoXi9aMj5IUSZedTc6b0FdbycnZ2hqVWA2NCpgPEE6I2xdbi1FakJoNVxGTiolKFohciNcL0xLWT8xcGUpcWw1WyJoW2hTb2FdQG11ZlprQ2xkbGhvQDlJYi88JWoiWypVT1BcO1NjZmQhdE5AQGI4dVMhcU43Rzk9NG4lVT90KG8ubU0kWkhFK19ycF1MbjNERjooMVpwTis5WDE7Smg/SkN0XW0tRFkvR2lKamRvbXQ2VDI2MWY1Sl5IOSEnU0gxJDtXQHNaOGcmTDtsc1ZTXWxTdV8pLDBrV0JNRENfPzNWaXAlcyZIVTlCMGpYTSpkVXI8IzFSOSRaZ0ZHbWtEaj1lTkZzYjxQZFRLYXUsKlA3MUpyUTk8NyZAVURlQGZaUHIxaEtpTllGTGpEPiZeMSdpNzUvSTJdbkFjQXFPMHQ4Yj0nYVpzPmNnRVQ0Tzg7b2U9K2lba1whV21tcFN0RFhqKVxZajo3LjVoJ1RyWFdAJUFlVjNaQ21fIksyS1N1PTozU0JIUFMuK09xbiVJSWU+TlVHaGEkQDVSN19BN2ZDMS8pQ1NMNz1lUytATkhsIUBkJzQkQjVAT14jXDJBcSNBW0NGTmtIXz4rSlM7LCNaUXJUIT9FKDxLPE0wLEosQiJJRmk6dElgTzFcQG0pR2IlNjYkXmxaJmgnX1YqJ0MzSjhAZU83ZyJSKSEmMk9YTipiUStOTUgyNFlAP0lWNTJZQ00kbj1Sblk8M0hfKmo0bW8/V3RJOlZ1cWpHNU87aG1yZG1SXm5cOkJiT2s5R1M3J11YKFhXYFNtSDA0WGE3b2BzaVxwNjw6XUs2clFYXHNmJTtGXzU8a3RYaSQvTlFGMj4jbUlyLC40R0VYMjlLWEsvJk4ianUmTj90ZWNmZVNlOU0/TSxubG9DVjwzLyheLzkiVC1tJk11OjtePiRXJ1UlNl9ELSU7TVFmRmomXkhkQyNqa0trPDk2L1ZKa3M0USRxXWpXOEFzM2hQYDtCSjhNdVooJGJ0PkcqbkFyV20sI2RbX0U7IkguN2NKR0BlPXAoVWxuQi9AMWZNcjM/OShtbjhfbmBCRltncD88UyV1NTBlPyFCSixWPVMpQUcoIi5JNUJzdWZoKE48WlUhPjghPU5IZHJuWjdTX0olO2FOMStxX2U+UUFDIi5HVjZVMCpYKmRgWEpRbk80NFdYZ0lVbCw3PmVSRWhAcVc5ckAlWSo8KGxjLVRQcFMiXF8+WCY0NlNRMyNxbW8jVThXVExAPWQxZTRiTTFiQlVRZCgtRz5QbDU9XUZiaUAobDUsPWssNVV0Jzg4J0E9WWdjV1M+NjddVGguNiE+cUVoST8vcVg3J1Q8cVBAdHBvQVtuTVo5dVwkVGknInRUTWBsbTg+REtXS2x0Y2srN0dxJDUySmAnSShWbkNTczhbMSNjQ1hebyQ4ciZIanM1SEZvPUhVIV5IQyhvbDE9ZihlNEdGTyZgJEM8SSlAZXBkRFAqT3NsPUptUix1YCdCUjE7WlZYTktoTC40S00xY1JkZzheRExISl4ybDM5aVZgblEmQWJBLTZJaW1RWS06UChrXW8sOFRCOFMlOjwubiMqbjo7SlM2Z2hWcVVKUUN0J2ZEdTlhIWxSNj9WalFtSS9UU0FoMEBEXyQ2OD9yUilwLFhbYWlAOEwsNiE/I3NgQkc8WzFiKyw4YlpNXlBZR2NXTzkjXDVdWyIjaFBPQkpgZ0RVbWpuUVM1LSJnVC1wXmJdOFEhaXUkIyRvMzZnNzIvbmN1KE8zQTdtb0FrIyJzMzE3Km02OStCdWkxQEojIjk5TT5rYjFDOz84JDdcKjVNLmU0YXNeb180SkxpPllNQEdTS1YyOVdhO1NuWihbb2o0ZSZCYEVDNHA5LlBoNmFhYnMpPiIuPDFVN0hhNDs4UCJIV2ltYF5ARjg/Wi80dVw0U1QiJ0tJL3NIRzFeZSZQK25xNT1vbVdnby9hP0xEU3NiLk9cS20hcFBOPj0iNUJaNjZqUzBPS1YyVi0yRWRSRDtnU288TUBgYU5CTiVYIjltNzdmVTRORGteTDA9X1RrWSFLUnVPKjBdakJNOUxFQWxlXCJQZFBsYWdYKSJmJEFJUVFYRUFAMy4sZj0oWFI2bj1zXV1tdGJoQkdAZSNnMVgpU1NoXVcldFZpR25wKi1tSylwYzROODEmVDMqRUNHVVotazRhMSVRQWhUbS5eM1s3SDJnP1BrUm4kXlVaWD5LWDlERmJVOyJAKGxjaVdQRmUiNkQrZzEmWS0iO1E2S3NfXG9tO1QwYSYmYnRRKUxNQy1xUk1YaUJiSnIkJltYMiwpJSxjPkwxKylgQ14iPGtEbSYpQC1oLHVaKEhzTCRgYVwoSjlkK0NuOCJsV0FRPXBCVk5SdVRBLGNrS05rNm9pWkRiWXBnIyw7ZDpeJGFjIVxnQjMvKFpMQ0g3OXVzMDQ9RDxTbkFLOUg/cDw2M2VWdCkwUFQ1cCIic08jWSZcXUNSRUs+TkBUO0RwPyYvVlVeKEpBU2ouJGY3YURgLmNDc1FHN11aTW9gMWc9Uk81KVVGM3EhMChjXS11P0NIMEpnTF43QVJFR2tXOEhONHVzanFdPjAiPmRKbUVvWyE+QnItOXBNSFNIQ0ZjZDhlPzNdQFlbO0VEOjdrMENaKCMlMSM/czFkWHJxUyZmOD9fLVYkRlpdRltxb0grJSs1YDV0PTBAUmRGazV0Yk1FYVptXT4zRmNlWkhmNl1oNktOTWAuTUc7MnJNXEhcQUxmUG9SKjkuPTE6cG1KaV5zVXBFWj5XXFBwSF0tU2ZBcVBFc1hdYVIsWjIyYC5DKWMmXmtlTGo0TDddb0lJYVU+VnI9OllfQT06Yy9AQnB0PG1XImBVZ0loKjZZO00rZmtUOk4sJyo7cCxdQDNwN34+CmVuZHN0cmVhbQplbmRvYmoKMjAgMCBvYmoKPDwKL0NvbnRlbnRzIDIxIDAgUgovTWVkaWFCb3ggWyAwIDAgNjEyIDc5MiBdCi9SZXNvdXJjZXMgPDwKL0ZvbnQgNiAwIFIKL1Byb2NTZXQgWyAvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJIF0KPj4KL1JvdGF0ZSAwCi9UcmFucyA8PAo+PgovVHlwZSAvUGFnZQovUGFyZW50IDIgMCBSCj4+CmVuZG9iagoyMSAwIG9iago8PAovRmlsdGVyIFsgL0FTQ0lJODVEZWNvZGUgL0ZsYXRlRGVjb2RlIF0KL0xlbmd0aCAyMjkwCj4+CnN0cmVhbQpHYXVgVD51VEs7J1JmLkdnY2ZSWkxsIj9bbi00U2ldPVlGJGFVVSpnSThPZixFR0pkWGpIL05dbiVGbk4oaCtqLDNqVjFGTi1xSyErbC40Imw5WlNCPmw+USchI0g7LklJRGRSXy4zYWZodWtiMCRhKGdIOj5aL08rLSstVjYtYk11NFghLnVfOGxgI0BKNiFcSSdlYiJfYVM/VjIyRkEza1ApKkhwNDJiVV8vUiQjTEolbCkrWk49YFRYZWF1Zz1aPC8icDZeK2lVdDFXa09abWVhMzFPUi50Q3E6QChdJHNuNHIlQzxsMFZsUmRgNmlxJE49cFp0PGcpMF9DcE9wWmNtPWZVUD1dWVxhcC1WISg6bWNzO0dVb1JaJGMrYG9AQ1NMPj4rbmJRcjVGLic8PTYnIXQpakxJa0U2NDAjLDlMP0Y9UWorO0xGbk0ncT5KRVByMz1ILE0lIy1pJClvPF9SWytGKChsZydWKDR1QUoiJ0hQTjtSRC8uLW09dXFBTEdgXEZCRElXVkxpb0dpJSl1O3UiKHQuKk4jXlVfKVpbRSshSz5lTHM1JFRMNTZqWFE4c1V1OEtkW2FCX0s1bW04Q0NyV0JyTjNrcEg3Vi0kIydHOClBTEJiajg0XkJmbkcpSVZZPVYpL3UyVW8oSEJCYiRYPHAvcDVNR1ZFblgzUGssWVJvIlcmXFNEJmVvczNUbW9ISyZvVFZHUUxlWklmaU9KSyxJPDxTaWoxRkYjJWheZyd1OCdaJFlvUy9eJjJCPDlNSDEyOzlOIlVCOEVAPWpLTSRsdSZxSnFwOSpxS200QWdfZDBiIUJdUE5fS2IhKGlqR3QmK2EoZ2NYZyRuTTBXMUpmbmtrL3EpU0UkUXNHPVBZI0RwTmJFNW5OXl8oSWBJQlwhX3BrPF89PXJqMSk7a0k3ZTssWnUmZXJfVmgjb1ddJkthRCg/UWoybGNTWmxDO0hIbllrMipYRU8mMCJXUEkhbkJlaEpJND1OJkNTMGJgKXEyZksnKCE3O1NyS0p0UVMkNlAiNCNhKyFjbywoREtqSVlgKFNsTHIsRFBoQDlRJEJeRUslLFZSSXBaXCdzJ1A1Tm9PNjRWL2RIIjM1ckdgOiVrUylbLUhlZjs4ZF5LWVZjZCxoUSUsQ0QuXkBaYUZUVU87ZGcncjtHPyhkXzgxYmg1QGVJczdlaGpEN0lec29jSyxMOVsoXE5IK0tFZ1cuKGhmRm0jMzVyRSwnRjJEc09rWW87NWJCWkJfPykwWjJDUGVMcTJJYnRSXltpUEJOcyNecipxYTRUNiloYE9TcS1TWz5pQCkna0lQLUdnQCQtYWZMdXQuKy8+XWpKSjJCXXJRKSdTYEFXJCsoQXJ1LkooKmM9VF47STxkPlk2LGIrSSI7TFM8XVZTSV4uJiRSXyRXVXMnWCNdUT8pKiZORUpAcUUuWy51RnJDYWNiMHReP09AQElRXEBrRChRZlFOJms8Ql9iUTc+U0RKVG05XCtdIjxZPCV0OjM+MmkyR048ZVkuLDMqNVEuakYqbl9mPWFUV0BhNlIzS1pDIWM/K1VvaUw1XmgnOjlEQCcvOnQxLlZEaj5yIms5Y1VmJz9OYFEocFosN25rNEQoOUVvU1ViYForLC9OVVU3aGFRV3VpbSJCKUUoPzJPc0puLGZSOC0xLGcsKShIZ1QqYihObGdrZ1U9P0c4Nz1hQHNXXWdAVTlBVF8jNWsoKVVtL15KXm4yUFArajw5VGMuLW9IV2s5RlteO05eNzlMInMuZXVhLiUjPEIpZDcxUDJibyxkZCVMXENGbDlta14iX3MuZDdfTW9US1JtcC42WWhddE9lYWREOiI6T1BKcTFASE83NCI1cV83WjhWazxcKSI5XS1NR1lmWiExdHNtKT4+a1haZG9QImRwVSFyLl8yZGRPPDZDbGsvR0xbbFpeYVw+Rmteb0xgZTpERyUmJk5CWTgnI00oKidgSlxXYSsiOV4uKWA4P3FUQ1Y0UjAwUWY8UTNMPyJxRSlUOjlDJ0hzcGxcKWJBS1hncCVCXXI7UEtcciVnLiRtQi5PPFVabF1PJj9aUWRiYlhdXS1AY25dJVdnZSZiKCRcXnRpNSEkbytJKTtfO0pYNm9aUkhdXT4tQVc5TDw/NVBCN24hIiE7a0BwRWk0NiRJI2VmIldaRGBbWUw9Y05XRDpHQzgtM1wiNVpmRV5bRi85K15qWltFP3FuVTxHTj85VHJKOEUuTkNpZj9rRiRTKltsJWwpbnRPTkBhb0ZQaSNETENdP3NfOy0sT1VpcCdkR2skaSM3SlVqIkFbQWJuUSJTWTI3S2RdaSEnJS5zMkYlIUdHUFVmbHI1SENTOmd1USU+b2peb15kR1NMbGVNJmJePk5UW0M3XGRSRk1hbEgjKDYsZiYvL2lHKj1aInU3PWU4VnI/NmQ9Ujg/MEovPjUidSs6W3EtK29wZlRLT2wjaDxiXGRzPk8xWWZhcCFaLCZnbGZOPzwsTyI5Y0UkOVtmJ0ZONWNFJDlbPHJKO1o6b2gnTCFkZltfQjFMUHNcQ1wwRCVwaHAyMjhAcUMuLiNPO1ppaFJWQVkjUWlgP1IxalVMMmwiYSZLN2kjKGA9aTttWFVBKi8sNV0hNGg/OztPZEY5VDVcN3JeclhPKi5eLV0vPWc9WShwPm9qNT9TaiNdV0FLcC48TnFPKStXOTleXUtoPlMyQ2w+PkRASGooalpWRT4xYVotVHBvSks1S1BKZDxfPyUzJlQrRjQiK0tCajBEQ01OcXJtRSszTz1palRuaF89Zjc8OEohPipWY2dFYGQuWEpfNyVtLidfZjNaNURRcjBQPDZVMydPUWpvcGsmXSleKylOO1lgcUlWQz5CQ1VWcmNbWzpfL1suPTNgMUdXJUBfTDNwU3U5W2JPRTJnW0kxYzgkJTRQNWQ1RjM1InJBczRfUDlCKis6KzY3JDRJPltTVElYLlNKcyU+Ryk9cCNAMjpDKUFnUmtlWiUsRFlrT04jc2g7Vyc3U09WKUxkOjVyckREW3BqMn4+CmVuZHN0cmVhbQplbmRvYmoKMjIgMCBvYmoKPDwKL0NvbnRlbnRzIDIzIDAgUgovTWVkaWFCb3ggWyAwIDAgNjEyIDc5MiBdCi9SZXNvdXJjZXMgPDwKL0ZvbnQgMTQgMCBSCi9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+Ci9Sb3RhdGUgMAovVHJhbnMgPDwKPj4KL1R5cGUgL1BhZ2UKL1BhcmVudCAyIDAgUgo+PgplbmRvYmoKMjMgMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdCi9MZW5ndGggMjQ2NAo+PgpzdHJlYW0KR2IiLyg5NjhpSScjKzZFb0drPFoxUUU/KFVhVHJXRWNDcnRBaC5sLFFFJyosJFZXbCJgWyU1SEA/OkVkRm9zIVgzQChGSEheTGgkOSNYKjM3WChXPm5VMWs2XyRMJnBvLyJZbGhDZGFaJTBQYjFATDRVWDY8SlZjbGMiXT5vImM5KUJBYk1jPSF1LUFMZXFuQ28tInBTcjA5WU9QX25sNzZnN2NoJyk+IUwodEUqOCFqM2FNZSIocTA8SlFiZUdnUnE4WzQnJTBoZ3UrXCcsOFtLb14xSjRNbFpbTlg2XVJXITlgTUZvPG1BaFY5VS0sJDFCQDNMZ09RWyM6dDxNU0xrVDpFU3VQJW4rOyJpLmZpTD9bYkgpPjcyRTo6QitVM2snQC9uW0ZbJGptOyllWW5vbF86ND5rMSVVa00pXkZSR0gqQT5rPWMsOWJdaFpEaEEsMlFxOWxSWlRCSiZkcjVCRkFHVDxNVkQmPCQpbWA8Vkc/PTZPaG1JWiRIaDtcLVFOZl9VR09KOVwmXlJzdVpSZ1Y4YFleKkJWKGNocjRuNUUxXzlCZkVlL2pdV2xiU08mMzhkU2whdDFNJy10OGQqaGByXDNkZTpqNj03P0N0MVRAQlBjdTkrLE9WXzNrJ09pI08+WldDKDRGIW9QU2stOEBWLUwuRyFuTWIqJklNQE9YWUJUOy5MSTcnKmo5ZCI0U1g9Vm5SRiNqW0UoZi0kSz47UV5QcVtWQ2xoKU0lR1lFX2xfOG9AL2shOT5GMF0nOldpUVpESnI9Wj9NR2hGdGArb3JMQFByUzUsV2FxdW9IP0lBNkAxRGBlJkRWTlZEUjZkbz5dMWZfaGV1c0NqQj1kYWcyRVtxKm5HcmZjc1Y2Y2pMN2JePHArTS5QViVlPXIrNHNFMF0oc1U7bVY4bzBVQTZWZWwhVjU+XyEzJnRxXyVLYltCXkpaPjs5PDNOZ0tgT1czYkBdZ0RvPjM3akokaXNyIlgnTDBFL09yYD84LEQ4RF04STNPOChNXTtSR291K2MjdWVScjhrazJwQDZUO2RpTi1dbF0nUHUhUCczVGJeQG8hKnJCbm83TGRwa00sJVlyXzIrUF4lRGNLZkZVMzBUKjtlc1ZFQjhgP0dIPWgwQyxVMzJXdEcsIWUvU21zN3VxKVRnM2NiMFVaTXRCUjtNKyFWTGBBN0JqVUE5I0hERGdaMFVMTGArOyRgKj0oIlhudDksWllyczkhPE8mNk1mNScmMj82aTxPUSxGOztjJ2NpYD5STEhVJjwmNmllL2tiS1E2OWNjNDxsUy0oaDEzLlxRIisiJGVIXExmWSkwLCE+XSFJZD9lI2duWC04XGYuLzRwV3RGaDRtRTA6TGcrXVQxLzluSmZlUT5KUG9ZSCxTMDVnKz0hWmxTMCNVYXFYIkVcNzdSNUtJLlduMzJuNDg1R3VKQEwvdD8ja05eU1lkNXMsZixHZGtOV10qSGsvRUwhX3FtTWFGWkAta11NVlNsPXJXXSotMCdAU1ZOMVxbMjNNSUtsRlRiMWJYY10mZFg9dStzRCFQSzI5WEUjLClWLlk4KExvZiEhIiMpa28mLGUhbEUwVEtaRFE8ISpIK2BAZjgrOzxlVEFkNVYidFVvM2VlPWZ1VW0mRjtYVnBRJHMhJE9sbV5ebTE9X0NQRHQ/W10tTnFVVjMnbT5LRDldPURKSm5jQzg1dU8pU11ERVI7b0lqS2MrKGZaWTslWkxfXFxiU3M2XW80SFkhKXFfRmVBbl5AP2YnUVZgbixKaEAyJVw7X1lnO0FgITM4T0JqNy9vdGVbYnRSXDFGaWlpVnJKLjIjcElQPCQ3X10/JklfQlFQXUk6TiJSbXFRci11RCEtSy1UKTRNWlZyYk9EVClaPWxFRyMzI2RWMC1NPlVwTWJGNGQ9Tm9aXFF1P1suWz0iRzY3Ym5QZkVXbyMzWTxNPzQ/UlxbVTxCTExjOSZwSVtKbi1FZmBRczdtMlo4TG43RkJFSycialhPNztiI0ZxaVtTP1k2dFJtbSNHWVF1ITBnX2JsaE0yYStcaGVQNlZHSVAoaHMsUVxGTycxK04mUkwxNj5dOUtWUnJsOHJyT08jTWY9SXNPL0xwRkxhR01bQGEhKVxiY1VGNjA1LVBFbWswLSVcbElPQj1qWFh1Rz9hM2dYKComdWknRHRPNyVqSGM7V0wkTTU8dCRaaixZY00lO1Q6azooImltNHBDWXJZNHFiSU9XdENFW0pRWHFcaF1aP0UqRkldci9tLiFUWksuPiVbPTBEKlkiP0xeOGI+JzNwNyQrQzRoIkxTaF4vODgpJUJuMEFOYVNbQnJTNSxLbm49VkszL0dGbjliVjlaKiZlPGBMYlUnQHVVZ18oZlgjLlQ3YWghKmxaZ04jUyM+WyM4cWs5ZGpGR1Q5JDhATV1HXD03TCtoZ0ZCJiVkdWxQb2dhaCFZSishcV5FO2dFLlU9P29IYW1mKzddcTQiX2BXbzU+big1QGVHTk0jPi9xLDlKXV0tRTpTRVBDOVEiVnEuRz9UaEI8Ilg3NEkmcE5wKHQrRFEvYjVjYGZHcEtAYEZOPD9na3JjbFdFPXFVPz09Vy9MU2E4XDFmOkFHUyZyPkRpIVRTTCpFOj5bTG9sXV4zRydEb1kjYC1VOTVhMCZvZE9rSEwnO2wmQ0tkWW5HIjhKXms/J25cMklsaE9UWVhyRnBuLSksa0JGOUdLKShAV2x1Mi9ZWDNpbF9yNGJkWCV0NGIvWDU8Iy1jY25FcydvIlEmZlpjLW10bklxWy8nXyxdZjk5T1heXkQjOWIpUSJtX1RXNG5tQD5zbSo1Tl9MOjBYRlFbVkdWJipNQXRccz8pWEo0OFgkQFlCUFxxYjxXQnJdUkNhP0s3XkA0SUtjSGczNlRUYUI9JllEIWE1MzxhU3JmZ0tcY0w+RWVwWz5aXEpTcXVuU01oYGglZmxxNFZIWEs/PiNjOD9qVzcxakdRQWxAWDIsQiJlTGRYPEs2MGI1S2RBY1pqallTLnIsOmkkcUVzJms5PTt0UEZ1OnBXVy4kUF0/PmpdO01AOSRNXVtnZSttTk07K2pEWT5tMiYkSEBWVzQqbl9sSXEzQClgRWpXS3UlPy8lKWp0XS9mYS1acmVwZlhYPD9xSVUxcTxDcWxvQk5mMmYxVSp1Vig2bkVWS1FIYmdJJS9QTE9oa0U1Q0dPPDYlMlpON05jUG5KYTxxUD1JWTNAbD5tM0s3ISdTYUclNEJsT3NqVT1vYCNDNSYkVCl+PgplbmRzdHJlYW0KZW5kb2JqCjI0IDAgb2JqCjw8Ci9Db250ZW50cyAyNSAwIFIKL01lZGlhQm94IFsgMCAwIDYxMiA3OTIgXQovUmVzb3VyY2VzIDw8Ci9Gb250IDYgMCBSCi9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+Ci9Sb3RhdGUgMAovVHJhbnMgPDwKPj4KL1R5cGUgL1BhZ2UKL1BhcmVudCAyIDAgUgo+PgplbmRvYmoKMjUgMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdCi9MZW5ndGggMjgxNgo+PgpzdHJlYW0KR2F0bT0+QkFRLSZxOVNZZlk0MVY2a2Q0KzFadVUrYGkkNS4+M2IvcDAvKlEkQ2o4ZkpiKVpLImZgYVgmNHFUSHNuVFtfbl5eImhuPzBsJSpAVVM0PFBLdTJqXDZRbEcvSGIuTkMnMlxkNEJWT2cybGVhWEcvMUVeM0VRXjRtOSklaCI6LEN1JVs3I1FeQ2VDUTlSbVkuQlQzPyQ4KWRjWF9yTWJVKmtgXDJmNjsxSjA5IVtSQ2xkXiZOK3B1IyE1XTp1KTgqUy9yLGNxbF1YdG1cclc0ZEMhQSZIOipqMUNlTTpfN28rXidfMUBKKC80SVxTYl45REg1OkgqMVoucTk2O0xfQEg6SG47OEN0XHRVdGQ4Ryg4TC1BXyk3XihrbTY6aUNiQWBoSDAlLyJyPE1XWVYhSEYnMDkrPnA1J2lRZSsmYkA+bWRBXEYiVmZIPXU7bUAibSEoM2Y+LVEhcjpFXnJrPyNAIiEyQXVEXVdnPFkmOmhITTVvWXNcOlglWG5HKWt1Zz5gQCliTG5MWWkxbiNiUSw8K1lxakNVQiFSSUlRJlNLYTNma2ZPM05FMTIpbTkwUFVoMTp1LzJPaWJBZlU6TChSS1E5ODZRPS9TOGJHO1g6VGJYMT9JY05lQl4yVThmTUVNbz02YU1aXHI8MWpHJXQ7QFQuMkZOXVReUTdYcj1VMGJZRz4sOCFAZjBjamNsK040Ry1wXm5TcS9BJSJWVEFvaFVqYWhtamFNWm0jb2xUOjx0amojNkNiNmIlTWI8ODpPQFo5Q1I1IWwjODdpUj1ZIUQ4OSRCbDtwLjJbWjZrZSpgdGJGOm0rck9lMy0wJSJoY0JyM0BpIT9yPlItWGNFOk1CXmJfJWdkPXFzV1oxVVYnLGBhbGJSZTJtNm0/WFw+NDkxTSgvU0VGKzVnVkQrJTtWdSk9UVRbS0ZFI14pa15cO0orJydgQChAKF8lN3EmW0dQTSRbW3BgM2ZpOjY3JFlHXXU7IWVFSU44VEJNQCNMQTE1ZkZDXzNuLUtkO0cqIyRASjo1LkAkWk1wMjo0VDxvWlRzV0pqdDomKlBaODBeO0ApK0FeJDsoIVxzS0JsZDcwIz1iO0VOZSdvKl1tYCQyZmg0LUhoOUZpRik0OlBTV19rZEMwZG5QNyRbIyYoTCguc08qQVNWVjplLnNvKks1VjRbVmZKQi4lWlxXaWVOV2c2YCRVN1onKFlMdGVcOihKY1krQWhvWSxWdGBFWEZZUUhAVmVNUShlSWgoQVhYKjUyYSY5QSRiTl4uczhYSyJrUWg1VkMtKD1QLDlJPGctZyM9OT9FJHRrTUBPJkhYYFQwSzVuZkVZOVsjJUVlJ0dWJXR1NiJhV01ab01KM3JPUWMxK1QiNWhVVkRhPCFEWU1FMSNePm49aChfa2liNTpVPkVlSD01PW9WaEJkZyNuSkdYNmpTTUhrW2QkPUFrJydmO2gmdGYkJ0wsWFsvIj9DUUp0TTBlQWlpRjtQR1tVNk9OXzd0PSRMbTkqPz9SaixrUz40ImJJcC8+WWY+aytpR088Zjo1PDh0ZkJXNyVEcTA8bzE8Pms8cEIoSSs7YyFEOHFCOWpTMCVYXjQyYjE+Km51ME80IWo9WFE8UCQ8YlcsbkhkcW5sMFFQXDUvXWM0MDZuaz5wMGZRKz1Lbm07ZTpTKTQoX2lRZVA0R01Nb0VIWlkzL25HPzh0LzI6UChDUHRPSGw0a0pYPTQwZGI1U2Upa15mWVAyKEQnZiwwQ2wrO1InUjpxYF9yMGZXMVJsaihUPlc6QTckJiZaVlxDT2B0PDcoRiVYSSJdaFlOY3RSXmMnNjdaXSxmW2AjIShnOi9Xc05eanNVTWsvIkxmSkRSR01jJy5MXE9dPV5VRVhjajI0cHF1JF1GOUNwIVt1IVotbjBqazw4TkxoLVprR29DKTw8MXRLNi9yUE1La0RcV1hFcUhGXS1VRj5YS2grZF8vVSI9OFYwZC9lOVpUUGMrIylRWytgKWo/YDE3OypHMjA5LkEkOVJHI0dzbzxsVFxgSyhwXFskYywwJTVaJlVybiM+TjovZCQxYDwjXz8lInIhRmMuSlxBa3BgQlwxaT9KLGQlQ2k7NSlKSFJwOzUvP0AxL0RKVjYqWC1mVkNxaihgTFdKMSFwR0xSZDo1cktaQSRaMEVVaGFjXXRmV1ROLG9LJSNBMFVIVjxtZkAxdEYvODxeXFYlRS03WyhoNycrZSg+TUlAPXI0PVRlOCkvRSxoTkJUcmhWZVxoKlBvT2lQKEMrOzZIbWQ2dDkvV25fXHFIOEQ4VDdJWkppNDFIJlJyP0BFbFhwM0FtKjs4LU1wRCpVMm4zY1NMVD8zTUAjVDw3X1RiXVlOT0k5TDotb3VwS2tkPUc0MDY+PCMuXDg4QSgzSClaXF1CZzA2bz1UXTU9L1Y0UVtVIjRbK08tS2w1YTIhUC40RWNyPEZgQ0ZWQEQrM2MsU0VpaydBdFRdODFPZ2FyczRMNyIiKjBdNFosIylMKzFIVWpjLXBHajpib0ViOkxaYzMjIz4oK2xPZFdcNW4zJzFuUiFsXFljQGk+My88MlJNMmA1WClJNSE/ZD5tQShjaCdjRVNRVk9HYyJNLUx0byI9YWxRSlpCRyU6VjdsSV0vdU1pY2k6dWFJbmdgWz8hNENMbEhQYHU+SCdPMlhBb2o+cCJIVHFsclBTbUlWUTtAOXJlbFYyQyNMPVhbY3BWTiEqYF5kKSFtPFpnTy9zMUVtNExIOjUzZExiJ1k2Jl9UJmVaPDQxdUFAaV9RZF1pIzdRS2FaR0AsM0tqQWpkRF9vbltGUiZSIixELEkyL1VBM2o6WGFMMnQrOXUjSElRKS5bPzBBQyksKDIhNXFDYzxURSUnJ1NDWmchZjY9NEpzbjluMU1AJz07UHI+LHBrUWMpK2hgOjo3WHE/JHVzW1xxO1ZCXCMmRFpHOzs3Q103ck1dXSpAci9xWExvSG4rYG9UNTI2KE9qUFJgTlEsZENzSkdqUz5zNjBSUG4hOiM0NUFsYyNKKjZAZzpmLl1jaCdTUDM4TWs2VVUySj42Ri8hcDU4RTZCWmswNlgiLmduX1tIUElRQzwnUzJFSFUyaixiJmo7Ki48SmpuX0o7NSZZVGc5N3IuJGRDKCY3dS8hZDBgL1k1Y1xScmdjbEpYZVZeKmw+RSgtLS1EdUxUPidiR2k5KztGLGFINHBHdVhfSUYqK1JiRi1JN2BvcFxKaDFyVWRmaT41aE5vX3RhYF41IT8kNEhWSlBhW2I9TGk+UTVWTk1nYFo6L2BrUF5LIUIwRGw2JjVldWFjJjhWTz5sWmNYKVckKi9AUS8nUUUuZmltVWJzKnRAKUc3Lkk+cTkiPVE1Nj1uREt0WVFRPXMjS0k2WEInOTZvcU0jWlpeUGE4RUlSTFJ1Lm9TJFphYkJqWTVWSWAoWzcpU2pkck5nWFxHbVBNTEglJFFQJyxgK2FkWzxgTC1ecC8jX0BDU0dBbyhXM1o8NyEuJS9qWVpCKFYjLTYhXmskNUpaXUNhPyVoQy0xXisnZGlhRGVVSDBXOjA0Pj1HdTVEZUYwSV4lLmA7VTVqSEdrV0AzYltTVlJ0VSgyVEFWMShZJVtXMG9uXCFOVmpvYmxrPDpgYV1zRGktIjUtaFNTVFdqKUxNZGI9O1ZJUk0lMmwkQ3NaKD49UE9LOzhGU0JOc1RdLFYvaDQrRl83PDpaL0MrRTp1TTwkMlNOfj4KZW5kc3RyZWFtCmVuZG9iagp4cmVmCjAgMjYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDE1IDAwMDAwIG4gCjAwMDAwMDAwNTQgMDAwMDAgbiAKMDAwMDAwMDE1NSAwMDAwMCBuIAowMDAwMDAwMjA0IDAwMDAwIG4gCjAwMDAwMDAzOTMgMDAwMDAgbiAKMDAwMDAwMzg5MCAwMDAwMCBuIAowMDAwMDAzOTQxIDAwMDAwIG4gCjAwMDAwMDQwNDggMDAwMDAgbiAKMDAwMDAwNDE2MCAwMDAwMCBuIAowMDAwMDA0Mjc1IDAwMDAwIG4gCjAwMDAwMDQ0NjYgMDAwMDAgbiAKMDAwMDAwNzMyMyAwMDAwMCBuIAowMDAwMDA3NTE1IDAwMDAwIG4gCjAwMDAwMTE0NDIgMDAwMDAgbiAKMDAwMDAxMTQ5NyAwMDAwMCBuIAowMDAwMDExNjA1IDAwMDAwIG4gCjAwMDAwMTE3MTggMDAwMDAgbiAKMDAwMDAxMTgzNCAwMDAwMCBuIAowMDAwMDEyMDI1IDAwMDAwIG4gCjAwMDAwMTUwOTkgMDAwMDAgbiAKMDAwMDAxNTI5MCAwMDAwMCBuIAowMDAwMDE3NjczIDAwMDAwIG4gCjAwMDAwMTc4NjUgMDAwMDAgbiAKMDAwMDAyMDQyMiAwMDAwMCBuIAowMDAwMDIwNjEzIDAwMDAwIG4gCnRyYWlsZXIKPDwKL1NpemUgMjYKL1Jvb3QgMyAwIFIKL0luZm8gMSAwIFIKPj4Kc3RhcnR4cmVmCjIzNTIyCiUlRU9GCg==';
 let armada=[], selectedUid=null, tierFilter='all', catFilter='all', sysCat='helm', dragSrc=null, dragSrcType=null, draggingToken=null, tokenOffX=0, tokenOffY=0;
+var _shipScale=1;
+var _SHIP_DIMS=[{w:70,h:28},{w:95,h:36},{w:124,h:46},{w:178,h:66},{w:214,h:82}];
+var _PAD=8;
 
 const _el={};
 function $id(id){ return _el[id]||(_el[id]=document.getElementById(id)); }
@@ -1245,7 +1350,8 @@ function renderCat(){
   if(catFilter!=='all') ships=ships.filter(function(s){return getShipCat(s)===catFilter;});
   list.innerHTML=ships.map(s=>`
     <div class="ship-chip" draggable="true" data-sid="${s.id}"
-      ondragstart="chipDS(event,'${s.id}')" ondragend="chipDE(event)">
+      ondragstart="chipDS(event,'${s.id}')" ondragend="chipDE(event)"
+>
       <div class="sc-name">${s.name}</div>
       <div class="sc-origin">${s.origin}</div>
       <div class="sc-row">
@@ -1256,6 +1362,15 @@ function renderCat(){
         ${s.unique?'<span class="sc-badge" style="border-color:#9060c8;color:#9060c8;">unique</span>':''}
       </div>
     </div>`).join('');
+  // Mobile: tap to add ship (touch devices only)
+  if('ontouchstart' in window){
+    list.querySelectorAll('.ship-chip').forEach(function(chip){
+      chip.addEventListener('touchend',function(e){
+        e.preventDefault();
+        mobAddShip(chip.dataset.sid);
+      });
+    });
+  }
 }
 
 function setTierFilter(t,btn){
@@ -1269,6 +1384,70 @@ function setCatFilter(c,btn){
   document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   renderCat();
+}
+
+var _mobPlaceIdx=0;
+function toggleTopMenu(){
+  var dd=document.getElementById('topbar-menu-dd');
+  if(!dd) return;
+  var open=dd.style.display==='flex';
+  dd.style.display=open?'none':'flex';
+}
+function closeTopMenu(){
+  var dd=document.getElementById('topbar-menu-dd');
+  if(dd) dd.style.display='none';
+}
+document.addEventListener('click',function(e){
+  var wrap=document.getElementById('topbar-menu-wrap');
+  if(wrap&&!wrap.contains(e.target)) closeTopMenu();
+});
+function toggleMobMenu(){
+  var d=document.getElementById('mob-menu-dropdown');
+  if(d) d.classList.toggle('open');
+}
+function closeMobMenu(){
+  var d=document.getElementById('mob-menu-dropdown');
+  if(d) d.classList.remove('open');
+}
+document.addEventListener('click',function(e){
+  var btn=document.getElementById('mob-menu-btn');
+  var dd=document.getElementById('mob-menu-dropdown');
+  if(dd&&btn&&!btn.contains(e.target)&&!dd.contains(e.target)) dd.classList.remove('open');
+});
+function mobAddShip(sid){
+  if(window.innerWidth>700) return;
+  var ship=_shipMap[sid];
+  if(!ship) return;
+  var wa=$id('water-area');
+  if(!wa) return;
+  var rect=wa.getBoundingClientRect();
+  var col=_mobPlaceIdx%3;
+  var row=Math.floor(_mobPlaceIdx/3);
+  var x=Math.round(20+col*Math.max(110,(rect.width-40)/3));
+  var y=Math.round(20+row*90);
+  x=Math.max(10,Math.min(x,rect.width-160));
+  y=Math.max(10,Math.min(y,rect.height-90));
+  _mobPlaceIdx++;
+  var inst={uid:''+Date.now()+Math.floor(Math.random()*1e9),shipId:ship.id,x:x,y:y,
+    systems:{},upgrades:new Array(ship.upgradeSlots).fill(null),
+    riggers:[''],crew:[],rooms:[],roomCrew:{}};
+  _armadaAdd(inst);
+  _rebuildShipMap();
+  _rebuildArmadaMap();
+  renderWater();updateStats();selectShip(inst.uid);
+  _mobToast(ship.name+' added to fleet');
+}
+
+function _mobToast(msg){
+  var t=document.createElement('div');
+  t.textContent=msg;
+  t.style.cssText='position:fixed;bottom:58px;left:50%;transform:translateX(-50%);background:#0d2a1a;border:1px solid #2a7a4a;color:#60d890;font-size:11px;padding:7px 16px;border-radius:20px;z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 2px 12px rgba(0,0,0,.5);opacity:0;transition:opacity .15s;';
+  document.body.appendChild(t);
+  requestAnimationFrame(function(){ t.style.opacity='1'; });
+  setTimeout(function(){
+    t.style.opacity='0';
+    setTimeout(function(){ t.remove(); },200);
+  },2200);
 }
 
 function chipDS(e,sid){dragSrc=sid;dragSrcType='ship';e.dataTransfer.effectAllowed='copy';setTimeout(()=>e.target.classList.add('dragging'),0);}
@@ -1367,6 +1546,8 @@ function wDrop(e){
     systems:{},upgrades:new Array(ship.upgradeSlots).fill(null),
     riggers:[''],crew:[],rooms:[],roomCrew:{}};
   _armadaAdd(inst);
+  var free=_findFreeSpot(inst,x,y);
+  inst.x=free.x; inst.y=free.y;
   _rebuildShipMap();
 _rebuildArmadaMap();
   renderWater();updateStats();selectShip(inst.uid);
@@ -4638,40 +4819,58 @@ function renderWater(){
       el=document.createElement('div');
       el.dataset.uid=''+inst.uid;
       el.style.cssText='position:absolute;cursor:pointer;user-select:none;background:transparent;border:none;padding:0;';
-      el.addEventListener('click',()=>selectShip(inst.uid));
+      el.addEventListener('click',()=>{selectShip(inst.uid);if(typeof mobGoDetail==='function')mobGoDetail();});
       el.addEventListener('mousedown',e=>{
         if(e.target.closest('.st-del')||e.target.closest('.st-cpy'))return;
         startDragToken(e,inst.uid);
       });
+      el.addEventListener('touchstart',function(e){
+        if(e.target.closest('.st-del')||e.target.closest('.st-cpy'))return;
+        var uid=''+inst.uid;
+        var moved=false;
+        var timer=setTimeout(function(){ startTouchToken(e,uid); moved=true; },200);
+        el.addEventListener('touchend',function te(){
+          clearTimeout(timer);
+          el.removeEventListener('touchend',te);
+          if(!moved){ selectShip(uid); if(typeof mobGoDetail==='function') mobGoDetail(); }
+        },{once:true});
+      },{passive:true});
     }
 
     const cls='ship-token'+(selected?' selected':'');
     if(el.className!==cls) el.className=cls;
     el.style.left=inst.x+'px';
     el.style.top=inst.y+'px';
+    el.style.transform='';
+    el.style.transformOrigin='';
 
+    const _DIMS=[28,36,46,66,82];
     if(inst.isEnemy){
       const tc='#c85040';
       const es=inst.enemyStats||{};
-      const svg=_shipSVGCached(2,tc,selected,true,'enemy_ship');
-      const html='<div style="position:relative;display:inline-block;">'+svg
+      const svgE=_shipSVGCached(2,tc,selected,true,'enemy_ship');
+      const scaleStyleE=_shipScale!==1?'display:inline-block;transform:scale('+_shipScale+');transform-origin:top left;':'';
+      const labelBotE=-(14 - _DIMS[2]*(1-_shipScale));
+      const htmlE='<div style="position:relative;display:inline-block;"><div style="'+scaleStyleE+'">'+svgE+'</div>'
         +'<div style="position:absolute;top:-18px;left:0;white-space:nowrap;font-size:9px;color:'+tc+';font-weight:700;">⚔ '+(inst.customName||'Enemy')+'</div>'
-        +'<div style="position:absolute;bottom:-14px;left:0;white-space:nowrap;font-size:9px;color:#c85040;opacity:.7;">'+(es.ac?'AC '+es.ac:'AC ?')+'</div>'
+        +'<div style="position:absolute;bottom:'+labelBotE+'px;left:0;white-space:nowrap;font-size:9px;color:'+tc+';opacity:.7;">'+(es.ac?'AC '+es.ac:'AC ?')+'</div>'
         +'<button class="st-del" onclick="delShip(event,\''+inst.uid+'\')" title="Remove" style="position:absolute;top:-18px;right:-4px;"><i class="ti ti-x" aria-hidden="true"></i></button>'
         +'</div>';
-      if(isNew||el._lastHtml!==html){ el.innerHTML=html; el._lastHtml=html; }
+      if(isNew||el._lastHtml!==htmlE){ el.innerHTML=htmlE; el._lastHtml=htmlE; }
     } else {
-      const ship=_shipMap[inst.shipId]||_shipMap[inst.shipId];
+      const ship=_shipMap[inst.shipId];
       if(!ship){ if(isNew) zone.appendChild(el); return; }
       const tc=TIER_COLOR[Math.min(ship.tier,4)];
-      const svg=_shipSVGCached(ship.tier,tc,selected,false,inst.shipId);
-      const html='<div style="position:relative;display:inline-block;">'+svg
-        +'<div style="position:absolute;top:-18px;left:0;white-space:nowrap;font-size:9px;color:'+tc+';font-weight:600;">T'+ship.tier+' · '+ship.ac+'AC</div>'
-        +'<div style="position:absolute;bottom:-15px;left:0;white-space:nowrap;font-size:10px;font-weight:600;color:#c8961e;text-shadow:0 0 6px #00000080;">'+(inst.customName||ship.name)+'</div>'
+      const svgS=_shipSVGCached(ship.tier,tc,selected,false,inst.shipId);
+      const scaleStyleS=_shipScale!==1?'display:inline-block;transform:scale('+_shipScale+');transform-origin:top left;':'';
+      const labelBotS=-(15 - _DIMS[Math.min(ship.tier,4)]*(1-_shipScale));
+      const htmlS='<div style="position:relative;display:inline-block;"><div style="'+scaleStyleS+'">'+svgS+'</div>'
+        +'<div style="position:absolute;top:-18px;left:0;white-space:nowrap;font-size:9px;color:'+tc+';font-weight:600;">T'+ship.tier+' \u00b7 '+ship.ac+'AC</div>'
+        +'<div style="position:absolute;bottom:'+labelBotS+'px;left:0;white-space:nowrap;font-size:10px;font-weight:600;color:#c8961e;text-shadow:0 0 6px #00000080;">'+(inst.customName||ship.name)+'</div>'
         +'<button class="st-cpy" onclick="copyShip(event,\''+inst.uid+'\')" title="Duplicate" style="position:absolute;top:-18px;right:16px;"><i class="ti ti-copy" aria-hidden="true"></i></button>'
         +'<button class="st-del" onclick="delShip(event,\''+inst.uid+'\')" title="Remove" style="position:absolute;top:-18px;right:-4px;"><i class="ti ti-x" aria-hidden="true"></i></button>'
         +'</div>';
-      if(isNew||el._lastHtml!==html){ el.innerHTML=html; el._lastHtml=html; }
+      if(isNew||el._lastHtml!==htmlS){ el.innerHTML=htmlS; el._lastHtml=htmlS; }
     }
 
     if(isNew) zone.appendChild(el);
@@ -4697,12 +4896,221 @@ function buildPips(inst,ship){
 }
 
 function startDragToken(e,uid){
-  e.preventDefault();draggingToken=uid;
-  const el=document.querySelector(`[data-uid="${uid}"]`);
+  e.preventDefault();
+  var wr=$id('water-area').getBoundingClientRect();
+  if(_multiSel.size>1&&_multiSel.has(''+uid)){
+    _groupDrag={offsets:[],wr:wr};
+    _multiSel.forEach(function(id){
+      var inst=_armadaGet(id);
+      if(inst) _groupDrag.offsets.push({uid:id,ox:inst.x-(e.clientX-wr.left),oy:inst.y-(e.clientY-wr.top)});
+      var el=document.querySelector('[data-uid="'+id+'"]');
+      if(el) el.style.zIndex=100;
+    });
+    document.addEventListener('mousemove',moveGroup);
+    document.addEventListener('mouseup',endGroupDrag);
+    return;
+  }
+  // Clicking a token not in selection — clear selection and do single drag
+  if(_multiSel.size) _clearMultiSel();
+  draggingToken=uid;
+  const el=document.querySelector('[data-uid="'+uid+'"]');
   const rect=el.getBoundingClientRect();
   tokenOffX=e.clientX-rect.left;tokenOffY=e.clientY-rect.top;
   el.style.zIndex=100;el.style.cursor='grabbing';
   document.addEventListener('mousemove',moveToken);document.addEventListener('mouseup',endDragToken);
+}
+function moveGroup(e){
+  if(!_groupDrag) return;
+  var wr=_groupDrag.wr;
+  _groupDrag.offsets.forEach(function(o){
+    var inst=_armadaGet(o.uid); if(!inst) return;
+    var nx=Math.max(0,Math.min(e.clientX-wr.left+o.ox,wr.width-155));
+    var ny=Math.max(0,Math.min(e.clientY-wr.top+o.oy,wr.height-85));
+    inst.x=nx; inst.y=ny;
+    var el=document.querySelector('[data-uid="'+o.uid+'"]');
+    if(el){el.style.left=nx+'px';el.style.top=ny+'px';}
+  });
+}
+function endGroupDrag(){
+  if(!_groupDrag) return;
+  _groupDrag.offsets.forEach(function(o){
+    var el=document.querySelector('[data-uid="'+o.uid+'"]');
+    if(el) el.style.zIndex='';
+  });
+  _groupDrag=null;
+  _clearMultiSel();
+  document.removeEventListener('mousemove',moveGroup);
+  document.removeEventListener('mouseup',endGroupDrag);
+}
+// Mobile touch drag ripple + trail canvas
+var _multiSel=new Set();
+var _groupDrag=null;
+var _selBox=null;
+var _selStart=null;
+
+function _initSelBox(){
+  var wr=$id('water-drop');
+  if(!wr) return;
+  // Desktop: mousedown on water (not on a token) starts selection box
+  wr.addEventListener('mousedown',function(e){
+    if(e.button!==0) return;
+    if(e.target.closest('.ship-token')||e.target.closest('.st-del')||e.target.closest('.st-cpy')) return;
+    var rect=wr.getBoundingClientRect();
+    _selStart={x:e.clientX-rect.left,y:e.clientY-rect.top};
+    var box=document.getElementById('sel-box');
+    if(!box) return;
+    box.style.cssText='position:absolute;border:1.5px dashed #c8961e;background:rgba(200,150,30,0.08);pointer-events:none;z-index:50;display:block;left:'+_selStart.x+'px;top:'+_selStart.y+'px;width:0;height:0;';
+    function onMove(ev){
+      if(!_selStart) return;
+      var rx=ev.clientX-rect.left, ry=ev.clientY-rect.top;
+      var x=Math.min(rx,_selStart.x), y=Math.min(ry,_selStart.y);
+      var w=Math.abs(rx-_selStart.x), h=Math.abs(ry-_selStart.y);
+      box.style.left=x+'px'; box.style.top=y+'px';
+      box.style.width=w+'px'; box.style.height=h+'px';
+    }
+    function onUp(ev){
+      document.removeEventListener('mousemove',onMove);
+      document.removeEventListener('mouseup',onUp);
+      if(!_selStart){return;}
+      var rx=ev.clientX-rect.left, ry=ev.clientY-rect.top;
+      var bx=Math.min(rx,_selStart.x), by=Math.min(ry,_selStart.y);
+      var bw=Math.abs(rx-_selStart.x), bh=Math.abs(ry-_selStart.y);
+      _selStart=null;
+      box.style.display='none';
+      if(bw<6&&bh<6){ _clearMultiSel(); return; } // tiny box = deselect
+      // Select all tokens whose rendered bounds overlap the selection box
+      _clearMultiSel();
+      armada.forEach(function(inst){
+        var el=document.querySelector('[data-uid="'+inst.uid+'"]');
+        if(!el) return;
+        var er=el.getBoundingClientRect();
+        var wrr=wr.getBoundingClientRect();
+        // Convert element rect to water-relative coords
+        var ex=er.left-wrr.left, ey=er.top-wrr.top;
+        var ew=er.width, eh=er.height;
+        // Check overlap (not just top-left point)
+        var overlaps=ex<bx+bw && ex+ew>bx && ey<by+bh && ey+eh>by;
+        if(overlaps){
+          _multiSel.add(''+inst.uid);
+          el.classList.add('multi-sel');
+        }
+      });
+    }
+    document.addEventListener('mousemove',onMove);
+    document.addEventListener('mouseup',onUp);
+  });
+
+  // Desktop: mousedown on token when multi-sel active is handled in startDragToken
+  // (no capture listener needed)
+}
+
+function _clearMultiSel(){
+  _multiSel.forEach(function(uid){
+    var el=document.querySelector('[data-uid="'+uid+'"]');
+    if(el) el.classList.remove('multi-sel');
+  });
+  _multiSel.clear();
+}
+
+// Call after water renders
+(function(){
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',_initSelBox);
+  else _initSelBox();
+})();
+
+function _mobPickupAnim(el){
+  if(!el) return;
+  var start=null; var dur=320;
+  function frame(ts){
+    if(!start) start=ts;
+    var p=(ts-start)/dur;
+    if(p>=1){ el.style.transform='scale(1.08)'; return; }
+    // Squish down then spring back up past normal then settle
+    var scale;
+    if(p<0.35){
+      // Compress down
+      scale=1-0.28*(p/0.35);
+    } else if(p<0.7){
+      // Spring up bigger
+      var t=(p-0.35)/0.35;
+      scale=0.72+0.48*t;
+    } else {
+      // Settle to slightly lifted
+      var t=(p-0.7)/0.3;
+      scale=1.2-0.12*t;
+    }
+    el.style.transform='scale('+scale.toFixed(3)+')';
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+function _startTrail(){
+  _touchTrailPoints=[];
+  if(_touchTrailCanvas) _touchTrailCanvas.remove();
+  _touchTrailCanvas=document.createElement('canvas');
+  _touchTrailCanvas.style.cssText='position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9997;';
+  _touchTrailCanvas.width=window.innerWidth;
+  _touchTrailCanvas.height=window.innerHeight;
+  document.body.appendChild(_touchTrailCanvas);
+  _touchTrailCtx=_touchTrailCanvas.getContext('2d');
+  _touchTrailRAF=requestAnimationFrame(_drawTrail);
+}
+
+function _addTrailPoint(x,y){
+  _touchTrailPoints.push({x:x,y:y,age:0});
+  if(_touchTrailPoints.length>32) _touchTrailPoints.shift();
+}
+
+function _drawTrail(){
+  if(!_touchTrailCtx) return;
+  var c=_touchTrailCanvas;
+  _touchTrailCtx.clearRect(0,0,c.width,c.height);
+  _touchTrailPoints.forEach(function(p){p.age++;});
+  for(var i=1;i<_touchTrailPoints.length;i++){
+    var p0=_touchTrailPoints[i-1], p1=_touchTrailPoints[i];
+    var prog=i/_touchTrailPoints.length;
+    var alpha=(prog*0.55)*(1-p1.age/40);
+    if(alpha<=0) return;
+    _touchTrailCtx.beginPath();
+    _touchTrailCtx.moveTo(p0.x,p0.y);
+    _touchTrailCtx.lineTo(p1.x,p1.y);
+    _touchTrailCtx.strokeStyle='rgba(80,180,255,'+alpha.toFixed(2)+')';
+    _touchTrailCtx.lineWidth=3*prog;
+    _touchTrailCtx.lineCap='round';
+    _touchTrailCtx.stroke();
+  }
+  _touchTrailRAF=requestAnimationFrame(_drawTrail);
+}
+
+function _stopTrail(){
+  if(_touchTrailRAF) cancelAnimationFrame(_touchTrailRAF);
+  _touchTrailRAF=null;
+  // Fade out
+  if(!_touchTrailCanvas) return;
+  var cv=_touchTrailCanvas; var op=1;
+  (function fade(){
+    op-=0.08;
+    cv.style.opacity=Math.max(0,op);
+    if(op>0) requestAnimationFrame(fade);
+    else cv.remove();
+  })();
+  _touchTrailCanvas=null; _touchTrailCtx=null; _touchTrailPoints=[];
+}
+
+function startTouchToken(e,uid){
+  if(e.touches.length!==1) return;
+  var t=e.touches[0];
+  draggingToken=uid;
+  const el=document.querySelector('[data-uid="'+uid+'"]');
+  const rect=el.getBoundingClientRect();
+  tokenOffX=t.clientX-rect.left; tokenOffY=t.clientY-rect.top;
+  el.style.zIndex=100;
+  _mobPickupAnim(el);
+  _startTrail();
+  _addTrailPoint(t.clientX,t.clientY);
+  document.addEventListener('touchmove',moveTouchToken,{passive:false});
+  document.addEventListener('touchend',endTouchToken);
 }
 function moveToken(e){
   if(!draggingToken)return;
@@ -4714,12 +5122,52 @@ function moveToken(e){
   const inst=_armadaGet(draggingToken);
   if(inst){inst.x=x;inst.y=y;}
 }
+function moveTouchToken(e){
+  e.preventDefault();
+  if(!draggingToken||!e.touches.length) return;
+  var t=e.touches[0];
+  const el=document.querySelector(`[data-uid="${draggingToken}"]`);
+  if(!el) return;
+  const wr=$id('water-area').getBoundingClientRect();
+  const x=Math.max(0,Math.min(t.clientX-wr.left-tokenOffX,wr.width-155));
+  const y=Math.max(0,Math.min(t.clientY-wr.top-tokenOffY,wr.height-85));
+  el.style.left=x+'px'; el.style.top=y+'px';
+  const inst=_armadaGet(draggingToken);
+  if(inst){inst.x=x;inst.y=y;}
+  _addTrailPoint(t.clientX, t.clientY);
+}
 function endDragToken(){
   if(!draggingToken)return;
   const el=document.querySelector(`[data-uid="${draggingToken}"]`);
   if(el){el.style.zIndex='';el.style.cursor='';}
+  // Shunt to free spot after drop
+  var inst=_armadaGet(draggingToken);
+  if(inst){
+    var free=_findFreeSpot(inst,inst.x,inst.y);
+    if(free.x!==inst.x||free.y!==inst.y){
+      inst.x=free.x; inst.y=free.y;
+      if(el){el.style.left=free.x+'px';el.style.top=free.y+'px';}
+    }
+  }
   draggingToken=null;
   document.removeEventListener('mousemove',moveToken);document.removeEventListener('mouseup',endDragToken);
+}
+function endTouchToken(){
+  if(!draggingToken) return;
+  const el=document.querySelector(`[data-uid="${draggingToken}"]`);
+  if(el){el.style.zIndex=''; el.style.transform='';}
+  var inst=_armadaGet(draggingToken);
+  if(inst){
+    var free=_findFreeSpot(inst,inst.x,inst.y);
+    if(free.x!==inst.x||free.y!==inst.y){
+      inst.x=free.x; inst.y=free.y;
+      if(el){el.style.left=free.x+'px';el.style.top=free.y+'px';}
+    }
+  }
+  draggingToken=null;
+  _stopTrail();
+  document.removeEventListener('touchmove',moveTouchToken);
+  document.removeEventListener('touchend',endTouchToken);
 }
 
 function delShip(e,uid){
@@ -4950,9 +5398,55 @@ const UPG_EFFECTS = {
   iron_web:          {speed:-1, hpBonus:300},
   zad_resonant_keel: {speed:+2},
   ironbone_hull:     {speed:-2, turnBonus:+1},
-  hateful_eye:       {hitBonus:+2},
-  oracle_deck:       {hitBonus:+2},
+  hateful_eye:             {hitBonus:+2},
+  hateful_eye2:            {hitBonus:+2},
+  oracle_deck:             {hitBonus:+2},
+  war_drums:               {hitBonusCond:{bonus:1,minMorale:10}},
+  overcharged_powder_hold: {dmgBonus:{n:1,sides:10}},
+  swift_keel_trim:   {speed:+1},
+  stripped_hull:     {speed:+3, turnBonus:-2, hpMult:0.5, acBonus:-2},
+  void_ballast:      {speed:+2},
 };
+
+const UPG_INCOMPAT = {
+  iron_heart:              ['ghost_rigging','scorched_heart','void_ballast','rigged_conversion'],
+  scorched_heart:          ['ghost_rigging','iron_heart','void_ballast','rigged_conversion'],
+  void_ballast:            ['iron_heart','scorched_heart','brine_core','brine_core_mk2','rigged_conversion'],
+  rigged_conversion:       ['iron_heart','scorched_heart','brine_core','brine_core_mk2','void_ballast'],
+  brine_core:              ['void_ballast','rigged_conversion'],
+  brine_core_mk2:          ['void_ballast','rigged_conversion'],
+  ghost_rigging:           ['iron_heart','scorched_heart','hateful_eye','hateful_eye2'],
+  hateful_eye:             ['ghost_rigging','veilshroud'],
+  hateful_eye2:            ['ghost_rigging','veilshroud'],
+  veilshroud:              ['stormcaller_mast','hateful_eye','hateful_eye2'],
+  stormcaller_mast:        ['veilshroud','long_ear'],
+  long_ear:                ['stormcaller_mast'],
+  mirror_hull:             ['brine_core','brine_core_mk2'],
+  coral_weave_hull:        ['greek_fire_station','pitch_reserves'],
+  stripped_hull:           ['ironbone_hull','reinforced_keel','wrathskin_plating','iron_web','iron_web2','coral_weave_hull','the_cradle'],
+  ironbone_hull:           ['stripped_hull'],
+  reinforced_keel:         ['stripped_hull','smugglers_hold'],
+  smugglers_hold:          ['reinforced_keel'],
+  ghost_lanterns:          ['iron_heart','scorched_heart'],
+  overcharged_powder_hold: ['pitch_reserves'],
+  pitch_reserves:          ['overcharged_powder_hold','coral_weave_hull'],
+  leech_anchor:            ['deadweight_anchor_rig'],
+  deadweight_anchor_rig:   ['leech_anchor'],
+  wrathbone_prow:          ['killing_deck'],
+  killing_deck:            ['wrathbone_prow'],
+};
+
+function getUpgIncompat(uid, inst){
+  // Returns set of upgrade IDs that are incompatible given current installed upgrades
+  if(!inst||!inst.upgrades) return new Set();
+  const blocked=new Set();
+  (inst.upgrades||[]).forEach(function(installed){
+    if(!installed) return;
+    const list=UPG_INCOMPAT[installed]||[];
+    list.forEach(function(id){ blocked.add(id); });
+  });
+  return blocked;
+}
 
 const HELM_EFFECTS = {
   'helm_t1':           {speed:0,  turn:0},
@@ -4991,6 +5485,7 @@ function computeStats(inst, ship){
     if(!fx) return;
     if(fx.speed){speed+=fx.speed; speedMods.push((fx.speed>0?'+':'')+fx.speed);}
     if(fx.hpBonus){hp+=fx.hpBonus; hpMods.push((fx.hpBonus>0?'+':'')+fx.hpBonus);}
+    if(fx.hpMult){hp=Math.round(hp*fx.hpMult); hpMods.push('×'+fx.hpMult);}
     if(fx.acBonus){ac+=fx.acBonus; acMods.push((fx.acBonus>0?'+':'')+fx.acBonus);}
     if(fx.turnBonus){turn+=fx.turnBonus;}
   });
@@ -5018,6 +5513,7 @@ function computeStats(inst, ship){
     const nm=u?u.name:uid;
     if(fx.speed) speedTips.push(nm+' '+(fx.speed>0?'+':'')+fx.speed);
     if(fx.hpBonus) hpTips.push(nm+' '+(fx.hpBonus>0?'+':'')+fx.hpBonus);
+    if(fx.hpMult) hpTips.push(nm+' ×'+fx.hpMult+' ('+Math.round((fx.hpMult-1)*100)+'%)');
     if(fx.acBonus) acTips.push(nm+' '+(fx.acBonus>0?'+':'')+fx.acBonus);
   });
   if(helmFx&&helmFx.speed){
@@ -5380,8 +5876,8 @@ function setDeckTab(tab){
     var inst=_armadaGet(selectedUid);
     var ship=inst&&_shipMap[inst.shipId];
     if(inst&&ship){
-      var pane=document.getElementById('pane-combat');
-      if(pane) _bindCbtEvents(pane,selectedUid,ship.hp);
+      var pane=_getCbtPane();
+      if(pane) _bindCbtEvents(pane,selectedUid,computeStats(inst,ship).hp);
     }
   }
 }
@@ -5492,6 +5988,26 @@ function renderEnemyDetail(inst, body){
 }
 
 function renderDetail(){
+  // In battle mode, re-render the battle detail panel instead of the main detail
+  if(_btlConnected&&_btlDetailUid){
+    var _bel=document.getElementById('battle-detail-content');
+    if(_bel){
+      var _binst=_armadaGet(_btlDetailUid);
+      var _bship=_binst&&_shipMap[_binst.shipId];
+      if(_binst&&_bship){
+        _bel.innerHTML=renderCombatPane(_binst,_bship);
+        _bindCbtEvents(_bel,_btlDetailUid,computeStats(_binst,_bship).hp);
+        var _bst=_getCbt(_btlDetailUid);
+        var _bmine=_btlMyFleet.find(function(s){return s.uid===_btlDetailUid;});
+        if(_bmine){
+          _bmine.hp=_bst.hp!==null?_bst.hp:_bmine.maxHp;
+          _bmine.fire=_bst.fire||0; _bmine.flood=_bst.flood||0;
+          _btlRenderMine();
+        }
+      }
+    }
+    return;
+  }
   const empty=document.getElementById('detail-empty');
   const body=document.getElementById('detail-body');
   if(!selectedUid){empty.style.display='flex';body.style.display='none';return;}
@@ -5563,8 +6079,8 @@ function renderDetail(){
       ${renderCombatPane(inst,ship)}
     </div>`;
   if(currentDeckTab==='combat'){
-    var cbtPane=document.getElementById('pane-combat');
-    if(cbtPane) _bindCbtEvents(cbtPane,inst.uid,ship.hp);
+    var cbtPane=_getCbtPane();
+    if(cbtPane) _bindCbtEvents(cbtPane,inst.uid,computeStats(inst,ship).hp);
   }
 }
 
@@ -6710,7 +7226,9 @@ function saveFleet(){
     const btn=document.getElementById('save-confirm');
     if(btn) btn.onclick=()=>{
       const name=(document.getElementById('save-name')?.value||'broadsides_fleet').trim().replace(/\.json$/i,'').replace(/[^a-zA-Z0-9_\-. ]/g,'_')||'broadsides_fleet';
-      const json=JSON.stringify({version:1,armada,globalCrew,_crewSeq},null,2);
+      const wa=document.getElementById('water-area');
+      const waW=wa?wa.clientWidth:1920; const waH=wa?wa.clientHeight:1080;
+      const json=JSON.stringify({version:2,waW,waH,armada,globalCrew,_crewSeq},null,2);
       const blob=new Blob([json],{type:'application/json'});
       const a=document.createElement('a');
       a.href=URL.createObjectURL(blob);
@@ -6752,9 +7270,26 @@ function loadFleetData(json){
   });
   armada=json.armada;
   armada.forEach(function(inst){ inst.uid=''+inst.uid; });
+  // Rescale positions if water area size has changed
+  var wa=document.getElementById('water-area');
+  if(wa && json.waW && json.waH){
+    var scaleX=wa.clientWidth/json.waW;
+    var scaleY=wa.clientHeight/json.waH;
+    armada.forEach(function(inst){
+      inst.x=Math.round(inst.x*scaleX);
+      inst.y=Math.round(inst.y*scaleY);
+    });
+  } else if(wa && (!json.waW || !json.waH)){
+    // Legacy fleet with no saved dimensions — clamp to current water area
+    armada.forEach(function(inst){
+      inst.x=Math.max(0,Math.min(inst.x,wa.clientWidth-160));
+      inst.y=Math.max(0,Math.min(inst.y,wa.clientHeight-90));
+    });
+  }
   _rebuildArmadaMap();
   selectedUid=null;
   renderWater();updateStats();renderDetail(); closeModal();
+  setTimeout(spreadShips,50);
 }
 
 function handleFleetFile(input){
@@ -7371,6 +7906,11 @@ function buildPickerGrid(filterCat, isUpg){
   }
 
   if(!items.length) return '<div style="font-size:11px;color:#3a6a8a;padding:12px;">No options available.</div>';
+  // Get currently installed upgrades for incompatibility check
+  const _inst=selectedUid?_armadaGet(selectedUid):null;
+  const _blocked=_inst?getUpgIncompat(null,_inst):new Set();
+  const _installed=new Set((_inst&&_inst.upgrades||[]).filter(Boolean));
+
   return items.map(item=>{
     const tc=TYPE_COLORS[item.cat]||'#4a7a9a';
     const sub=item.desc.split('\n')[0].slice(0,110);
@@ -7378,19 +7918,25 @@ function buildPickerGrid(filterCat, isUpg){
     const tierStr=item.tier!=null?'T'+item.tier:'';
     const catBadge=(filterCat==='all'&&!isUpg)?'<span style="font-size:9px;color:'+tc+';background:'+tc+'20;padding:1px 5px;border-radius:3px;margin-right:3px;">'+item.cat+'</span>':'';
     const isUpgItem = item.cat==='upgrade';
+    const isBlocked = isUpgItem && _blocked.has(item.id);
+    const isInstalled = isUpgItem && _installed.has(item.id);
     const hoverIn  = isUpgItem
-      ? 'showTipById(event,&quot;'+item.id+'&quot;,true);this.style.background=\'#0d1e0a\';this.style.borderColor=\''+tc+'\''
+      ? 'showTipById(event,&quot;'+item.id+'&quot;,true);if(!'+isBlocked+')this.style.background=\'#0d1e0a\';this.style.borderColor=\''+tc+'\''
       : 'showTipById(event,&quot;'+item.id+'&quot;,false);this.style.background=\'#0d1e0a\';this.style.borderColor=\''+tc+'\'';
-    return '<div onclick="pickItem(&quot;'+item.id+'&quot;)" style="border:.5px solid '+tc+'30;border-radius:8px;padding:9px 11px;cursor:pointer;background:#06101a;"'
+    const blockedStyle=isBlocked?'opacity:0.35;filter:grayscale(0.7);cursor:not-allowed;':'cursor:pointer;';
+    const blockedLabel=isBlocked?'<span style="font-size:9px;color:#c85040;margin-left:auto;font-style:italic;">conflict</span>':'';
+    return '<div '+(isBlocked?'':'onclick="pickItem(&quot;'+item.id+'&quot;)"')+' style="border:.5px solid '+tc+'30;border-radius:8px;padding:9px 11px;'+blockedStyle+'background:#06101a;"'
       +' onmouseenter="'+hoverIn+'"'
       +' onmouseleave="hideTip();this.style.background=\'#06101a\';this.style.borderColor=\''+tc+'30\'">'
       +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:'+(sub?'3':'0')+'px;">'
         +(tierStr?'<span style="font-size:10px;font-weight:700;color:'+tc+';background:'+tc+'20;padding:1px 6px;border-radius:4px;">'+tierStr+'</span>':'')
         +catBadge
-        +'<span style="font-size:12px;font-weight:500;color:#c8d8e8;">'+item.name+'</span>'
+        +'<span style="font-size:12px;font-weight:500;color:'+(isBlocked?'#4a5a6a':'#c8d8e8')+';">'+item.name+'</span>'
         +(costStr?'<span style="font-size:10px;color:#3a7a3a;margin-left:auto;">'+costStr+'</span>':'')
+        +blockedLabel
       +'</div>'
-      +(sub?'<div style="font-size:10px;color:#5a8aaa;line-height:1.4;">'+sub+'</div>':'')
+      +(sub?'<div style="font-size:10px;color:'+(isBlocked?'#2a4a5a':'#5a8aaa')+';line-height:1.4;">'+sub+'</div>':'')
+      +(isBlocked?'<div style="font-size:9px;color:#c85040;margin-top:3px;">⊘ Incompatible with installed upgrade</div>':'')
     +'</div>';
   }).join('');
 }
@@ -8147,14 +8693,32 @@ function openBestiary(){
   window.open('https://broadsidesbestiary.netlify.app/','_blank');
 }
 
-function getUpgradeHitBonus(){
-  if(!selectedUid) return 0;
-  var inst=_armadaGet(selectedUid);
+function getUpgradeHitBonus(uid){
+  uid=uid||selectedUid;
+  if(!uid) return 0;
+  var inst=_armadaGet(uid);
   if(!inst) return 0;
-  return (inst.upgrades||[]).reduce(function(sum,uid){
-    var fx=uid&&UPG_EFFECTS[uid];
-    return sum+(fx&&fx.hitBonus?fx.hitBonus:0);
+  var st=_getCbt(uid);
+  var morale=st?st.morale:10;
+  return (inst.upgrades||[]).reduce(function(sum,id){
+    var fx=id&&UPG_EFFECTS[id];
+    if(!fx) return sum;
+    if(fx.hitBonus) return sum+fx.hitBonus;
+    if(fx.hitBonusCond&&morale>=fx.hitBonusCond.minMorale) return sum+fx.hitBonusCond.bonus;
+    return sum;
   },0);
+}
+function getUpgradeDmgBonus(uid){
+  uid=uid||selectedUid;
+  if(!uid) return {n:0,sides:10};
+  var inst=_armadaGet(uid);
+  if(!inst) return {n:0,sides:10};
+  var totalN=0; var sides=10;
+  (inst.upgrades||[]).forEach(function(id){
+    var fx=id&&UPG_EFFECTS[id];
+    if(fx&&fx.dmgBonus){totalN+=fx.dmgBonus.n||0; sides=fx.dmgBonus.sides||sides;}
+  });
+  return {n:totalN,sides:sides};
 }
 function cryptoRoll(sides){
   var max=Math.floor(0x100000000/sides)*sides,arr=new Uint32Array(1);
@@ -8162,12 +8726,15 @@ function cryptoRoll(sides){
   return(arr[0]%sides)+1;
 }
 function parseRollsFromDesc(desc){
-  var rolls=[],hitMatch=desc.match(/Hit ([+-]\d+)/i);
+  var rolls=[];
+  // Match "Hit +X" (cannons/harpoons) OR "Spell atk +X" (focus mounts)
+  var hitMatch=desc.match(/Hit ([+-]\d+)/i)||desc.match(/Spell atk ([+-]\d+)/i);
   var hitBonus=hitMatch?parseInt(hitMatch[1]):null;
   var dmgPattern=/(\d+)d(\d+)(?:\s*[×x]\s*(\d+))?/gi,dmgMatch,damages=[];
   while((dmgMatch=dmgPattern.exec(desc))!==null)
     damages.push({n:parseInt(dmgMatch[1]),sides:parseInt(dmgMatch[2]),mult:dmgMatch[3]?parseInt(dmgMatch[3]):1,raw:dmgMatch[0]});
-  if(hitBonus!==null&&damages.length>0) rolls.push({type:'attack',bonus:hitBonus});
+  // For focus mounts: show attack roll even with no damage dice (caster picks spell)
+  if(hitBonus!==null) rolls.push({type:'attack',bonus:hitBonus});
   damages.forEach(function(d){rolls.push({type:'damage',n:d.n,sides:d.sides,mult:d.mult,raw:d.raw});});
   return rolls;
 }
@@ -8202,7 +8769,68 @@ function execRoll(btnEl,type,data){
     openDiceModal(results,null,mult);
   }
 }
-var _lastDiceArgs=null;
+var _dicePool=[];
+var _hitPool=0;
+function addHitToPool(){ _hitPool++; _renderPool(); }
+
+function _poolKey(d){ return 'd'+d.sides+(d.mult>1?'x'+d.mult:''); }
+
+function addToPool(sides, mult){
+  mult=mult||1;
+  var key=_poolKey({sides:sides,mult:mult});
+  var existing=_dicePool.find(function(p){return p.sides===sides&&p.mult===mult;});
+  if(existing){ existing.count++; } else { _dicePool.push({sides:sides,mult:mult,count:1}); }
+  _renderPool();
+}
+
+function clearPool(){
+  _dicePool=[];
+  _hitPool=0;
+  _renderPool();
+}
+
+function _renderPool(){
+  var el=document.getElementById('dice-pool-display');
+  var section=document.getElementById('dice-pool-section');
+  if(!el) return;
+  var hasContent=_hitPool>0||_dicePool.length>0;
+  if(!hasContent){
+    if(section) section.style.display='none';
+    var dm=document.getElementById('dice-modal');
+    if(dm) dm.style.paddingTop='';
+    el.innerHTML='';
+    document.getElementById('dice-pool-roll').style.display='none';
+    document.getElementById('dice-pool-clear').style.display='none';
+    return;
+  }
+  if(section) section.style.display='flex';
+  // Push dice modal down to make room for pool bar
+  var dm=document.getElementById('dice-modal');
+  if(dm) dm.style.paddingTop='70px';
+  var parts=[];
+  if(_hitPool>0){
+    parts.push('<span style="background:#0a1820;border:1px solid #c8501e80;border-radius:4px;padding:2px 7px;font-size:10px;color:#e07850;">'+_hitPool+' hit'+(_hitPool!==1?'s':'')+' saved</span>');
+  }
+  _dicePool.forEach(function(p){
+    var count=_hitPool>0?_hitPool*p.count:p.count;
+    parts.push('<span style="background:#0a1820;border:1px solid #c8961e40;border-radius:4px;padding:2px 7px;font-size:10px;color:#c8961e;">'+count+'×d'+p.sides+(p.mult>1?' ×'+p.mult:'')+'</span>');
+  });
+  el.innerHTML=parts.join(' ');
+  document.getElementById('dice-pool-roll').style.display=_dicePool.length?'inline-block':'none';
+  document.getElementById('dice-pool-clear').style.display='inline-block';
+}
+
+function rollPool(){
+  if(!_dicePool.length) return;
+  var multiplier=_hitPool>0?_hitPool:1;
+  var allDice=[];
+  _dicePool.forEach(function(p){
+    var total=p.count*multiplier;
+    for(var i=0;i<total;i++) allDice.push({sides:p.sides,result:cryptoRoll(p.sides)});
+  });
+  var mult=_dicePool.length===1?_dicePool[0].mult:1;
+  openDiceModal(allDice,null,mult);
+}
 function openDiceModal(dice,attackBonus,mult){
   _lastDiceArgs={dice:dice.map(function(d){return{sides:d.sides};}),attackBonus:attackBonus,mult:mult};
   var modal=document.getElementById('dice-modal');
@@ -8272,6 +8900,25 @@ function openDiceModal(dice,attackBonus,mult){
   setTimeout(function(){
     document.querySelectorAll('#dice-tray .die3d').forEach(function(el,i){
       el.classList.add('landed');
+      var wrap=el.parentNode;
+      var sides=dice[i]?dice[i].sides:null;
+      var m=mult||1;
+      if(!sides) return;
+      function dieFlash(w,col){
+        col=col||'#0a2a0a';
+        w.style.transition='background .15s';
+        w.style.background=col;
+        w.style.borderRadius='8px';
+        setTimeout(function(){ w.style.background=''; },300);
+      }
+      if(attackBonus===null){
+        // Damage die — click/tap wrap to save
+        wrap.style.cursor='pointer';
+        wrap.style.transition='transform .15s';
+        wrap.addEventListener('mouseenter',function(){ wrap.style.transform='scale(1.12)'; });
+        wrap.addEventListener('mouseleave',function(){ wrap.style.transform=''; });
+        wrap.onclick=function(e){ e.stopPropagation(); addToPool(sides,m); dieFlash(wrap,'#0a2a0a'); };
+      }
     });
     var vals=dice.map(function(d){return d.result;});
     var sum=vals.reduce(function(a,b){return a+b;},0);
@@ -8281,6 +8928,11 @@ function openDiceModal(dice,attackBonus,mult){
       var nat=sum===20?'<span class="nat20"> NAT 20!</span>':sum===1?'<span class="nat1"> NAT 1</span>':'';
       html='<div class="dr-total">'+total+nat+'</div>'
           +'<div class="dr-detail">d20 rolled '+sum+(attackBonus>=0?' + ':' − ')+Math.abs(attackBonus)+'</div>';
+      // Save hit button — appears below result, big and tappable
+      html+='<div style="margin-top:10px;">'
+           +'<button id="save-hit-btn" style="background:#1a0a2a;border:2px solid #c8961e;border-radius:8px;color:#c8961e;font-size:13px;font-weight:700;padding:8px 22px;cursor:pointer;width:100%;">'
+           +'Save Hit</button>'
+           +'</div>';
     } else {
       var final=sum*(mult||1);
       html='<div class="dr-total">'+final+(mult>1?'<span class="dr-mult"> ×'+mult+'</span>':'')+'</div>'
@@ -8290,6 +8942,25 @@ function openDiceModal(dice,attackBonus,mult){
     resultEl.innerHTML=html;
     resultEl.style.transition='opacity .4s';
     resultEl.style.opacity='1';
+    // Wire save hit button if present
+    var saveBtn=document.getElementById('save-hit-btn');
+    if(saveBtn){
+      saveBtn.addEventListener('click',function(e){
+        e.stopPropagation();
+        addHitToPool();
+        saveBtn.textContent='Saved ('+_hitPool+')';
+        saveBtn.style.borderColor='#50c870';
+        saveBtn.style.color='#50c870';
+      });
+      saveBtn.addEventListener('touchend',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        addHitToPool();
+        saveBtn.textContent='Saved ('+_hitPool+')';
+        saveBtn.style.borderColor='#50c870';
+        saveBtn.style.color='#50c870';
+      });
+    }
   },allDone);
 }
 function closeDiceModal(){document.getElementById('dice-modal').style.display='none';}
@@ -8364,14 +9035,21 @@ function _getCbt(uid){
   return _cbtState[uid];
 }
 function _refreshCbt(uid){
-  var pane=document.getElementById('pane-combat');
+  var pane=_getCbtPane();
   if(!pane) return;
   var inst=_armadaGet(uid);
   if(!inst) return;
   var ship=_shipMap[inst.shipId];
   if(!ship) return;
   pane.innerHTML=renderCombatPane(inst,ship);
-  _bindCbtEvents(pane,uid,ship.hp);
+  _bindCbtEvents(pane,uid,computeStats(inst,ship).hp);
+}
+// Returns the active combat pane — either battle detail or normal pane-combat
+function _getCbtPane(){
+  if(_btlConnected&&_btlDetailUid){
+    return document.getElementById('battle-detail-content');
+  }
+  return document.getElementById('pane-combat');
 }
 function _refreshMorale(pane,uid){
   var st=_getCbt(uid),m=st.morale;
@@ -8490,7 +9168,7 @@ function _syncHpDisplay(uid,maxHp){
   // Update modal
   _updateHpModalDisplay('hp-modal-cur','hp-modal-bar',curHp,maxHp);
   // Update pane bar
-  var pane=document.getElementById('pane-combat');
+  var pane=_getCbtPane();
   if(pane){
     var bar=pane.querySelector('.hull-hp-bar');
     var btn=pane.querySelector('.hull-hp-btn');
@@ -8547,7 +9225,7 @@ function _syncSysHpDisplay(uid,sysId,maxHp){
   // Update modal
   _updateHpModalDisplay('shp-modal-cur','shp-modal-bar',curHp,maxHp);
   // Update pane button
-  var pane=document.getElementById('pane-combat');
+  var pane=_getCbtPane();
   if(pane){
     var btn=pane.querySelector('[data-syshp="'+sysId+'"]');
     if(btn){
@@ -8571,10 +9249,10 @@ function _updateHpModalDisplay(curId,barId,curHp,maxHp){
 
 function renderCombatPane(inst,ship){
   var uid=inst.uid,st=_getCbt(uid);
-  var maxHp=ship.hp,curHp=st.hp!==null?st.hp:maxHp;
+  var cs=computeStats(inst,ship);
+  var maxHp=cs.hp,curHp=st.hp!==null?st.hp:maxHp;
   var pct=maxHp>0?Math.max(0,curHp/maxHp):0;
   var hpColor=pct>0.6?'#60d890':pct>0.3?'#c8961e':'#c85040';
-  var cs=computeStats(inst,ship);
   var h='';
 
   // Stats
@@ -8709,13 +9387,20 @@ function renderCombatPane(inst,ship){
     row+='</div>';
     // Rolls
     if(rolls.length&&!disabled){
+      var upgHit=getUpgradeHitBonus(uid);
+      var upgDmg=getUpgradeDmgBonus(uid);
       row+='<div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;">';
       rolls.forEach(function(r){
         if(r.type==='attack'){
-          var sign=r.bonus>=0?'+':'';
-          row+='<button class="roll-btn" onclick="execRoll(this,\'attack\',\''+r.bonus+'\')" style="font-size:9px;padding:2px 7px;">&#x1F3B2; '+sign+r.bonus+'</button>';
+          var total=r.bonus+upgHit;
+          var sign=total>=0?'+':'';
+          var style=upgHit!==0?'color:#c8961e;':'';
+          row+='<button class="roll-btn" onclick="execRoll(this,\'attack\',\''+r.bonus+'\')" style="font-size:9px;padding:2px 7px;'+style+'">&#x1F3B2; '+sign+total+'</button>';
         } else {
-          row+='<button class="roll-btn" onclick="execRoll(this,\'damage\',\''+r.n+','+r.sides+','+r.mult+'\')" style="font-size:9px;padding:2px 7px;">&#x1F4A5; '+r.n+'d'+r.sides+(r.mult>1?' \u00d7'+r.mult:'')+'</button>';
+          var extraN=(upgDmg.n>0&&upgDmg.sides===r.sides)?upgDmg.n:0;
+          var totalN=r.n+extraN;
+          var style=extraN>0?'color:#c8961e;':'';
+          row+='<button class="roll-btn" onclick="execRoll(this,\'damage\',\''+totalN+','+r.sides+','+r.mult+'\')" style="font-size:9px;padding:2px 7px;'+style+'">&#x1F4A5; '+totalN+'d'+r.sides+(r.mult>1?' \u00d7'+r.mult:'')+'</button>';
         }
       });
       row+='</div>';
@@ -8745,11 +9430,17 @@ function renderCombatPane(inst,ship){
     h+=cbtSysRow(sid,s.type||'cannon',false,count);
   });
 
+  // Upgrades that have genuine combat actions (not just passive bonuses)
+  var COMBAT_ACTION_UPGRADES=new Set(['greek_fire_station','pitch_cauldron','alchemists_ballista',
+    'depth_charge_rack','drowning_bell','the_render','ghost_cannon','boarding_spike_battery',
+    'chain_web_launcher','pitch_reserves','dead_reckoning_frame','fog_bellows','decoy_launchers',
+    'fast_assault_davit','tide_anchor','predator_wake','the_bleeder','the_stage',
+    'deadweight_anchor_rig','leech_anchor','war_drums']);
   (inst.upgrades||[]).forEach(function(upgId){
     if(!upgId) return;
+    if(!COMBAT_ACTION_UPGRADES.has(upgId)) return;
     var u=UPGRADES.find(function(x){return x.id===upgId;});
     if(!u||!u.desc) return;
-    if(!/hit|damage|save|DC|attack|hull|fire|flood|ram|boarding/i.test(u.desc)) return;
     if(!parseRollsFromDesc(u.desc).length) return;
     h+=cbtSysRow(upgId,'upgrade',true);
   });
@@ -8799,9 +9490,522 @@ function renderCombatPane(inst,ship){
   return h;
 }
 
+function _shipW(tier){ return Math.round(_SHIP_DIMS[Math.min(tier||0,4)].w*_shipScale); }
+function _shipH(tier){ return Math.round(_SHIP_DIMS[Math.min(tier||0,4)].h*_shipScale); }
+
+function _overlaps(ax,ay,aw,ah, bx,by,bw,bh){
+  return ax<bx+bw+_PAD && ax+aw+_PAD>bx && ay<by+bh+_PAD && ay+ah+_PAD>by;
+}
+
+function _findFreeSpot(newInst, newX, newY){
+  var wa=document.getElementById('water-area');
+  var WW=wa?wa.clientWidth:800, WH=wa?wa.clientHeight:600;
+  var nw=_shipW(newInst.tier||(_shipMap[newInst.shipId]||{}).tier||0);
+  var nh=_shipH(newInst.tier||(_shipMap[newInst.shipId]||{}).tier||0);
+
+  function hasOverlap(tx,ty){
+    for(var k=0;k<armada.length;k++){
+      var o=armada[k];
+      if(o.uid===newInst.uid) continue;
+      var ot=(_shipMap[o.shipId]||{}).tier||0;
+      if(_overlaps(tx,ty,nw,nh, o.x,o.y,_shipW(ot),_shipH(ot))) return true;
+    }
+    return false;
+  }
+
+  if(!hasOverlap(newX,newY)) return {x:newX,y:newY};
+
+  // Spiral outward from the drop point to find nearest free spot
+  var step=Math.max(nw,nh)/2+_PAD;
+  for(var r=step; r<Math.max(WW,WH)*2; r+=step){
+    var angles=Math.ceil(2*Math.PI*r/step);
+    for(var a=0;a<angles;a++){
+      var angle=(a/angles)*Math.PI*2;
+      var tx=Math.round(newX+Math.cos(angle)*r);
+      var ty=Math.round(newY+Math.sin(angle)*r);
+      tx=Math.max(0,Math.min(tx,WW-nw));
+      ty=Math.max(0,Math.min(ty,WH-nh));
+      if(!hasOverlap(tx,ty)) return {x:tx,y:ty};
+    }
+  }
+  return {x:newX,y:newY}; // fallback
+}
+
+function toggleShipScale(){
+  _shipScale=_shipScale===1?0.65:1;
+  var btn=document.getElementById('ship-scale-btn');
+  if(btn) btn.textContent=_shipScale===1?'⛵ Normal':'⛵ Small';
+  renderWater();
+}
+
+// Spread ships so none overlap on load
+function spreadShips(){
+  var wa=document.getElementById('water-area');
+  if(!wa||!armada.length) return;
+  var wr=wa.getBoundingClientRect();
+  var W=wr.width||800, H=wr.height||600;
+  var dims=[{w:70,h:28},{w:95,h:36},{w:124,h:46},{w:178,h:66},{w:214,h:82}];
+  var MAX_PASSES=50;
+  for(var pass=0;pass<MAX_PASSES;pass++){
+    var moved=false;
+    for(var i=0;i<armada.length;i++){
+      var a=armada[i];
+      var da=dims[Math.min(a.tier||0,4)];
+      var ax=a.x, ay=a.y, aw=da.w*_shipScale, ah=da.h*_shipScale;
+      for(var j=i+1;j<armada.length;j++){
+        var b=armada[j];
+        var db=dims[Math.min(b.tier||0,4)];
+        var bx=b.x, by=b.y, bw=db.w*_shipScale, bh=db.h*_shipScale;
+        // Check overlap with padding
+        var pad=10;
+        var ox=Math.min(ax+aw+pad,bx+bw+pad)-Math.max(ax-pad,bx-pad);
+        var oy=Math.min(ay+ah+pad,by+bh+pad)-Math.max(ay-pad,by-pad);
+        if(ox>0&&oy>0){
+          // Push apart along axis of least overlap
+          var pushX=ox/2+1, pushY=oy/2+1;
+          if(ox<oy){
+            // Push horizontally
+            var cx=(ax+aw/2), bCx=(bx+bw/2);
+            if(cx<bCx){ a.x=Math.max(0,ax-pushX); b.x=Math.min(W-bw,bx+pushX); }
+            else { a.x=Math.min(W-aw,ax+pushX); b.x=Math.max(0,bx-pushX); }
+          } else {
+            // Push vertically
+            var cy=(ay+ah/2), bCy=(by+bh/2);
+            if(cy<bCy){ a.y=Math.max(0,ay-pushY); b.y=Math.min(H-bh,by+pushY); }
+            else { a.y=Math.min(H-ah,ay+pushY); b.y=Math.max(0,by-pushY); }
+          }
+          moved=true;
+        }
+      }
+    }
+    if(!moved) break;
+  }
+  renderWater();
+}
+(function(){
+  var _lastW=0, _lastH=0;
+  function _clampShips(newW, newH){
+    if(!newW||!newH) return;
+    var changed=false;
+    armada.forEach(function(inst){
+      var ox=inst.x, oy=inst.y;
+      // Scale proportionally if we have a previous size
+      if(_lastW>0&&_lastH>0){
+        inst.x=Math.round(inst.x*(newW/_lastW));
+        inst.y=Math.round(inst.y*(newH/_lastH));
+      }
+      // Hard clamp to new bounds
+      inst.x=Math.max(0,Math.min(inst.x,newW-155));
+      inst.y=Math.max(0,Math.min(inst.y,newH-85));
+      if(inst.x!==ox||inst.y!==oy) changed=true;
+    });
+    _lastW=newW; _lastH=newH;
+    if(changed) renderWater();
+  }
+  function _initResizeObs(){
+    var wa=document.getElementById('water-area');
+    if(!wa) return;
+    var r=wa.getBoundingClientRect();
+    _lastW=r.width; _lastH=r.height;
+    if(window.ResizeObserver){
+      new ResizeObserver(function(entries){
+        var e=entries[0];
+        var w=e.contentRect.width, h=e.contentRect.height;
+        if(Math.abs(w-_lastW)>2||Math.abs(h-_lastH)>2) _clampShips(w,h);
+      }).observe(wa);
+    } else {
+      window.addEventListener('resize',function(){
+        var r2=wa.getBoundingClientRect();
+        _clampShips(r2.width,r2.height);
+      });
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',_initResizeObs);
+  else setTimeout(_initResizeObs,100);
+})();
+
 // Boot
 // Boot
 renderCat();renderDetail();updateStats();
+
+// ════════════════════════════════════════════════════════
+// BATTLE MODE — WebRTC peer-to-peer fleet combat
+// ════════════════════════════════════════════════════════
+
+var _btlPc=null;       // RTCPeerConnection
+var _btlCh=null;       // RTCDataChannel
+var _btlRole=null;     // 'host' or 'join'
+var _btlConnected=false;
+var _btlMyFleet=[];    // [{uid,name,tier,ac,hp,maxHp,fire,flood,x,y}]
+var _btlOppFleet=[];   // same, received from opponent
+var _btlAttacker=null; // uid of my selected attacking ship
+var _btlTarget=null;   // uid of opponent's targeted ship
+var _btlLastHit=false;
+var _btlWeapon=null;   // {n,sides,mult,hitBonus} current weapon
+
+var _STUN={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]};
+
+// ── Open setup modal ──────────────────────────────────────
+function openBattleModal(){
+  document.getElementById('battle-setup-modal').style.display='flex';
+  battleShowStep('host');
+}
+function battleShowStep(s){
+  document.getElementById('battle-step-host').style.display=s==='host'?'block':'none';
+  document.getElementById('battle-step-join').style.display=s==='join'?'block':'none';
+  var hBtn=document.getElementById('btl-setup-host');
+  var jBtn=document.getElementById('btl-setup-join');
+  if(hBtn){
+    hBtn.style.background=s==='host'?'#0a1a10':'';
+    hBtn.style.borderColor=s==='host'?'#40e08060':'';
+    hBtn.style.color=s==='host'?'#40e080':'';
+  }
+  if(jBtn){
+    jBtn.style.background=s==='join'?'#0a1a10':'';
+    jBtn.style.borderColor=s==='join'?'#40e08060':'';
+    jBtn.style.color=s==='join'?'#40e080':'';
+  }
+}
+
+// ── Serialise my fleet for sharing ───────────────────────
+function _btlSerialiseFleet(){
+  return armada.filter(function(i){return !i.isEnemy;}).map(function(i){
+    var ship=_shipMap[i.shipId]||{};
+    var cs=computeStats(i,ship);
+    var st=_getCbt(i.uid);
+    return {uid:''+i.uid,name:ship.name||i.shipId,tier:ship.tier||0,
+      ac:cs.ac,maxHp:cs.hp,hp:st.hp!==null?st.hp:cs.hp,
+      fire:st.fire||0,flood:st.flood||0,x:i.x||0,y:i.y||0};
+  });
+}
+
+// ── Send over data channel ────────────────────────────────
+function _btlSend(obj){
+  if(_btlCh&&_btlCh.readyState==='open') _btlCh.send(JSON.stringify(obj));
+}
+
+// ── Receive handler ───────────────────────────────────────
+function _btlOnMsg(raw){
+  var msg; try{msg=JSON.parse(raw);}catch(e){return;}
+  if(msg.type==='fleet'){
+    _btlOppFleet=msg.fleet;
+    _btlRenderOpp();
+    _btlLog('sys','Opponent fleet received ('+msg.fleet.length+' ships).');
+  } else if(msg.type==='dmg'){
+    // Opponent dealt damage to one of my ships
+    var mine=_btlMyFleet.find(function(s){return s.uid===msg.uid;});
+    if(mine){
+      mine.hp=Math.max(0,msg.hp);
+      mine.fire=msg.fire||mine.fire;
+      mine.flood=msg.flood||mine.flood;
+      // Also update live _cbtState
+      var st=_getCbt(msg.uid);
+      st.hp=mine.hp; st.fire=mine.fire||0; st.flood=mine.flood||0;
+      _btlRenderMine();
+      _btlLog('dmg','Enemy hit '+mine.name+' for '+msg.dmg+' damage! HP now '+mine.hp+'/'+mine.maxHp+'.');
+    }
+  } else if(msg.type==='log'){
+    _btlLog('sys','Opponent: '+msg.text);
+  } else if(msg.type==='ping'){
+    _btlSend({type:'pong'});
+  }
+}
+
+// ── Setup RTCPeerConnection ───────────────────────────────
+function _btlMakePc(){
+  if(_btlPc) _btlPc.close();
+  _btlPc=new RTCPeerConnection(_STUN);
+  _btlPc.oniceconnectionstatechange=function(){
+    var s=_btlPc.iceConnectionState;
+    document.getElementById('battle-status').textContent=s.charAt(0).toUpperCase()+s.slice(1);
+    if(s==='disconnected'||s==='failed') _btlLog('sys','Connection lost.');
+  };
+  return _btlPc;
+}
+
+function _btlOnConnected(){
+  if(_btlConnected) return;
+  _btlConnected=true;
+  document.getElementById('battle-status').textContent='Connected';
+  document.getElementById('battle-status').style.color='#40e080';
+  document.getElementById('battle-setup-modal').style.display='none';
+  document.getElementById('battle-overlay').classList.add('active');
+  _btlMyFleet=_btlSerialiseFleet();
+  _btlRenderMine();
+  _btlSend({type:'fleet',fleet:_btlMyFleet});
+  _btlLog('sys','Connected! Fleet shared. Select a ship to begin.');
+}
+
+// ── HOST: generate offer ──────────────────────────────────
+async function battleGenerateOffer(){
+  var pc=_btlMakePc();
+  _btlRole='host';
+  var ch=pc.createDataChannel('battle');
+  _btlCh=ch;
+  // Connection confirmed when data channel opens
+  ch.onopen=function(){ _btlOnConnected(); };
+  ch.onmessage=function(e){_btlOnMsg(e.data);};
+  var offer=await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  // Gather ICE candidates
+  await new Promise(function(res){
+    if(pc.iceGatheringState==='complete'){res();return;}
+    pc.onicegatheringstatechange=function(){if(pc.iceGatheringState==='complete')res();};
+    setTimeout(res,5000);
+  });
+  document.getElementById('battle-offer-out').value=btoa(JSON.stringify(pc.localDescription));
+}
+
+// ── HOST: receive answer and connect ─────────────────────
+async function battleCompleteHost(){
+  var raw=document.getElementById('battle-answer-in').value.trim();
+  if(!raw){alert('Paste the answer code first.');return;}
+  if(!_btlPc){alert('Generate an offer first.');return;}
+  try{
+    var ans=JSON.parse(atob(raw));
+    await _btlPc.setRemoteDescription(new RTCSessionDescription(ans));
+  }catch(e){alert('Invalid answer code: '+e.message);}
+}
+
+// ── JOIN: receive offer, generate answer ──────────────────
+async function battleGenerateAnswer(){
+  var raw=document.getElementById('battle-offer-in').value.trim();
+  if(!raw){alert('Paste the host offer code first.');return;}
+  try{
+    var offer=JSON.parse(atob(raw));
+    var pc=_btlMakePc();
+    _btlRole='join';
+    // Connection confirmed when data channel opens
+    pc.ondatachannel=function(e){
+      _btlCh=e.channel;
+      _btlCh.onopen=function(){ _btlOnConnected(); };
+      _btlCh.onmessage=function(ev){_btlOnMsg(ev.data);};
+    };
+    await pc.setRemoteDescription(new RTCSessionDescription(offer));
+    var answer=await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    // Gather ICE candidates before showing answer
+    await new Promise(function(res){
+      if(pc.iceGatheringState==='complete'){res();return;}
+      pc.onicegatheringstatechange=function(){if(pc.iceGatheringState==='complete')res();};
+      setTimeout(res,5000);
+    });
+    document.getElementById('battle-answer-out').value=btoa(JSON.stringify(pc.localDescription));
+    document.getElementById('battle-join-waiting').style.display='block';
+    // Copy button highlight
+    var copyBtn=document.querySelector('#battle-step-join button[onclick*="answer-out"]');
+    if(copyBtn){copyBtn.style.borderColor='#40e080';copyBtn.style.color='#40e080';}
+  }catch(e){alert('Error: '+e.message);}
+}
+
+// ── Center tab toggle ─────────────────────────────────────
+function btlCenterTab(tab){
+  var log=document.getElementById('battle-log-panel');
+  var det=document.getElementById('battle-detail-panel');
+  var tlog=document.getElementById('btl-tab-log');
+  var tdet=document.getElementById('btl-tab-detail');
+  if(tab==='log'){
+    log.style.display='flex'; det.style.display='none';
+    tlog.style.borderBottomColor='#40e080'; tlog.style.color='#40e080';
+    tdet.style.borderBottomColor='transparent'; tdet.style.color='#4a7a9a';
+  } else {
+    log.style.display='none'; det.style.display='block';
+    tdet.style.borderBottomColor='#c8961e'; tdet.style.color='#c8961e';
+    tlog.style.borderBottomColor='transparent'; tlog.style.color='#4a7a9a';
+  }
+}
+
+// ── Render selected ship detail in battle mode ────────────
+var _btlDetailUid=null;
+
+function _btlRenderDetail(uid){
+  _btlDetailUid=uid;
+  // Set selectedUid so HP modal, system rolls etc. all work against this ship
+  selectedUid=''+uid;
+  var el=document.getElementById('battle-detail-content');
+  if(!el) return;
+  var inst=_armadaGet(uid);
+  var ship=inst&&_shipMap[inst.shipId];
+  if(!inst||!ship){ el.innerHTML='<div style="color:#3a6a8a;padding:10px;">No ship selected.</div>'; return; }
+  el.innerHTML=renderCombatPane(inst,ship);
+  _bindCbtEvents(el,uid,computeStats(inst,ship).hp);
+  // Also show weapon roll buttons in action bar
+  _btlPopulateWeapons(uid,inst,ship);
+}
+function _btlRenderMine(){
+  var el=document.getElementById('battle-my-list');
+  if(!el) return;
+  el.innerHTML=_btlMyFleet.map(function(s){
+    var pct=s.maxHp>0?Math.max(0,s.hp/s.maxHp):0;
+    var col=pct>0.6?'#40e080':pct>0.3?'#c8961e':'#c85040';
+    var sel=_btlAttacker===s.uid?' selected':'';
+    var sunk=s.hp<=0?' sunk':'';
+    return '<div class="battle-ship-row'+sel+sunk+'" onclick="btlSelectAttacker(\''+s.uid+'\')">'+
+      '<div class="bsr-name">T'+s.tier+' '+s.name+'</div>'+
+      '<div class="bsr-stats"><span>HP '+s.hp+'/'+s.maxHp+'</span><span>AC '+s.ac+'</span>'+
+      (s.fire>0?'<span style="color:#c85040;">Fire '+['','Min','Mod','Sev'][s.fire]+'</span>':'')+
+      (s.flood>0?'<span style="color:#4a8ac8;">Flood '+['','TW','Fl','Crit'][s.flood]+'</span>':'')+
+      '</div>'+
+      '<div class="bsr-hp-bar"><div class="bsr-hp-fill" style="width:'+Math.round(pct*100)+'%;background:'+col+';"></div></div>'+
+    '</div>';
+  }).join('');
+}
+
+// ── Render opponent fleet panel ───────────────────────────
+function _btlRenderOpp(){
+  var el=document.getElementById('battle-opp-list');
+  if(!el) return;
+  el.innerHTML=_btlOppFleet.map(function(s){
+    var pct=s.maxHp>0?Math.max(0,s.hp/s.maxHp):0;
+    var col=pct>0.6?'#40e080':pct>0.3?'#c8961e':'#c85040';
+    var tgt=_btlTarget===s.uid?' targeting':'';
+    var sunk=s.hp<=0?' sunk':'';
+    return '<div class="battle-ship-row'+tgt+sunk+'" onclick="btlSelectTarget(\''+s.uid+'\')">'+
+      '<div class="bsr-name">T'+s.tier+' '+s.name+'</div>'+
+      '<div class="bsr-stats"><span>HP '+s.hp+'/'+s.maxHp+'</span><span>AC '+s.ac+'</span></div>'+
+      '<div class="bsr-hp-bar"><div class="bsr-hp-fill" style="width:'+Math.round(pct*100)+'%;background:'+col+';"></div></div>'+
+    '</div>';
+  }).join('');
+}
+
+function _btlPopulateWeapons(uid,inst,ship){
+  var mbtns=document.getElementById('battle-mount-btns');
+  if(!mbtns) return;
+  mbtns.innerHTML='';
+  var rolls=[];
+  (inst.systems&&inst.systems.mounts||[]).forEach(function(sid){
+    if(!sid) return;
+    var s=findSys(sid);
+    if(!s||!s.desc) return;
+    var hitM=s.desc.match(/Hit ([+-]\d+)/i)||s.desc.match(/Spell atk ([+-]\d+)/i);
+    var dmgM=s.desc.match(/(\d+)d(\d+)(?:\s*[×x]\s*(\d+))?/i);
+    if(hitM&&dmgM){
+      var key=sid+'|'+hitM[1]+'|'+dmgM[1]+'|'+dmgM[2]+'|'+(dmgM[3]||1);
+      if(!rolls.find(function(r){return r.key===key;}))
+        rolls.push({key:key,label:s.name,hitBonus:parseInt(hitM[1]),n:parseInt(dmgM[1]),sides:parseInt(dmgM[2]),mult:parseInt(dmgM[3])||1});
+    }
+  });
+  rolls.forEach(function(r){
+    var b=document.createElement('button');
+    b.className='battle-roll-btn'; b.style.fontSize='9px'; b.style.padding='3px 10px';
+    b.textContent=r.label+' ('+(r.n)+'d'+r.sides+(r.mult>1?' ×'+r.mult:'')+')';
+    b.addEventListener('click',function(){
+      _btlWeapon=r;
+      mbtns.querySelectorAll('button').forEach(function(x){x.style.borderColor='';});
+      b.style.borderColor='#c8961e';
+      _btlUpdateActions();
+    });
+    mbtns.appendChild(b);
+  });
+}
+
+// ── Select attacker ───────────────────────────────────────
+function btlSelectAttacker(uid){
+  _btlAttacker=uid;
+  _btlTarget=null;
+  _btlLastHit=false;
+  _btlWeapon=null;
+  document.getElementById('battle-result').style.display='none';
+  document.getElementById('btn-roll-dmg').disabled=true;
+  _btlRenderMine(); _btlRenderOpp(); _btlUpdateActions();
+  _btlRenderDetail(uid);
+  btlCenterTab('detail');
+  document.getElementById('battle-action-hint').textContent='Choose a weapon, then select an enemy target.';
+}
+
+// ── Select target ─────────────────────────────────────────
+function btlSelectTarget(uid){
+  if(!_btlAttacker){_btlLog('sys','Select one of your ships first.'); return;}
+  var s=_btlOppFleet.find(function(x){return x.uid===uid;});
+  if(s&&s.hp<=0){_btlLog('sys','That ship has already sunk.'); return;}
+  _btlTarget=uid;
+  _btlLastHit=false;
+  document.getElementById('battle-result').style.display='none';
+  document.getElementById('btn-roll-dmg').disabled=true;
+  _btlRenderOpp();
+  _btlUpdateActions();
+}
+
+// ── Update action buttons ─────────────────────────────────
+function _btlUpdateActions(){
+  var canHit=_btlAttacker&&_btlTarget&&_btlWeapon&&_btlConnected;
+  document.getElementById('btn-roll-hit').disabled=!canHit;
+  if(_btlAttacker&&_btlTarget)
+    document.getElementById('battle-action-hint').textContent=
+      _btlWeapon?'Ready to fire! Roll to hit.':'Choose a weapon.';
+}
+
+// ── Roll to hit ───────────────────────────────────────────
+function battleRollHit(){
+  if(!_btlAttacker||!_btlTarget||!_btlWeapon) return;
+  var tgt=_btlOppFleet.find(function(s){return s.uid===_btlTarget;});
+  if(!tgt) return;
+  var upgHit=getUpgradeHitBonus(_btlAttacker);
+  var roll=cryptoRoll(20);
+  var total=roll+_btlWeapon.hitBonus+upgHit;
+  var hit=total>=tgt.ac;
+  _btlLastHit=hit;
+  var res=document.getElementById('battle-result');
+  res.style.display='block';
+  res.className=hit?'hit':'miss';
+  res.textContent=hit?'HIT! ('+total+' vs AC '+tgt.ac+')':'MISS ('+total+' vs AC '+tgt.ac+')';
+  document.getElementById('btn-roll-dmg').disabled=!hit;
+  var myShip=_btlMyFleet.find(function(s){return s.uid===_btlAttacker;});
+  _btlLog(hit?'hit':'miss',
+    (myShip?myShip.name:'Your ship')+' fires at '+tgt.name+
+    ' — d20('+roll+')+'+((_btlWeapon.hitBonus+upgHit)>=0?'+':'')+(_btlWeapon.hitBonus+upgHit)+
+    '='+total+' vs AC '+tgt.ac+' — '+(hit?'HIT!':'MISS'));
+  _btlSend({type:'log',text:(myShip?myShip.name:'Enemy')+' fires at you — '+(hit?'HIT':'MISS')});
+}
+
+// ── Roll damage ───────────────────────────────────────────
+function battleRollDmg(){
+  if(!_btlLastHit||!_btlWeapon||!_btlTarget) return;
+  var tgt=_btlOppFleet.find(function(s){return s.uid===_btlTarget;});
+  if(!tgt) return;
+  var upgDmg=getUpgradeDmgBonus(_btlAttacker);
+  var extraN=(upgDmg.n>0&&upgDmg.sides===_btlWeapon.sides)?upgDmg.n:0;
+  var totalN=_btlWeapon.n+extraN;
+  var rolls=[]; var sum=0;
+  for(var i=0;i<totalN;i++){var r=cryptoRoll(_btlWeapon.sides);rolls.push(r);sum+=r;}
+  var dmg=sum*_btlWeapon.mult;
+  tgt.hp=Math.max(0,tgt.hp-dmg);
+  _btlRenderOpp();
+  var myShip=_btlMyFleet.find(function(s){return s.uid===_btlAttacker;});
+  _btlLog('dmg',(myShip?myShip.name:'Your ship')+' deals '+dmg+' damage to '+tgt.name+
+    ' ['+rolls.join('+')+']'+(totalN>1?'='+sum:'')+(_btlWeapon.mult>1?' ×'+_btlWeapon.mult:'')+
+    '. Enemy HP: '+tgt.hp+'/'+tgt.maxHp+(tgt.hp<=0?' — SUNK!':''));
+  if(tgt.hp<=0) _btlLog('hit',tgt.name+' has been sunk!');
+  // Sync damage to opponent
+  _btlSend({type:'dmg',uid:_btlTarget,hp:tgt.hp,dmg:dmg});
+  document.getElementById('btn-roll-dmg').disabled=true;
+  _btlLastHit=false;
+  document.getElementById('battle-result').style.display='none';
+}
+
+// ── Battle log ────────────────────────────────────────────
+function _btlLog(cls,text){
+  var area=document.getElementById('battle-log-area');
+  if(!area) return;
+  var ts=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  var d=document.createElement('div');
+  d.className='blog-entry blog-'+cls;
+  d.textContent='['+ts+'] '+text;
+  area.appendChild(d);
+  area.scrollTop=area.scrollHeight;
+}
+
+// ── Leave battle ──────────────────────────────────────────
+function battleLeave(){
+  if(_btlPc){_btlPc.close();_btlPc=null;}
+  _btlCh=null; _btlConnected=false; _btlRole=null;
+  _btlMyFleet=[]; _btlOppFleet=[];
+  _btlAttacker=null; _btlTarget=null; _btlWeapon=null; _btlLastHit=false;
+  document.getElementById('battle-overlay').classList.remove('active');
+  document.getElementById('battle-status').textContent='Not Connected';
+  document.getElementById('battle-status').style.color='';
+}
+
 </script>
 
 <div id="crew-pool-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;align-items:center;justify-content:center;">
@@ -8845,8 +10049,19 @@ renderCat();renderDetail();updateStats();
   </div>
 </div>
 
+<div id="dice-pool-section" style="display:none;position:fixed;top:0;left:0;right:0;z-index:2001;background:#060e14;border-bottom:1px solid #2a5a80;padding:8px 16px;flex-direction:column;gap:6px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;">
+    <div style="font-size:9px;color:#3a6a8a;text-transform:uppercase;letter-spacing:.08em;">Damage Pool</div>
+    <div style="display:flex;gap:6px;">
+      <button id="dice-pool-roll" onclick="rollPool()" style="display:none;background:#0a2010;border:1px solid #50c87060;border-radius:6px;color:#50c870;font-size:10px;padding:3px 12px;cursor:pointer;">💥 Roll Pool</button>
+      <button id="dice-pool-clear" onclick="clearPool()" style="display:none;background:#1a0808;border:1px solid #c8504040;border-radius:6px;color:#c85040;font-size:10px;padding:3px 10px;cursor:pointer;">✕ Clear</button>
+    </div>
+  </div>
+  <div id="dice-pool-display" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;"></div>
+</div>
 <div id="dice-modal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(2,8,14,.85);align-items:center;justify-content:center;flex-direction:column;" onclick="if(event.target===this)closeDiceModal()">
-  <div style="background:#06101a;border:1px solid #2a5a80;border-radius:14px;padding:28px 32px 22px;min-width:220px;max-width:90vw;display:flex;flex-direction:column;align-items:center;box-shadow:0 8px 40px rgba(0,0,0,.8);">
+  <div style="background:#06101a;border:1px solid #2a5a80;border-radius:14px;padding:22px 32px 18px;min-width:260px;max-width:90vw;display:flex;flex-direction:column;align-items:center;box-shadow:0 8px 40px rgba(0,0,0,.8);">
+
     <div id="dice-tray" style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;align-items:flex-end;min-height:90px;perspective:600px;margin-bottom:18px;"></div>
     <div id="dice-result" style="opacity:0;text-align:center;min-height:52px;transition:opacity .4s;"></div>
     <div style="display:flex;gap:8px;margin-top:14px;">
@@ -8856,40 +10071,177 @@ renderCat();renderDetail();updateStats();
   </div>
 </div>
 
-<div id="mob-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;height:46px;background:#0d1e30;border-top:1px solid #1a3a55;z-index:400;flex-direction:row;align-items:stretch;">
-  <button onclick="mobTab('catalogue')" id="mob-btn-catalogue" class="mob-btn mob-btn-active" style="flex:1;background:none;border:none;color:#c8961e;font-size:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-right:1px solid #1a3a55;">
-    <i class="ti ti-ship" style="font-size:18px;"></i>Ships
-  </button>
-  <button onclick="mobTab('water-area')" id="mob-btn-water-area" class="mob-btn" style="flex:1;background:none;border:none;color:#4a7a9a;font-size:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-right:1px solid #1a3a55;">
-    <i class="ti ti-wave-sine" style="font-size:18px;"></i>Fleet
-  </button>
-  <button onclick="mobTab('detail')" id="mob-btn-detail" class="mob-btn" style="flex:1;background:none;border:none;color:#4a7a9a;font-size:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;">
-    <i class="ti ti-layout-sidebar-right" style="font-size:18px;"></i>Detail
-  </button>
-</div>
+ <div id="mob-nav" style="position:fixed;bottom:0;left:0;right:0;height:46px;background:#0d1e30;border-top:1px solid #1a3a55;z-index:400;flex-direction:row;align-items:stretch;">
+   <button onclick="mobTab('catalogue')" id="mob-btn-catalogue" class="mob-btn mob-btn-active" style="flex:1;background:none;border:none;color:#c8961e;font-size:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-right:1px solid #1a3a55;">
+     <i class="ti ti-ship" style="font-size:18px;"></i>Ships
+   </button>
+   <button onclick="mobTab('water-area')" id="mob-btn-water-area" class="mob-btn" style="flex:1;background:none;border:none;color:#4a7a9a;font-size:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;">
+     <i class="ti ti-wave-sine" style="font-size:18px;"></i>Fleet
+   </button>
+ </div>
 
 <script>
-var _mobActive='catalogue';
+
 function mobTab(id){
-  ['catalogue','water-area','detail'].forEach(function(p){
+  if(window.innerWidth>700) return;
+  ['catalogue','water-area'].forEach(function(p){
     var el=document.getElementById(p);
     if(el) el.classList.toggle('mob-active', p===id);
     var btn=document.getElementById('mob-btn-'+p);
-    if(btn){
-      btn.style.color = p===id ? '#c8961e' : '#4a7a9a';
-    }
+    if(btn) btn.style.color=(p===id)?'#c8961e':'#4a7a9a';
   });
   _mobActive=id;
-  // If switching to detail after selecting a ship, trigger a resize for any canvas
   if(id==='water-area') setTimeout(function(){window.dispatchEvent(new Event('resize'));},50);
 }
-// Init mobile on load
+
+function mobGoDetail(){
+  if(window.innerWidth>700) return;
+  var ov=document.getElementById('mob-detail-overlay');
+  var detail=document.getElementById('detail');
+  if(!ov){
+    ov=document.createElement('div');
+    ov.id='mob-detail-overlay';
+    ov.style.cssText='position:fixed;bottom:46px;left:0;right:0;top:0;z-index:350;display:flex;flex-direction:column;overflow:hidden;background:#0d1e30;';
+    var hdr=document.createElement('div');
+    hdr.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-bottom:1px solid #1a3a55;flex-shrink:0;background:#0a1828;';
+    hdr.innerHTML='<span style="font-size:11px;color:#c8961e;font-weight:600;letter-spacing:.05em;">SHIP DETAIL</span>';
+    var xBtn=document.createElement('button');
+    xBtn.innerHTML='&times;';
+    xBtn.style.cssText='background:none;border:none;color:#4a7a9a;font-size:24px;cursor:pointer;line-height:1;padding:0;';
+    xBtn.addEventListener('click',mobCloseDetail);
+    hdr.appendChild(xBtn);
+    ov.appendChild(hdr);
+    document.body.appendChild(ov);
+  }
+  // Always move #detail into overlay so CSS rule makes it visible
+  if(detail&&detail.parentNode!==ov){
+    ov.appendChild(detail);
+  }
+  ov.style.display='flex';
+}
+
+function mobCloseDetail(){
+  var ov=document.getElementById('mob-detail-overlay');
+  var detail=document.getElementById('detail');
+  var app=document.getElementById('app');
+  // Move #detail back to #app so desktop and future renders work normally
+  if(detail&&app&&detail.parentNode!==app){
+    app.appendChild(detail);
+  }
+  if(ov) ov.style.display='none';
+}
+
 (function(){
-  if(window.innerWidth<=700){
-    document.getElementById('catalogue').classList.add('mob-active');
+  function mobInit(){
+    if(window.innerWidth<=700){
+      ['catalogue','water-area'].forEach(function(p){
+        var el=document.getElementById(p);
+        if(el) el.classList.remove('mob-active');
+      });
+      var cat=document.getElementById('catalogue');
+      if(cat) cat.classList.add('mob-active');
+      var btn=document.getElementById('mob-btn-catalogue');
+      if(btn) btn.style.color='#c8961e';
+    }
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',mobInit);
+  } else {
+    mobInit();
   }
 })();
 </script>
 
+
+<!-- ═══════════════ BATTLE OVERLAY ═══════════════ -->
+<div id="battle-overlay">
+
+  <div id="battle-topbar">
+    <h2>⚔️ BROADSIDES! — Battle Mode</h2>
+    <span id="battle-status">Not Connected</span>
+    <button class="menu-btn" onclick="battleLeave()" style="background:#2a0808;border-color:#c8504060;color:#c85040;font-size:10px;">✕ Leave Battle</button>
+  </div>
+
+  <div id="battle-main">
+
+    <!-- MY FLEET -->
+    <div id="battle-my-panel">
+      <div class="battle-panel-hdr" style="color:#40e080;">YOUR FLEET</div>
+      <div class="battle-fleet-list" id="battle-my-list"></div>
+    </div>
+
+    <!-- CENTER: Log + Actions -->
+    <div id="battle-center">
+      <!-- Tab bar -->
+      <div style="display:flex;border-bottom:1px solid #1a3a55;flex-shrink:0;background:#060e14;">
+        <button onclick="btlCenterTab('log')" id="btl-tab-log" style="flex:1;padding:7px;font-size:10px;background:none;border:none;border-bottom:2px solid #40e080;color:#40e080;cursor:pointer;letter-spacing:.05em;">📜 Battle Log</button>
+        <button onclick="btlCenterTab('detail')" id="btl-tab-detail" style="flex:1;padding:7px;font-size:10px;background:none;border:none;border-bottom:2px solid transparent;color:#4a7a9a;cursor:pointer;letter-spacing:.05em;">⚙️ Ship Detail</button>
+      </div>
+      <!-- Log panel -->
+      <div id="battle-log-panel" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;">
+        <div id="battle-log-area" style="flex:1;overflow-y:auto;padding:10px 14px;font-size:10px;font-family:monospace;line-height:1.6;"><div class="blog-entry blog-info">Battle log will appear here...</div></div>
+      </div>
+      <div id="battle-detail-panel" style="flex:1;overflow-y:auto;display:none;">
+        <div id="battle-detail-content"></div>
+      </div>
+      <div id="battle-action-bar">
+        <div style="font-size:9px;color:#3a6a8a;" id="battle-action-hint">Select one of your ships, then select an enemy target.</div>
+        <div id="battle-dice-area">
+          <button class="battle-roll-btn hit-btn" id="btn-roll-hit" disabled onclick="battleRollHit()">🎲 Roll to Hit</button>
+          <div id="battle-result"></div>
+          <button class="battle-roll-btn dmg-btn" id="btn-roll-dmg" disabled onclick="battleRollDmg()">💥 Roll Damage</button>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;" id="battle-mount-btns"></div>
+      </div>
+    </div>
+
+    <!-- OPPONENT FLEET -->
+    <div id="battle-opp-panel">
+      <div class="battle-panel-hdr" style="color:#c85040;">ENEMY FLEET</div>
+      <div class="battle-fleet-list" id="battle-opp-list"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ BATTLE SETUP MODAL ═══════════════ -->
+<div id="battle-setup-modal" style="display:none;position:fixed;inset:0;z-index:1500;background:rgba(0,0,0,.8);align-items:center;justify-content:center;">
+  <div class="modal" style="max-width:520px;width:94vw;max-height:90vh;overflow-y:auto;">
+    <h2 style="font-size:14px;margin-bottom:16px;color:#40e080;">⚔️ Battle Setup</h2>
+
+    <!-- Step selector -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;" id="battle-step-tabs">
+      <button onclick="battleShowStep('host')" id="btl-setup-host" class="btn" style="flex:1;background:#0a1a10;border:1px solid #40e08060;color:#40e080;">Host Battle</button>
+      <button onclick="battleShowStep('join')" id="btl-setup-join" class="btn" style="flex:1;">Join Battle</button>
+    </div>
+
+    <!-- HOST STEP 1: generate offer -->
+    <div id="battle-step-host" style="display:block;">
+      <div style="font-size:11px;color:#5a8aaa;margin-bottom:10px;">1. Click Generate to create your connection offer. Send the code to your opponent.</div>
+      <button class="btn btn-gold" onclick="battleGenerateOffer()" style="width:100%;margin-bottom:10px;">Generate Offer Code</button>
+      <textarea id="battle-offer-out" rows="5" placeholder="Your offer code will appear here..." style="width:100%;background:#0a1820;border:1px solid #1e3a55;border-radius:6px;color:#c8d8e8;font-size:10px;padding:8px;resize:vertical;font-family:monospace;box-sizing:border-box;" readonly></textarea>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('battle-offer-out').value)" class="btn" style="width:100%;margin-top:6px;font-size:10px;">Copy Code</button>
+      <div style="font-size:11px;color:#5a8aaa;margin:14px 0 6px;">2. Paste their answer code here:</div>
+      <textarea id="battle-answer-in" rows="4" placeholder="Paste opponent's answer code..." style="width:100%;background:#0a1820;border:1px solid #1e3a55;border-radius:6px;color:#c8d8e8;font-size:10px;padding:8px;resize:vertical;font-family:monospace;box-sizing:border-box;"></textarea>
+      <button class="btn btn-gold" onclick="battleCompleteHost()" style="width:100%;margin-top:8px;">Connect</button>
+    </div>
+
+    <!-- JOIN STEP: paste offer, get answer -->
+    <div id="battle-step-join" style="display:none;">
+      <div style="font-size:11px;color:#5a8aaa;margin-bottom:10px;">1. Paste the host's offer code:</div>
+      <textarea id="battle-offer-in" rows="5" placeholder="Paste host's offer code..." style="width:100%;background:#0a1820;border:1px solid #1e3a55;border-radius:6px;color:#c8d8e8;font-size:10px;padding:8px;resize:vertical;font-family:monospace;box-sizing:border-box;"></textarea>
+      <button class="btn btn-gold" onclick="battleGenerateAnswer()" style="width:100%;margin:8px 0;">Generate Answer Code</button>
+      <div style="font-size:11px;color:#5a8aaa;margin-bottom:6px;">2. Send this answer code back to the host:</div>
+      <textarea id="battle-answer-out" rows="4" placeholder="Your answer will appear here..." style="width:100%;background:#0a1820;border:1px solid #1e3a55;border-radius:6px;color:#c8d8e8;font-size:10px;padding:8px;resize:vertical;font-family:monospace;box-sizing:border-box;" readonly></textarea>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('battle-answer-out').value)" class="btn" style="width:100%;margin-top:6px;font-size:10px;">Copy Answer</button>
+      <div style="font-size:11px;color:#40e080;margin-top:10px;display:none;" id="battle-join-waiting">⏳ Waiting for host to connect...</div>
+    </div>
+
+    <button onclick="document.getElementById('battle-setup-modal').style.display='none'" class="btn" style="width:100%;margin-top:14px;">Cancel</button>
+  </div>
+</div>
+
+</body>
+</html>
 </body>
 </html>
