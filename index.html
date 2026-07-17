@@ -310,7 +310,7 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
   .menu-btn{display:none;}
   #dockyard-btn{display:none;}
   .stat-chip{display:none;}
-  #mob-menu-btn{display:flex;}
+  #mob-menu-btn{display:flex;}  /* mobile only */
   #mob-menu-dropdown{display:none;position:absolute;top:calc(100% + 4px);right:6px;background:#0d1e30;border:1px solid #2a5a80;border-radius:10px;min-width:200px;z-index:600;padding:6px 0;flex-direction:column;}
   #mob-menu-dropdown.open{display:flex;}
 
@@ -468,7 +468,10 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
 <div id="app">
   <div id="catalogue">
     <div id="cat-head">
-      <h2>Ship Catalogue</h2>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <h2>Ship Catalogue</h2>
+        <button id="cat-collapse-btn" onclick="toggleCatalogue()" title="Collapse catalogue" style="display:none;background:none;border:1px solid #2a5a80;border-radius:5px;color:#4a9abc;font-size:14px;padding:2px 7px;cursor:pointer;line-height:1;">‹</button>
+      </div>
       <div id="tier-tabs">
         <button class="tier-tab active" onclick="setTierFilter('all',this)">All</button>
         <button class="tier-tab" onclick="setTierFilter(0,this)">T0</button>
@@ -495,6 +498,10 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
       </div>
     </div>
     <div id="ship-list"></div>
+    <!-- Expand tab shown when collapsed on tablet -->
+    <div id="cat-expand-tab" onclick="toggleCatalogue()" title="Expand catalogue" style="display:none;writing-mode:vertical-rl;text-orientation:mixed;cursor:pointer;color:#4a9abc;font-size:10px;letter-spacing:.08em;padding:12px 8px;align-items:center;justify-content:center;gap:6px;user-select:none;">
+      <span style="font-size:14px;">›</span> SHIPS
+    </div>
   </div>
 
   <div id="water-area">
@@ -911,7 +918,7 @@ const SYSTEMS = {
     {id:'wraithline',name:'Wraithline',tier:2,cost:2500,desc:"2d6 ×10 impact. Range 6 sq / 12 sq long (extended). 1 line. Reel 2 sq/turn. HP 200.\nEthereal line: cannot be cut by conventional means — only the Rigger's Sever Line or DC 16 Arcana check removes it.\nBreak free: DC 14 Str check. Passes through rigging, masts, and crew without obstruction."},
     {id:'widows_net',name:"The Widow's Net",tier:2,cost:1800,desc:"1d6 ×10 impact. Range 4 sq / 8 sq long. Hit +2. Net lines (counts as 2 for Speed). Reel 1 sq/turn. HP 200.\nWeighted net: on a hit, 1d4 random enemy crew are restrained (Str DC 13 to break free as action).\nCounts as 2 lines for Speed penalties. Break free: DC 15 Str check."},
     {id:'heartstring',name:'Heartstring',tier:2,cost:2800,desc:"3d6 ×10 impact. Range 5 sq / 10 sq long. Hit +2. 1 line. Reel 2 sq/turn. HP 200.\nResonance: while the line is attached, always know the tethered ship's exact hull HP.\nVibration sense: GM narrates which station activates each round on the enemy ship.\nBreak free: DC 15 Str check."},
-    {id:'jaw_deep',name:'Jaw of the Deep',tier:3,cost:16000,desc:"6d6 ×10 impact (highest harpoon damage). Range 6 sq / 12 sq long. Hit +4. 2 lines + boarding. Reel 3 sq/turn. HP 320.\nAnchor strike: on the round of impact, target ship loses ALL movement — not halved, gone — as the lance buries deep.\nLine HP 120. Break free: DC 19 Str check (hardest of any harpoon)."},
+    {id:'jaw_deep',name:'Jaw of the Deep',tier:3,cost:8000,desc:"6d6 ×10 impact (highest harpoon damage). Range 6 sq / 12 sq long. Hit +4. 2 lines + boarding. Reel 3 sq/turn. HP 320.\nAnchor strike: on the round of impact, target ship loses ALL movement — not halved, gone — as the lance buries deep.\nLine HP 120. Break free: DC 19 Str check (hardest of any harpoon)."},
     {id:'whisp_chain',name:'The Whispering Chain',tier:3,cost:9000,desc:"4d6 ×10 impact. Range 7 sq / 14 sq long. Hit +4. 2 lines + boarding. Reel 3 sq/turn. HP 320.\nPsychic suppression: while tethered, enemy Captain DC 13 Wis save at start of turn or loses their command this round.\nThe chain's weight suppresses their voice. Break free: DC 18 Str check."},
     {id:'dead_anchor',name:'Dead Anchor',tier:3,cost:7500,desc:"4d6 ×10 impact. Range 5 sq / 10 sq long. Hit +4. 2 lines + boarding. Reel 2 sq/turn. HP 320.\nAnchor shot (once/combat, requires existing line): on a hit, tethered ship Speed drops to 0 for 1 round — fully stopped, not halved.\nBreak free: DC 18 Str check."},
     {id:'boarding_ram',name:'The Boarding Ram',tier:3,cost:8500,desc:"4d6 ×10 impact. Range 6 sq / 12 sq long. Hit +4. 3 lines (triple slow) + boarding. Reel 3 sq/turn. HP 320.\nThree lines: each halves Speed — three lines makes even a fast ship nearly immobile.\nBoarding momentum: boarding crew gain advantage AND +1d10 bonus damage on their first attack.\nBreak free: DC 17 Str check."},
@@ -1344,6 +1351,57 @@ const SHIP_CAT=(function(){
 })();
 function getShipCat(ship){ return SHIP_CAT[ship.id]||(ship.unique?'cultural':'standard'); }
 
+function toggleCatalogue(){
+  var cat=document.getElementById('catalogue');
+  var btn=document.getElementById('cat-collapse-btn');
+  if(!cat) return;
+  var collapsed=cat.classList.toggle('collapsed');
+  if(btn) btn.textContent=collapsed?'›':'‹';
+}
+
+// Tablet touch drag from catalogue — same as mobile tap-to-add but with position
+function _tabletChipDrag(){
+  if(window.innerWidth<=700||window.innerWidth>1024) return;
+  var list=document.getElementById('ship-list');
+  if(!list) return;
+  list.querySelectorAll('.ship-chip').forEach(function(chip){
+    chip.addEventListener('touchstart',function(e){
+      var sid=chip.dataset.sid;
+      var ship=_shipMap[sid]; if(!ship) return;
+      var sx=e.touches[0].clientX, sy=e.touches[0].clientY;
+      var dragging=false;
+      function onMove(ev){
+        if(!dragging && Math.hypot(ev.touches[0].clientX-sx,ev.touches[0].clientY-sy)>10){
+          dragging=true;
+        }
+        if(dragging) ev.preventDefault();
+      }
+      function onEnd(ev){
+        chip.removeEventListener('touchmove',onMove);
+        chip.removeEventListener('touchend',onEnd);
+        if(!dragging) return; // tap — do nothing (desktop handles it)
+        var tt=ev.changedTouches[0];
+        var wa=document.getElementById('water-area');
+        if(!wa) return;
+        var wr=wa.getBoundingClientRect();
+        var x=Math.max(10,Math.min(tt.clientX-wr.left-60, wr.width-160));
+        var y=Math.max(30,Math.min(tt.clientY-wr.top-30, wr.height-90));
+        var inst={uid:''+Date.now()+Math.floor(Math.random()*1e9),shipId:ship.id,x:x,y:y,tier:ship.tier,
+          systems:{},upgrades:new Array(ship.upgradeSlots).fill(null),
+          riggers:[''],crew:[],rooms:[],roomCrew:{}};
+        _armadaAdd(inst);
+        _rebuildShipMap();_rebuildArmadaMap();
+        var free=_findFreeSpot(inst,x,y);
+        inst.x=free.x;inst.y=free.y;
+        renderWater();updateStats();selectShip(inst.uid);
+        _mobToast(ship.name+' dropped');
+      }
+      chip.addEventListener('touchmove',onMove,{passive:false});
+      chip.addEventListener('touchend',onEnd,{once:true});
+    },{passive:true});
+  });
+}
+
 function renderCat(){
   const list=$id('ship-list');
   let ships=tierFilter==='all'?SHIPS:SHIPS.filter(s=>s.tier===tierFilter);
@@ -1364,12 +1422,17 @@ function renderCat(){
     </div>`).join('');
   // Mobile: tap to add ship (touch devices only)
   if('ontouchstart' in window){
-    list.querySelectorAll('.ship-chip').forEach(function(chip){
-      chip.addEventListener('touchend',function(e){
-        e.preventDefault();
-        mobAddShip(chip.dataset.sid);
+    if(window.innerWidth<=700){
+      // Mobile: tap to add
+      list.querySelectorAll('.ship-chip').forEach(function(chip){
+        chip.addEventListener('touchend',function(e){
+          e.preventDefault();
+          mobAddShip(chip.dataset.sid);
+        });
       });
-    });
+    }
+    // Tablet: drag from catalogue
+    _tabletChipDrag();
   }
 }
 
@@ -4827,13 +4890,75 @@ function renderWater(){
       el.addEventListener('touchstart',function(e){
         if(e.target.closest('.st-del')||e.target.closest('.st-cpy'))return;
         var uid=''+inst.uid;
-        var moved=false;
-        var timer=setTimeout(function(){ startTouchToken(e,uid); moved=true; },200);
-        el.addEventListener('touchend',function te(){
-          clearTimeout(timer);
-          el.removeEventListener('touchend',te);
-          if(!moved){ selectShip(uid); if(typeof mobGoDetail==='function') mobGoDetail(); }
-        },{once:true});
+        var t0=e.touches[0];
+        var sx=t0.clientX, sy=t0.clientY;
+        var dragging=false;
+
+        function onMove(ev){
+          if(!ev.touches.length) return;
+          var t=ev.touches[0];
+          if(!dragging && Math.hypot(t.clientX-sx,t.clientY-sy)>10){
+            dragging=true;
+            // Start drag with current touch position
+            var el2=document.querySelector('[data-uid="'+uid+'"]');
+            if(el2){
+              var rect=el2.getBoundingClientRect();
+              tokenOffX=t.clientX-rect.left;
+              tokenOffY=t.clientY-rect.top;
+              draggingToken=uid;
+              el2.style.zIndex=100;
+              _mobPickupAnim(el2);
+              _startTrail();
+              _addTrailPoint(t.clientX,t.clientY);
+              // Lock scroll
+              var wa=document.getElementById('water-area');
+              if(wa) wa.style.overflow='hidden';
+            }
+          }
+          if(dragging){
+            ev.preventDefault();
+            if(!draggingToken) return;
+            var el3=document.querySelector('[data-uid="'+draggingToken+'"]');
+            if(!el3) return;
+            var tt=ev.touches[0];
+            var wr=document.getElementById('water-area').getBoundingClientRect();
+            var x=Math.max(0,Math.min(tt.clientX-wr.left-tokenOffX,wr.width-155));
+            var y=Math.max(0,Math.min(tt.clientY-wr.top-tokenOffY,wr.height-85));
+            el3.style.left=x+'px'; el3.style.top=y+'px';
+            var inst2=_armadaGet(draggingToken);
+            if(inst2){inst2.x=x;inst2.y=y;}
+            _addTrailPoint(tt.clientX,tt.clientY);
+          }
+        }
+
+        function onEnd(){
+          el.removeEventListener('touchmove',onMove);
+          el.removeEventListener('touchend',onEnd);
+          if(!dragging){
+            // Tap — open ship details
+            selectShip(uid);
+            if(typeof mobGoDetail==='function') mobGoDetail();
+          } else {
+            // End drag
+            if(draggingToken){
+              var el4=document.querySelector('[data-uid="'+draggingToken+'"]');
+              if(el4){el4.style.zIndex='';el4.style.transform='';}
+              var inst3=_armadaGet(draggingToken);
+              if(inst3){
+                var free=_findFreeSpot(inst3,inst3.x,inst3.y);
+                inst3.x=free.x; inst3.y=free.y;
+                if(el4){el4.style.left=free.x+'px';el4.style.top=free.y+'px';}
+              }
+              draggingToken=null;
+            }
+            _stopTrail();
+            var wa=document.getElementById('water-area');
+            if(wa) wa.style.overflow='';
+          }
+        }
+
+        el.addEventListener('touchmove',onMove,{passive:false});
+        el.addEventListener('touchend',onEnd,{once:true});
       },{passive:true});
     }
 
