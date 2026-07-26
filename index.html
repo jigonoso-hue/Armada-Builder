@@ -166,7 +166,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .si-tier{color:#4a7a9a;margin-right:3px;}
 
 /* tooltip */
-#tooltip{position:fixed;background:#050f1a;border:1px solid #2a5a80;border-radius:9px;padding:10px 12px;font-size:10px;color:#8ab8d8;pointer-events:auto;z-index:1500;max-width:290px;line-height:1.6;display:none;box-shadow:0 4px 20px rgba(0,0,0,.5);}
+#tooltip{position:fixed;background:#050f1a;border:1px solid #2a5a80;border-radius:9px;padding:10px 12px;font-size:10px;color:#8ab8d8;pointer-events:auto;z-index:2200;max-width:290px;line-height:1.6;display:none;box-shadow:0 4px 20px rgba(0,0,0,.5);}
 .roll-btn{display:inline-block;background:#0e1a2a;border:1px solid #2a4a6a;border-radius:6px;color:#6a9aba;font-size:10px;font-weight:600;padding:3px 9px;margin:2px 2px 0 0;cursor:pointer;line-height:1.5;}
 .roll-btn:hover{background:#1a2a3a;border-color:#4a7a9a;color:#8ab8d8;}
 .slot.filled:hover{background:#0f2a40;border-color:#5a9abc!important;transform:translateY(-2px);box-shadow:0 4px 12px rgba(60,140,200,.25);}
@@ -193,7 +193,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 @keyframes pulse20{from{opacity:.5}to{opacity:1}}
 
 /* modal */
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1100;display:flex;align-items:center;justify-content:center;}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2100;display:flex;align-items:center;justify-content:center;}
 .modal{background:#0d1e30;border:1px solid #2a5a80;border-radius:12px;padding:20px;min-width:340px;max-width:480px;width:90%;}
 .modal h2{font-size:14px;font-weight:500;color:#e0d8c8;margin-bottom:12px;}
 .modal textarea{width:100%;height:120px;background:#06101a;border:0.5px solid #1a3a55;border-radius:6px;color:#8ab8d8;font-family:monospace;font-size:11px;padding:8px;resize:vertical;}
@@ -341,7 +341,7 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
 .rft.active{background:#1a3a55;color:#c8d8e8;}
 
 /* Room tooltip (rich) */
-#room-tip{position:fixed;background:#050f1a;border:1px solid #2a5a80;border-radius:10px;padding:11px 13px;font-size:10px;color:#8ab8d8;pointer-events:none;z-index:1600;max-width:280px;line-height:1.6;display:none;box-shadow:0 4px 24px rgba(0,0,0,.6);}
+#room-tip{position:fixed;background:#050f1a;border:1px solid #2a5a80;border-radius:10px;padding:11px 13px;font-size:10px;color:#8ab8d8;pointer-events:none;z-index:2300;max-width:280px;line-height:1.6;display:none;box-shadow:0 4px 24px rgba(0,0,0,.6);}
 
 #crew-pool-overlay::-webkit-scrollbar{width:3px;}
 .cp-row{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;border:.5px solid #1a3a55;margin-bottom:3px;background:#06101a;}
@@ -547,6 +547,7 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
       <button onclick="openCombatRules();closeTopMenu()" class="topmenu-item topmenu-orange"><i class="ti ti-sword"></i> Combat Rules</button>
       <button onclick="openBattleModal();closeTopMenu()" id="battle-btn" class="topmenu-item topmenu-green"><i class="ti ti-sword-off"></i> Battle</button>
       <button onclick="openBestiary();closeTopMenu()" class="topmenu-item topmenu-purple"><i class="ti ti-book"></i> Bestiary</button>
+      <button onclick="openProductionFlowchart();closeTopMenu()" class="topmenu-item topmenu-orange"><i class="ti ti-sitemap"></i> Production Flowchart</button>
     </div>
   </div>
 
@@ -563,6 +564,7 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
     <button class="mob-dd-item" onclick="openEncounterModal();closeMobMenu()"><i class="ti ti-swords"></i> Create Encounter</button>
     <div class="mob-dd-sep"></div>
     <button class="mob-dd-item" onclick="openCombatRules();closeMobMenu()" style="color:#f0a040;"><i class="ti ti-sword"></i> Combat Rules</button>
+    <button class="mob-dd-item" onclick="openProductionFlowchart();closeMobMenu()" style="color:#f0a040;"><i class="ti ti-sitemap"></i> Production Flowchart</button>
     <button class="mob-dd-item" onclick="openBestiary();closeMobMenu()" style="color:#c8a0f0;"><i class="ti ti-book"></i> Bestiary</button>
   </div>
 </div>
@@ -653,7 +655,7 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
   'tidebreaker_spine':'defense','zadelian_depth_anchor':'defense',
   'iron_heart':'generators','scorched_heart':'generators','brine_core':'generators',
   'anima_core_vessel':'generators','elec_arc_battery':'offense',
-  'brine_core_mk2':'generators','arcane_battery':'generators','stellar_tokamak':'generators',
+  'brine_core_mk2':'generators','arcane_battery':'generators','stellar_tokamak':'generators','voltaic_furnace':'generators',
   'still_flame':'defense','arcane_battery_tap':'offense','arcane_battery_reserve':'defense',
   'elec_capacitor_bank_redundancy':'utility','combustion_ash_recycling':'utility',
   'brine_containment_coil':'defense','brine_overload_diverter':'offense','brine_adaptive_lattice':'offense',
@@ -1436,6 +1438,14 @@ electric_cannon:[
    desc:"4d10 x10 hull damage only. Range 7 sq / 14 sq long. Hit +5. Reload 1 round. HP 340. Crew 4.\nRequires: Electric Generator. Non-functional if generator disabled.\nUltra-high-velocity precision weapon — the pinnacle of magnetic acceleration.\nHypervelocity Impact (passive): ignores cover entirely, and deals double damage against any target that hasn't moved since its last turn."},
   {id:'elec_magnetar_cannon',name:'Magnetar Cannon',tier:3,cost:24000,
    desc:"4d10 x10 hull damage only. Range 6 sq / 12 sq long. Hit +4. Reload 1 round. HP 340. Crew 4.\nRequires: Electric Generator. Non-functional if generator disabled.\nThe largest magnet weapon ever mounted on a hull — a floating city's worth of coil power in one barrel.\nMagnetar Pulse (1/combat): charge the coils for one round (no attack that round), then unleash — deals 8d10x10 damage to one target and disables their engine for 1 round if their hull is metal."},
+  {id:'stellar_lance',name:'Stellar Lance',tier:3,cost:45000,
+   desc:"6d10 x10 hull damage only. Range 8 sq / 16 sq long. Hit +6. Reload 1 round. HP 400. Crew 4.\nRequires: The Stellar Tokamak installed. Non-functional with any other engine.\nA direct-fire beam split off the captive star itself, channeled through a focusing lens too unstable for any hull but the Tokamak's own.\nUnfiltered Plasma (passive): ignores all damage reduction and armor plating — the beam doesn't care what it's cutting through.\nDRAWBACK: each shot counts as 50 damage toward the Tokamak's own Containment Failure threshold, tracked separately from combat damage taken."},
+  {id:'stellar_coronal_ejection',name:'Coronal Ejection Cannon',tier:3,cost:50000,
+   desc:"Special — no standard hull damage stat. Range 6 sq. Reload — see ability. HP 400. Crew 4.\nRequires: The Stellar Tokamak installed. Non-functional with any other engine.\nVents a controlled coronal burst outward from the reactor housing — devastating, but it strains containment every time.\nCoronal Burst (1/combat): every ship within 4 sq of the target takes 8d10x10 fire and lightning damage, no attack roll needed.\nDRAWBACK: after firing, roll d6 — on a 1, the Tokamak's containment field destabilizes and an immediate Containment Failure check triggers."},
+  {id:'stellar_singularity_bore',name:'Singularity Bore',tier:4,cost:60000,
+   desc:"7d10 x10 hull damage only. Range 6 sq / 12 sq long. Hit +7. Reload 2 rounds. HP 400. Crew 5.\nRequires: The Stellar Tokamak installed. Non-functional with any other engine.\nA collapsed thread of stellar matter fired as a single round — where it hits, gravity itself briefly fails.\nGravitic Collapse (passive, on hit): the target's Speed drops to 0 for 1 round and all its weapon mounts fire at disadvantage as the hull briefly buckles inward.\nDRAWBACK: counts as 75 damage toward the Tokamak's Containment Failure threshold per shot — the heaviest strain of any Tokamak weapon."},
+  {id:'stellar_photosphere_battery',name:'Photosphere Battery',tier:4,cost:55000,
+   desc:"4d10 x10 hull damage only, hits up to 3 different targets within range simultaneously, one attack roll each. Range 7 sq. Hit +6. Reload 1 round. HP 400. Crew 5.\nRequires: The Stellar Tokamak installed. Non-functional with any other engine.\nTwelve secondary emitters ringing the reactor housing, firing in overlapping sequence — less a single cannon than a wall of the sun itself.\nDRAWBACK: cannot be fired the same round as any other Tokamak weapon — draws too much from the shared reactor line."},
 ],
 
 electric_harpoon:[
@@ -1494,44 +1504,44 @@ electric_harpoon:[
 
 combustion_cannon:[
   {id:'coal_piston_cannon',name:'Piston Cannon',tier:1,cost:650,
-   desc:"3d10 ×10 hull damage. Range 4 sq / 8 sq long. Hit +2. Reload 1 round. HP 150. Crew 2.\nRequires: Coal Engine (Firebox or Ember Drive). Non-functional if engine disabled or destroyed.\nSteam-Cycled Loader (passive): reload drops to 0 rounds on any round this ship's engine took no damage — a stable boiler feeds the breech continuously.\nPressure Burst (1/combat): vent the boiler straight into the shot — this attack ignores the first 10 points of the target's AC."},
+   desc:"3d10 ×10 hull damage. Range 4 sq / 8 sq long. Hit +2. Reload 1 round. HP 150. Crew 2.\nRequires: Coal Engine (Firebox or Firebox MkII). Non-functional if engine disabled or destroyed.\nSteam-Cycled Loader (passive): reload drops to 0 rounds on any round this ship's engine took no damage — a stable boiler feeds the breech continuously.\nPressure Burst (1/combat): vent the boiler straight into the shot — this attack ignores the first 10 points of the target's AC."},
   {id:'coal_furnace_bore',name:'Furnace Bore',tier:1,cost:700,
-   desc:"3d10 ×10 hull damage plus fire. Range 4 sq / 8 sq long. Hit +1. Reload 1 round. HP 150. Crew 2.\nRequires: Coal Engine (Firebox or Ember Drive). Non-functional if engine disabled or destroyed.\nMolten Shot (passive): on a hit, inflicts one fire severity level on the target ship.\nForge-Fed Round (1/combat): load a shell straight from the firebox — this attack deals an extra 2d10×10 fire damage; this cannon takes 1d10 damage from the overheated barrel afterward."},
+   desc:"3d10 ×10 hull damage plus fire. Range 4 sq / 8 sq long. Hit +1. Reload 1 round. HP 150. Crew 2.\nRequires: Coal Engine (Firebox or Firebox MkII). Non-functional if engine disabled or destroyed.\nMolten Shot (passive): on a hit, inflicts one fire severity level on the target ship.\nForge-Fed Round (1/combat): load a shell straight from the firebox — this attack deals an extra 2d10×10 fire damage; this cannon takes 1d10 damage from the overheated barrel afterward."},
   {id:'coal_gatling_bore',name:'Gatling Bore',tier:2,cost:3400,
-   desc:"3d10 ×10 hull damage. Range 4 sq / 8 sq long. Hit +3. Reload 1 round. HP 220. Crew 3.\nRequires: Coal Engine (Firebox or Ember Drive). Non-functional if engine disabled or destroyed.\nChain-Fed Barrels (passive): may fire twice in one round instead of once — the second shot is made at disadvantage.\nSpin-Up (1/combat): fire immediately with no reload cost this round, even right after a previous shot."},
+   desc:"3d10 ×10 hull damage. Range 4 sq / 8 sq long. Hit +3. Reload 1 round. HP 220. Crew 3.\nRequires: Coal Engine (Firebox or Firebox MkII). Non-functional if engine disabled or destroyed.\nChain-Fed Barrels (passive): may fire twice in one round instead of once — the second shot is made at disadvantage.\nSpin-Up (1/combat): fire immediately with no reload cost this round, even right after a previous shot."},
   {id:'coal_pressure_ram',name:'Pressure Ram',tier:2,cost:3600,
-   desc:"5d10 ×10 hull damage. Range 4 sq / 8 sq long. Hit +2. Reload 2 rounds. HP 220. Crew 3.\nRequires: Coal Engine (Firebox or Ember Drive). Non-functional if engine disabled or destroyed.\nCompressed Charge (passive): highest single-shot damage of any T2 coal cannon, offset by a 2-round reload cycle.\nOverpressure (1/combat): this shot ignores the first 15 points of the target's AC and, if it hits, pushes the target 1 sq."},
+   desc:"5d10 ×10 hull damage. Range 4 sq / 8 sq long. Hit +2. Reload 2 rounds. HP 220. Crew 3.\nRequires: Coal Engine (Firebox or Firebox MkII). Non-functional if engine disabled or destroyed.\nCompressed Charge (passive): highest single-shot damage of any T2 coal cannon, offset by a 2-round reload cycle.\nOverpressure (1/combat): this shot ignores the first 15 points of the target's AC and, if it hits, pushes the target 1 sq."},
   {id:'coal_furnace_heart',name:'The Furnace Heart',tier:3,cost:14000,
-   desc:"6d10 ×10 hull damage. Range 6 sq / 12 sq long. Hit +4. Reload 1 round. HP 340. Crew 4.\nRequires: Coal Engine (Firebox or Ember Drive). Non-functional if engine disabled or destroyed.\nSystem targeting: disadvantage to hit. Damage halved before ×10.\nOverdrive Firing (1/combat): feed the ship's own boiler directly into the barrel — this shot deals +4d10×10 bonus damage; the engine takes 2d10 damage and this ship's Speed is halved next round."},
+   desc:"6d10 ×10 hull damage. Range 6 sq / 12 sq long. Hit +4. Reload 1 round. HP 340. Crew 4.\nRequires: Coal Engine (Firebox or Firebox MkII). Non-functional if engine disabled or destroyed.\nSystem targeting: disadvantage to hit. Damage halved before ×10.\nOverdrive Firing (1/combat): feed the ship's own boiler directly into the barrel — this shot deals +4d10×10 bonus damage; the engine takes 2d10 damage and this ship's Speed is halved next round."},
   {id:'coal_cogwork_devastator',name:'Cogwork Devastator',tier:3,cost:13500,
-   desc:"5d10 ×10 hull damage. Range 7 sq / 14 sq long. Hit +6. Reload 1 round. HP 340. Crew 4.\nRequires: Coal Engine (Firebox or Ember Drive). Non-functional if engine disabled or destroyed.\nGeared Precision (passive): +2 to hit beyond the listed bonus against any target this ship has already hit once this combat — the mechanical calculation engine tracks the firing solution.\nClockwork Volley (1/combat): fire twice in the same round with no disadvantage on either shot."},
+   desc:"5d10 ×10 hull damage. Range 7 sq / 14 sq long. Hit +6. Reload 1 round. HP 340. Crew 4.\nRequires: Coal Engine (Firebox or Firebox MkII). Non-functional if engine disabled or destroyed.\nGeared Precision (passive): +2 to hit beyond the listed bonus against any target this ship has already hit once this combat — the mechanical calculation engine tracks the firing solution.\nClockwork Volley (1/combat): fire twice in the same round with no disadvantage on either shot."},
   {id:'coal_slag_barrel',name:'Slag Barrel',tier:1,cost:680,
-   desc:"3d10 ×10 hull damage. Range 4 sq / 8 sq long. Hit +1. Reload 1 round. HP 150. Crew 2.\nRequires: Coal Engine (Firebox or Ember Drive). Non-functional if engine disabled or destroyed.\nSlag Coating (1/combat): coat the target in molten slag — until the end of their next turn, the target has disadvantage on all attack rolls, the residue fouling their gun sights and rigging."},
+   desc:"3d10 ×10 hull damage. Range 4 sq / 8 sq long. Hit +1. Reload 1 round. HP 150. Crew 2.\nRequires: Coal Engine (Firebox or Firebox MkII). Non-functional if engine disabled or destroyed.\nSlag Coating (1/combat): coat the target in molten slag — until the end of their next turn, the target has disadvantage on all attack rolls, the residue fouling their gun sights and rigging."},
   {id:'coal_flywheel_cannon',name:'Flywheel Cannon',tier:2,cost:3300,
-   desc:"3d10 ×10 hull damage. Range 4 sq / 8 sq long. Hit +2. Reload 1 round. HP 220. Crew 3.\nRequires: Coal Engine (Firebox or Ember Drive). Non-functional if engine disabled or destroyed.\nFlywheel Charge (passive): each round this cannon holds its fire, a spinning flywheel stores kinetic charge (max 3 stacks). The next shot fired deals +1d10×10 damage per stored charge, then the flywheel resets to 0."},
+   desc:"3d10 ×10 hull damage. Range 4 sq / 8 sq long. Hit +2. Reload 1 round. HP 220. Crew 3.\nRequires: Coal Engine (Firebox or Firebox MkII). Non-functional if engine disabled or destroyed.\nFlywheel Charge (passive): each round this cannon holds its fire, a spinning flywheel stores kinetic charge (max 3 stacks). The next shot fired deals +1d10×10 damage per stored charge, then the flywheel resets to 0."},
   {id:'coal_smokestack_cannon',name:'Smokestack Cannon',tier:3,cost:13000,
-   desc:"5d10 ×10 hull damage. Range 6 sq / 12 sq long. Hit +4. Reload 1 round. HP 340. Crew 4.\nRequires: Coal Engine (Firebox or Ember Drive). Non-functional if engine disabled or destroyed.\nSystem targeting: disadvantage to hit. Damage halved before ×10.\nBillowing Smoke (passive): each time this ship fires a cannon mount, thick coal smoke wreathes the hull — gain +1 AC until the end of the round. Stacks up to 3 times per round (max +3 AC); clears at the start of this ship's next turn."},
+   desc:"5d10 ×10 hull damage. Range 6 sq / 12 sq long. Hit +4. Reload 1 round. HP 340. Crew 4.\nRequires: Coal Engine (Firebox or Firebox MkII). Non-functional if engine disabled or destroyed.\nSystem targeting: disadvantage to hit. Damage halved before ×10.\nBillowing Smoke (passive): each time this ship fires a cannon mount, thick coal smoke wreathes the hull — gain +1 AC until the end of the round. Stacks up to 3 times per round (max +3 AC); clears at the start of this ship's next turn."},
 ],
 
 combustion_harpoon:[
   {id:'coal_piston_lance',name:'Piston Lance',tier:1,cost:550,
-   desc:"2d6 ×10 impact. Range 4 sq / 8 sq long. Hit +2. 1 line. Reel 2 sq/turn. HP 150. Crew 2.\nRequires: Coal Engine (Firebox or Ember Drive). Non-functional if engine disabled or destroyed.\nLine HP 60. Cut DC 12 (Str). Break free: DC 13 Str check, full move, no action.\nSteam Winch (passive): reels in faster than any other T1 harpoon — pressurized cable drum pulls hard.\nPneumatic Fire (1/combat): fire this harpoon at no cost this round if it already has a line attached to another target."},
+   desc:"2d6 ×10 impact. Range 4 sq / 8 sq long. Hit +2. 1 line. Reel 2 sq/turn. HP 150. Crew 2.\nRequires: Coal Engine (Firebox or Firebox MkII). Non-functional if engine disabled or destroyed.\nLine HP 60. Cut DC 12 (Str). Break free: DC 13 Str check, full move, no action.\nSteam Winch (passive): reels in faster than any other T1 harpoon — pressurized cable drum pulls hard.\nPneumatic Fire (1/combat): fire this harpoon at no cost this round if it already has a line attached to another target."},
   {id:'coal_coalfire_grapple',name:'Coalfire Grapple',tier:1,cost:600,
-   desc:"2d6 ×10 impact. Range 4 sq / 8 sq long. Hit +1. 1 line. Reel 1 sq/turn. HP 150. Crew 2.\nRequires: Coal Engine (Firebox or Ember Drive). Non-functional if engine disabled or destroyed.\nLine HP 70. Cut DC 13 (Str). Break free: DC 13 Str check, full move, no action.\nWelded Barb (passive): the heated barb fuses slightly to the hull — Cut DC increases by 2 after the first round attached."},
+   desc:"2d6 ×10 impact. Range 4 sq / 8 sq long. Hit +1. 1 line. Reel 1 sq/turn. HP 150. Crew 2.\nRequires: Coal Engine (Firebox or Firebox MkII). Non-functional if engine disabled or destroyed.\nLine HP 70. Cut DC 13 (Str). Break free: DC 13 Str check, full move, no action.\nWelded Barb (passive): the heated barb fuses slightly to the hull — Cut DC increases by 2 after the first round attached."},
   {id:'coal_gearwinch_harpoon',name:'Gearwinch Harpoon',tier:2,cost:2700,
-   desc:"3d6 ×10 impact. Range 5 sq / 10 sq long. Hit +3. 1 line. Reel 3 sq/turn (fastest T2 reel). HP 220. Crew 3.\nRequires: Coal Engine (Firebox or Ember Drive). Non-functional if engine disabled or destroyed.\nLine HP 150. Cut DC 14 (Str). Break free: DC 15 Str check, full move, no action.\nMechanical Advantage (passive): reeling in this line never imposes a system-targeting penalty on the harpoonist."},
+   desc:"3d6 ×10 impact. Range 5 sq / 10 sq long. Hit +3. 1 line. Reel 3 sq/turn (fastest T2 reel). HP 220. Crew 3.\nRequires: Coal Engine (Firebox or Firebox MkII). Non-functional if engine disabled or destroyed.\nLine HP 150. Cut DC 14 (Str). Break free: DC 15 Str check, full move, no action.\nMechanical Advantage (passive): reeling in this line never imposes a system-targeting penalty on the harpoonist."},
   {id:'coal_steam_drill_spike',name:'Steam Drill Spike',tier:2,cost:2950,
-   desc:"2d6 ×10 impact. Range 4 sq / 8 sq long. Hit +3. 1 line. Reel 2 sq/turn. HP 220. Crew 3.\nRequires: Coal Engine (Firebox or Ember Drive). Non-functional if engine disabled or destroyed.\nLine HP 160. Cut DC 15 (Str). Break free: DC 16 Str check, full move, no action.\nDrilling Bit (passive): each round this line remains attached, it deals an additional 1d10×10 damage automatically as the drill bores deeper — this stacks with the initial hit."},
+   desc:"2d6 ×10 impact. Range 4 sq / 8 sq long. Hit +3. 1 line. Reel 2 sq/turn. HP 220. Crew 3.\nRequires: Coal Engine (Firebox or Firebox MkII). Non-functional if engine disabled or destroyed.\nLine HP 160. Cut DC 15 (Str). Break free: DC 16 Str check, full move, no action.\nDrilling Bit (passive): each round this line remains attached, it deals an additional 1d10×10 damage automatically as the drill bores deeper — this stacks with the initial hit."},
   {id:'coal_ironclaw',name:'The Ironclaw',tier:3,cost:9200,
-   desc:"4d6 ×10 impact. Range 6 sq / 12 sq long. Hit +5. 2 lines + boarding. Reel 2 sq/turn. HP 340. Crew 4.\nRequires: Coal Engine (Firebox or Ember Drive). Non-functional if engine disabled or destroyed.\nLine HP 220. Cut DC 17 (Str). Break free: DC 18 Str check, full move, no action.\nCrushing Grip (passive): while attached, the tethered ship's Speed cannot be increased above half by any means.\nHydraulic Crush (1/combat, requires an existing line): the claw clamps down — deal 3d10×10 bonus hull damage to the tethered target with no attack roll needed."},
+   desc:"4d6 ×10 impact. Range 6 sq / 12 sq long. Hit +5. 2 lines + boarding. Reel 2 sq/turn. HP 340. Crew 4.\nRequires: Coal Engine (Firebox or Firebox MkII). Non-functional if engine disabled or destroyed.\nLine HP 220. Cut DC 17 (Str). Break free: DC 18 Str check, full move, no action.\nCrushing Grip (passive): while attached, the tethered ship's Speed cannot be increased above half by any means.\nHydraulic Crush (1/combat, requires an existing line): the claw clamps down — deal 3d10×10 bonus hull damage to the tethered target with no attack roll needed."},
   {id:'coal_boiler_harpoon',name:'Boiler Harpoon',tier:3,cost:9600,
-   desc:"4d6 ×10 impact. Range 6 sq / 12 sq long. Hit +5. 1 line + boarding. Reel 3 sq/turn. HP 340. Crew 4.\nRequires: Coal Engine (Firebox or Ember Drive). Non-functional if engine disabled or destroyed.\nLine HP 200. Cut DC 16 (Str). Break free: DC 17 Str check, full move, no action.\nSteam Vent (1/combat, requires an existing line): vent scalding steam down the line into the tethered ship — all crew aboard the target take 1d6×10 damage, DC 15 Con save for half."},
+   desc:"4d6 ×10 impact. Range 6 sq / 12 sq long. Hit +5. 1 line + boarding. Reel 3 sq/turn. HP 340. Crew 4.\nRequires: Coal Engine (Firebox or Firebox MkII). Non-functional if engine disabled or destroyed.\nLine HP 200. Cut DC 16 (Str). Break free: DC 17 Str check, full move, no action.\nSteam Vent (1/combat, requires an existing line): vent scalding steam down the line into the tethered ship — all crew aboard the target take 1d6×10 damage, DC 15 Con save for half."},
   {id:'coal_rivet_harpoon',name:'Rivet Harpoon',tier:1,cost:580,
-   desc:"2d6 ×10 impact. Range 4 sq / 8 sq long. Hit +2. 1 line. Reel 1 sq/turn. HP 150. Crew 2.\nRequires: Coal Engine (Firebox or Ember Drive). Non-functional if engine disabled or destroyed.\nLine HP 65. Cut DC 13 (Str). Break free: DC 14 Str check, full move, no action.\nRivet Lock (passive): the barbed rivet punctures a weak seam — while this line remains attached, the tethered ship's AC is reduced by 1."},
+   desc:"2d6 ×10 impact. Range 4 sq / 8 sq long. Hit +2. 1 line. Reel 1 sq/turn. HP 150. Crew 2.\nRequires: Coal Engine (Firebox or Firebox MkII). Non-functional if engine disabled or destroyed.\nLine HP 65. Cut DC 13 (Str). Break free: DC 14 Str check, full move, no action.\nRivet Lock (passive): the barbed rivet punctures a weak seam — while this line remains attached, the tethered ship's AC is reduced by 1."},
   {id:'coal_conveyor_harpoon',name:'Conveyor Harpoon',tier:2,cost:2750,
-   desc:"3d6 ×10 impact. Range 5 sq / 10 sq long. Hit +3. 1 line. Reel 2 sq/turn. HP 220. Crew 3.\nRequires: Coal Engine (Firebox or Ember Drive). Non-functional if engine disabled or destroyed.\nLine HP 150. Cut DC 14 (Str). Break free: DC 15 Str check, full move, no action.\nCargo Winch (passive, while a line is attached): the belt continuously drags hull plating, cargo, and supplies off the tethered ship each round — the target takes 1d6×10 hull damage and this ship heals for the same amount as the scavenged material is fed straight into the boiler."},
+   desc:"3d6 ×10 impact. Range 5 sq / 10 sq long. Hit +3. 1 line. Reel 2 sq/turn. HP 220. Crew 3.\nRequires: Coal Engine (Firebox or Firebox MkII). Non-functional if engine disabled or destroyed.\nLine HP 150. Cut DC 14 (Str). Break free: DC 15 Str check, full move, no action.\nCargo Winch (passive, while a line is attached): the belt continuously drags hull plating, cargo, and supplies off the tethered ship each round — the target takes 1d6×10 hull damage and this ship heals for the same amount as the scavenged material is fed straight into the boiler."},
   {id:'coal_hammerhead_harpoon',name:'Hammerhead Harpoon',tier:3,cost:9300,
-   desc:"4d6 ×10 impact. Range 6 sq / 12 sq long. Hit +5. 1 line + boarding. Reel 2 sq/turn. HP 340. Crew 4.\nRequires: Coal Engine (Firebox or Ember Drive). Non-functional if engine disabled or destroyed.\nLine HP 200. Cut DC 16 (Str). Break free: DC 17 Str check, full move, no action.\nConcussive Impact (passive): on a hit, the shockwave rattles the target's helm — their Helmsman must succeed a DC 14 Con save or be stunned for 1 round."},
+   desc:"4d6 ×10 impact. Range 6 sq / 12 sq long. Hit +5. 1 line + boarding. Reel 2 sq/turn. HP 340. Crew 4.\nRequires: Coal Engine (Firebox or Firebox MkII). Non-functional if engine disabled or destroyed.\nLine HP 200. Cut DC 16 (Str). Break free: DC 17 Str check, full move, no action.\nConcussive Impact (passive): on a hit, the shockwave rattles the target's helm — their Helmsman must succeed a DC 14 Con save or be stunned for 1 round."},
 ],
 
   utility:[
@@ -1542,7 +1552,7 @@ combustion_harpoon:[
 
 const UPGRADES = [
   {id:'widows_mantle',name:"Widow's Mantle",type:'Defense',cost:7500,desc:"Sacrificial ablative plating bolted over the hull. Plating has its own 300 HP pool.\nHull damage –15 per hit · Fire resistance · Ram taken –2d10 ×10 · Speed –1 sq\nWhen plating HP depleted: all bonuses lost until replaced at port (3,000 gp).\nStacks with Iron Web. Cannot mount on Geobukseon (already iron-shelled)."},
-  {id:'dead_lanterns',name:"Dead Men's Lanterns",type:'Utility',cost:6000,desc:"Illusion-projecting lanterns at bow, stern, and masts. Ship can appear as any other vessel.\nDetection: Arcana DC 16 or Investigation DC 18 · Change appearance: Captain free action · Enemy fails detection: no reaction in first round\nPIERCED automatically within 1 sq (adjacent). Firing weapons or taking hull damage ends illusion for 1 round.\nIncompatible: Firebox · Ember Drive (smoke ruins illusion)"},
+  {id:'dead_lanterns',name:"Dead Men's Lanterns",type:'Utility',cost:6000,desc:"Illusion-projecting lanterns at bow, stern, and masts. Ship can appear as any other vessel.\nDetection: Arcana DC 16 or Investigation DC 18 · Change appearance: Captain free action · Enemy fails detection: no reaction in first round\nPIERCED automatically within 1 sq (adjacent). Firing weapons or taking hull damage ends illusion for 1 round.\nIncompatible: Firebox · Firebox MkII (smoke ruins illusion)"},
   {id:'tidecallers_net',name:"The Tidecaller's Net",type:'Magic',cost:11000,desc:"Copper nets trailing beneath the hull redirect ocean currents. Always on.\n+2 sq Speed (always active, own ship) · Enemy ships within 3 sq: –1 sq Speed · Harpoon reel +1 sq (stacks with launcher tier)\nCannot be disabled by system targeting — the nets are below the waterline.\nDRAWBACK: Nets cut if enemy adjacent 2 consecutive rounds (DC 15 Str action destroys upgrade). Incompatible: Deepwalker Keel"},
   {id:'widows_eye',name:"The Widow's Eye",type:'Utility',cost:1800,desc:"Mana-crystal lens array at the bow reads wake and pressure signatures.\nThis ship always knows the exact HP, speed, and heading of every ship within 6 sq \u2014 regardless of fog, darkness, or invisibility.\nCannot be surprised by any ship within 6 sq, even ships using Veilshroud or Ghost Rigging."},
   {id:'sirens_perch',name:"Siren's Perch",type:'Utility',cost:1400,desc:"Elevated bow platform with mana-resonant sound horn \u2014 amplifies voice and music across 1 mile of open water.\n2 crew to operate \xb7 Out of combat or pre-combat only.\nLure: DC 14 Performance \u2014 hold a ship within 6 sq in place for 1 round. Fails if any hostile action has been taken this combat.\nIntimidate: before initiative, DC 15 Intimidation forces one ship's crew to make a morale check immediately.\nParley: Persuasion or Deception while active and no weapons fired gains advantage."},
@@ -1575,7 +1585,7 @@ const UPGRADES = [
 
   {id:'leech_keel',name:'Leech Keel',type:'Hull',cost:2400,desc:"The hull beneath the waterline is coated in pressure-reactive brine membrane.\nEach round this ship moves at least 4 sq, it stores 1 Leech charge (max 5).\nSpend charges 1-for-1 to: add 1d10\xd710 to any single weapon attack; reduce incoming damage from one hit by 1d10\xd710; or grant a rigger +1 charge without spending an action.\nCharges reset to 0 at end of combat."},
   {id:'ghost_cannon',name:'Ghost Cannon',type:'Offense',cost:12000,desc:"A specially constructed cannon that fires projectiles treated with a phasing compound — the shot passes through hull sections before detonating inside.\nPhase shot: applies to one designated cannon mount. Its shots ignore all damage reduction, magical hull hardening, and conduit plating — full damage always applies.\nInternal burst: on a critical hit, the round detonates inside the hull — +4d10x10 bonus damage bypassing all reductions.\nDRAWBACK: Each shot costs 200 gp in phasing compound materials. Running out mid-combat means the mount reverts to normal shots."},
-  {id:'ghost_lanterns',name:'Ghost Lanterns',type:'Utility',cost:5000,desc:"Enchanted lanterns at bow, stern, and mast-tops that project false light and silhouette.\nOnce per combat: helmsman issues a decoy movement order as a free action. Enemies make DC 14 Perception or target the wrong position for one round.\nPierced automatically if the ship fires weapons or takes hull damage during the decoy round.\nIncompatible: Firebox · Ember Drive. Stacks with Dead Men's Lanterns."},
+  {id:'ghost_lanterns',name:'Ghost Lanterns',type:'Utility',cost:5000,desc:"Enchanted lanterns at bow, stern, and mast-tops that project false light and silhouette.\nOnce per combat: helmsman issues a decoy movement order as a free action. Enemies make DC 14 Perception or target the wrong position for one round.\nPierced automatically if the ship fires weapons or takes hull damage during the decoy round.\nIncompatible: Firebox · Firebox MkII. Stacks with Dead Men's Lanterns."},
   {id:'ghost_rigging',name:'Ghost Rigging',type:'Hull',cost:6500,desc:"Silence-thread woven sails muffle the ship's approach entirely.\nAdvantage all stealth checks · Sniper detection DC +4 (raised to 18) · Night speed +1 sq (darkness only) · Wind efficiency +1 sq speed\nINCOMPATIBLE with all engines — silence-thread unravels under heat and energy output.\nWorks with Dead Men's Lanterns for extreme deception builds."},
   {id:'gloomveil_shroud',name:'Gloomveil Shroud',type:'Utility',cost:3600,desc:"Illusory mist generators sourced exclusively from the Gloomveil Syndicate — the same technology cloaking the Veilmarket ghost-fleet.\n1 crew to operate · 2 uses per long rest.\n1 action: this ship and all ships within 3 sq become completely invisible to magical detection, scrying, and Tideforged Charts for 10 minutes. Ranged attacks cannot cross the shroud boundary in either direction. Ships inside can still detect each other within 1 sq by sound and proximity.\nCannot be countered by the Widow's Eye, Long Ear, or Oracle Deck.\nDRAWBACK: The Gloomveil Syndicate knows when this is used. At some point a representative of Varasha Veilhand will appear to discuss a favour. The nature of the favour is not disclosed at purchase. This is standard."}
 
@@ -1613,7 +1623,7 @@ const UPGRADES = [
   {id:'reinforced_keel',name:'Reinforced Keel',type:'Hull',cost:5500,desc:"Structural overhaul of the keel and frame — heavier timber, iron brackets throughout.\nRam damage taken: -50% · Ram damage dealt: +1 die · Hull HP +150\nPassive — always on.\nDRAWBACK: Speed -1 sq. Hard About DC +1.\nStacks with Wrathbone Prow for extreme ram builds."},
   {id:'resonance_hull',name:'Resonance Hull',category:'zadelian',type:'Utility',desc:"Hull lined with Songkeeper-calibrated resonance chambers amplifying voice with precise emotional targeting.\n1 crew to operate · Sustained effect.\nWhile staffed, any Charisma-based check made by this ship's captain against enemy crew automatically gains advantage — the resonance makes words feel reasonable regardless of content.\nMorale strike (1/combat): targeted resonance pulse at one enemy ship within 4 sq — that ship makes a morale check immediately as if it took 25% hull damage. DC 16 Wis save negates.\nDRAWBACK: The Songkeepers know this was reverse-engineered from their methods. Any ship with a Resonance Hull is on their list to monitor. They will not act immediately. They will act eventually."},
   {id:'zad_resonant_keel',name:'Resonant Keel',type:'Hull',category:'zadelian',desc:"The keel has been replaced with a Zadelian harmonic lattice — the ship resonates with leyline flow.\nHarmonic repair: regenerates 20 HP at the start of each ship turn automatically.\nLeyline speed: +2 sq base speed. Speed bonus doubles while traveling along a known leyline route.\nPhase resistance: the first time each combat this ship would take hull damage, roll d6 — on 4+ the hit is deflected entirely by a momentary phase shift.\nDRAWBACK: The resonance is detectable by Zadelian mounts and Anima-powered systems — this ship shows as a leyline node on any harmonic scanner within 5 miles."},
-  {id:'rigged_conversion',name:'Rigged Conversion',type:'Hull',cost:90000,desc:"Removes the oil engine and installs a full mast-and-sail rig. Giff ships only.\nLoses all engine bonuses but gains wind movement bonuses. No longer fueled by coal or oil.\nWith wind: +2 sq Speed · Against wind: -1 sq Speed · No smoke trail · Compatible with Ghost Rigging and stealth builds.\nMovement type changes from engine to sail — all engine-incompatible upgrades become available.\nDRAWBACK: Loses Firebox / Ember Drive / Brine Core bonuses entirely. Engine cannot be reinstalled.\nIncompatible: Firebox · Ember Drive · Brine Core · any Engine upgrade."},
+  {id:'rigged_conversion',name:'Rigged Conversion',type:'Hull',cost:90000,desc:"Removes the oil engine and installs a full mast-and-sail rig. Giff ships only.\nLoses all engine bonuses but gains wind movement bonuses. No longer fueled by coal or oil.\nWith wind: +2 sq Speed · Against wind: -1 sq Speed · No smoke trail · Compatible with Ghost Rigging and stealth builds.\nMovement type changes from engine to sail — all engine-incompatible upgrades become available.\nDRAWBACK: Loses Firebox / Firebox MkII / Brine Core bonuses entirely. Engine cannot be reinstalled.\nIncompatible: Firebox · Firebox MkII · Brine Core · any Engine upgrade."},
   {id:'spectral_lantern_array',name:'Spectral Lantern Array',type:'Utility',cost:2200,desc:"Mana-fed lanterns project a false visual profile of a different ship type.\n1 crew to operate \xb7 Sustained effect.\nWhile staffed, this ship appears as a chosen ship class. Any ship that has not boarded must succeed DC 17 Investigation to detect the disguise.\nDisguise fails if this ship fires a weapon or takes weapon damage. Reactivating costs 1 action."},
   {id:'elec_storm_array',name:'Storm Array',type:'Offense',category:'Electric',cost:25000,desc:"A network of lightning rods, capacitors, and discharge ports covering the upper deck.\nStorm harvest: in rain, fog, or stormy conditions all electric mounts deal +1d10x10 and gain advantage on attack rolls.\nLightning surge (1/combat): charge for 1 round (no mounts fire), then discharge — every ship within 4 sq takes 4d10x10 lightning, no roll or save.\nRequires: Electric Generator installed.\nDRAWBACK: In calm clear weather the array produces nothing. Cannot stealth while active — the ship crackles with visible electricity."},
   {id:'stormcaller_mast',name:'Stormcaller Mast',type:'Hull',cost:9000,desc:"Runed mast with stormcaller crystals. Once per combat, Captain may summon a localized storm as their action (replaces Command).\nStorm covers 10-sq radius · Own ship in storm: +3 sq Speed · Enemy ships in storm: –2 sq Speed, disadvantage on ranged attacks · Morale: +2/round storm active\nDRAWBACK: Storm affects allied ships equally for Speed penalties. Mast disabled = storm dissipates.\n500 gp crystal reagents per use. Incompatible: Veilshroud · Long Ear"},
@@ -1640,7 +1650,7 @@ const UPGRADES = [
   {id:'mirror_hull',name:'The Mirror Hull',type:'Defense',cost:14000,desc:"Mirror-silver worked into the hull plating.\nNatural 1 on spell attack vs this ship: spell reflects full ×5 damage back at caster · Save-based: nat 1 on save + DC 15 Int check to reflect\nAOE spells cannot be reflected — only direct targeted spells.\nDRAWBACK: Own focus –1 spell attack (feedback from reflection coating). Incompatible: Brine Core"},
   {id:'oracle_deck',name:'The Oracle Deck',type:'Utility',cost:7000,desc:"Charts, astrolabes, signal flags, and a trained navigator. Ship is never surprised.\nEnemy system HP brackets known before combat · First round: all crew +2 attack rolls · No weather speed or attack penalties · Initiative: roll twice, take higher\nREQUIRES dedicated navigator crew member. Navigator killed = all bonuses lost for rest of combat."},
   {id:'the_render',name:'The Render',type:'Offense',cost:3800,desc:"Massive anchor-weight on a reinforced chain swung as a ship-scale flail.\n4 crew to operate \xb7 2 uses per long rest.\n1 action: swing at one ship within 2 sq \u2014 8d10\xd710 bludgeoning. On hit roll d6: 1-2 target helm takes 200 HP directly; 3-4 one random mount disabled 2 rounds; 5-6 target knocked 2 sq away, cannot approach until spending a full move.\nDRAWBACK: This ship cannot move next round. The 4 crew cannot act the round after."},
-  {id:'scorched_heart',name:'The Ember Drive',type:'Engine MkII',category:'Combustion',cost:20000,desc:"Refined alchemical coal engine. Upgraded Firebox — the extra heat is fed straight into the guns instead of the hull.\n+2d10 ×10 damage to Combustion-category cannons and harpoons.\nDRAWBACK: Cannot stealth — thick black smoke and a pollution slick trail the ship, visible 10+ miles, lingering 1 hour after the engine stops.\nDrawback: Barrel of coal/oil consumed each session (2,000 gp).\nREQUIRES Firebox installed first. Incompatible: Ghost Rigging · Brine Core"},
+  {id:'scorched_heart',name:'The Firebox MkII',type:'Engine MkII',category:'Combustion',cost:20000,desc:"Refined alchemical coal engine — a standalone upgrade over the base Firebox, feeding the extra heat straight into the guns instead of the hull.\n+2d10 ×10 damage to Combustion-category cannons and harpoons.\nDRAWBACK: Cannot stealth — thick black smoke and a pollution slick trail the ship, visible 10+ miles, lingering 1 hour after the engine stops.\nDrawback: Barrel of coal/oil consumed each session (2,000 gp).\nIncompatible: Ghost Rigging"},
   {id:'soulwarden',name:'The Soulwarden',type:'Magic',cost:18000,desc:"Soul-anchor crystal mounted at the mast base.\nDesignate one crew member pre-combat (1-minute ritual). That crew member auto-revives at 0 HP: restored to 2d8+5 HP.\nOnce per combat. Mast system disabled = Soulwarden goes dark.\nCannot protect the same crew member twice in one combat."},
   {id:'the_stage',name:'The Stage',type:'Utility',cost:1800,desc:"Raised hardwood performance deck amidships with rigging-mounted lighting and instrument storage.\n1 crew to operate \xb7 Long rest benefit.\nWhen a performer uses the Stage during a long rest, all crew gain advantage on their first morale check of the next combat.\nRegular crew resting near an active Stage recover 1 extra hit die during long rests.\nIf a Bard is assigned to this ship, the morale benefit extends to all allied ships within 4 sq during combat."},
   {id:'still_flame',name:'The Still Flame',type:'Brine Stabilizer',cost:12000,desc:"Containment lattice and dampening field fitted around the Brine Core. Requires Brine Core installed.\nMeltdown trigger: reduced to 1-in-6 only (d6, fail on 1) · Cascade damage: 3d10 ×10 (down from 5d10) · Stabilize DC: 14 (down from 18)\nCrystal consumption: every 2 sessions (not 1). 5-day installation.\nCANNOT prevent catastrophic meltdown on nat 1 stabilize — just makes it far less likely."},
@@ -1653,7 +1663,7 @@ const UPGRADES = [
 ,
 
   {id:'fog_bellows',name:'Fog Bellows',type:'Utility',cost:2800,desc:"Pressurised brine-salt fog vents mounted along the hull.\nOnce per combat as a free action, deploy a 4 sq radius fog cloud centred on this ship. Persists 3 rounds, drifts with wind each round (DM determines direction).\nAll ranged attacks targeting this ship from outside the cloud have disadvantage.\nShips inside the cloud cannot be targeted by harpoons or homing abilities.\nMagical detection targeting ships inside the cloud automatically fails for the duration.\nDRAWBACK: The crew of this ship also cannot see out of the cloud. All attacks made from inside the cloud against targets outside it also have disadvantage."},
-  {id:'void_ballast',name:'Void Ballast',type:'Utility',cost:35000,desc:"+2 sq Speed. Ship movement ignores wind entirely — no speed bonus or penalty from wind, immune to passive storm drift. Effective engine-tier movement without an engine.\nDRAWBACK: if driven at night, the ballast begins to seep. All crew on deck are subjected to Crown of Madness (DC 14 Wis save or affected) for the duration of night movement. Void material worsens — after 3 night combats without a long rest, the save DC increases by 2 per combat.\nIncompatible: Firebox · Ember Drive · Brine Core."},
+  {id:'void_ballast',name:'Void Ballast',type:'Utility',cost:35000,desc:"+2 sq Speed. Ship movement ignores wind entirely — no speed bonus or penalty from wind, immune to passive storm drift. Effective engine-tier movement without an engine.\nDRAWBACK: if driven at night, the ballast begins to seep. All crew on deck are subjected to Crown of Madness (DC 14 Wis save or affected) for the duration of night movement. Void material worsens — after 3 night combats without a long rest, the save DC increases by 2 per combat.\nIncompatible: Firebox · Firebox MkII · Brine Core."},
   {id:'elec_volt_keel',name:'Volt Keel',type:'Hull',category:'Electric',cost:16000,desc:"The keel has been electrified — contact with the hull deals damage to anything touching the ship in the water.\nElectric skin: any creature or ship attempting to board by water contact must DC 13 Dex save or take 2d10 lightning and be Stunned 1 round.\nSubmarine shock: any underwater creature within 2 sq takes 1d10 lightning at the start of each round automatically.\nRam bonus: ram attacks deal +3d10x10 lightning in addition to normal ram damage.\nRequires: Electric Generator installed.\nDRAWBACK: Crew cannot swim alongside or repair the hull while active — they take the same damage. Deactivating takes 1 action."},
   {id:'elec_overload_capacitor',name:'Overload Capacitor Array',type:'Offense',category:'Electric',cost:25000,desc:"A bank of capacitors that stores unused generator output instead of letting it bleed off.\nCharge Accumulation (passive): stores 1 charge every round this ship's electric mounts don't fire (max 5 charges).\nRelease (1/combat): discharge every stored charge at once — every electric mount that fires this round deals +1d10×10 damage per charge stored, then the array resets to 0.\nRequires: Electric Generator installed.\nDRAWBACK: if this ship takes hull damage while charges are stored, roll a d6 per charge — on a 1, that charge detonates early for 1d10×10 damage to this ship instead."},
   {id:'elec_tesla_resonance_array',name:'Tesla Resonance Array',type:'Offense',category:'Electric',cost:21000,desc:"A web of tuned coils strung between every electric mount aboard, letting each one feed off the others' discharge.\nResonant Feed (passive): every electric cannon or harpoon mount on this ship deals +1d10 lightning damage on a hit.\nRequires: Electric Generator installed. Requires 2 or more electric mounts to function.\nDRAWBACK: if any single electric mount aboard is destroyed, the resonance array short-circuits and shuts down for the rest of combat."},
@@ -1700,26 +1710,27 @@ const UPGRADES = [
   {id:'akaru_shell_plating',name:"Great Akaru's Shell Plating",type:'Defense',cost:13000,desc:"Layered tortoise-shell plating blessed by the Order of the Sheltering Shell, said to carry a fragment of Great Akaru's own patience.\nShielding patience (passive): +250 HP, but -1 sq Speed — the shell is heavy, and it does not hurry.\nSanctuary hull (passive): any crew who take refuge belowdecks (not at a station) cannot be targeted by boarding attacks or called shots while this upgrade is installed."},
   {id:'harrowhold_grafts',name:'Harrowhold Bone Grafts',type:'Utility',cost:9500,desc:"Reinforcing bone grafts worked into the ship's frame by Bone Harrow artisans, who consider the ship itself a 'blessed vessel' in the making.\nTireless frame (passive): +100 HP. The grafted bone does not tire, bleed, or feel the strain other hulls do.\nGrim upkeep: this upgrade requires 1 fresh bone offering (any Tier 1+ creature corpse) delivered to a Bone Harrow shrine every 3 months, or it begins to weaken (-50 HP after 3 months' neglect, cumulative)."},
   {id:'crownbearer_growth',name:"Crown-Bearer's Coral Growth",type:'Defense',cost:12000,desc:"Living coral seeded from the Coral Throne itself, slowly fusing with the hull the way a Coral Crown fuses with its wearer.\nLiving armor (passive): +180 HP. This HP pool regenerates 10 HP per round automatically, so long as this ship remains in salt water.\nCrowned legitimacy: a captain sailing a ship with this growth installed is recognized as a legitimate island ruler by any faction that honors the Coral Throne, for better or worse."},
-  {id:'kaalele_windbound_sails',name:"Ka'alele Wind-Bound Sails",type:'Utility',cost:15000,desc:"Sails woven with the Ahiwake Storm's bound air spirits, said to remember the way to a homeland that no longer exists above the waves.\nSpirit-driven (passive): +3 sq Speed, always active, regardless of wind direction or conditions — the spirits do not care which way the wind blows.\nHomeward pull (once/long rest): the sails may attempt to guide this ship toward the lost island of Ka'aloa — GM's discretion on effect, but the crew reports vivid dreams of a burning coastline for days after.\nDRAWBACK: incompatible with Firebox, Ember Drive, and Void Ballast — the spirits will not share the hull with alien engines."},
+  {id:'kaalele_windbound_sails',name:"Ka'alele Wind-Bound Sails",type:'Utility',cost:15000,desc:"Sails woven with the Ahiwake Storm's bound air spirits, said to remember the way to a homeland that no longer exists above the waves.\nSpirit-driven (passive): +3 sq Speed, always active, regardless of wind direction or conditions — the spirits do not care which way the wind blows.\nHomeward pull (once/long rest): the sails may attempt to guide this ship toward the lost island of Ka'aloa — GM's discretion on effect, but the crew reports vivid dreams of a burning coastline for days after.\nDRAWBACK: incompatible with Firebox, Firebox MkII, and Void Ballast — the spirits will not share the hull with alien engines."},
   {id:'flotilla_lashings',name:'Flotilla Lashings',type:'Utility',cost:3500,desc:"Rope-and-chain lashing points fitted along the hull, Driftfolk-style, meant to bind hulls together into a floating community rather than a single ship.\nRaft cohesion (passive): while lashed alongside 1+ allied ships (both stationary, adjacent), all lashed ships share a single pool of Rigger charges, refreshed at the start of combat.\nWandering welcome: this ship is always recognized as neutral by Driftfolk flotillas and may resupply food and fresh water from them at no cost, regardless of standing with other factions."},
   {id:'rootwoven_hull',name:'Root-Woven Camouflage Hull',type:'Defense',cost:7000,desc:"Storm-grown mangrove root lashed and grown directly into the hull planking by Mangrove Tribe shipwrights.\nLiving camouflage (passive): +1 AC. While this ship is stationary and adjacent to any coastline, mangrove growth, or reef, the first attack made against it each combat is made at disadvantage (GM's discretion to rule as partial concealment).\nOvergrowth risk: if this ship goes 30+ days without being crewed or sailed, the roots keep growing and become difficult to clear — -2 sq Speed until a Rigger spends a full day in port removing the excess growth."},
   {id:'sunscale_dazzle_plating',name:'Sunscale Dazzle Plating',type:'Defense',cost:8000,desc:"Polished scale plating in the Sunscale Clans' fashion, angled to throw blinding reflections across the water at midday.\nDazzling glare (passive): +1 AC. In clear daylight, the first enemy ship to fire on this ship each combat does so at disadvantage, momentarily blinded by the glare off the scales.\nSun-blessed (passive): crew aboard this ship gain advantage on morale saves made during daylight hours — the Sunscale Clans consider the sun itself a shield against fear."},
 
   // -- Coal / Oil Engine upgrades --
-  {id:'oil_slick_deployer',name:'Oil Slick Deployer',type:'Offense',category:'Combustion',cost:3500,desc:"Stern-mounted valves that dump reserve engine oil directly into this ship's wake.\n2 crew to operate · 3 uses per long rest.\nEach use (1 action): dump oil into a 4 sq radius patch of open water within 3 sq of this ship. The slick persists for 3 rounds or until ignited.\nIgnite (free action, requires an oil slick already deployed): any fire source — a cannon shot, an existing fire severity level, a dropped ember — sets the slick ablaze. All ships in the burning patch take 4d10×10 fire damage and gain one fire severity level; the fire keeps burning on the water for 2 more rounds.\nRequires: Coal Engine (Firebox or Ember Drive) installed.\nDRAWBACK: this ship's engine takes 1d10 HP damage each time oil is dumped — draining the reserve tank strains the fuel line."},
-  {id:'piston_ram_prow',name:'Piston-Driven Ram Prow',type:'Offense',category:'Combustion',cost:6000,desc:"A reinforced iron prow with hydraulic pistons that punch forward on impact, fed directly off the ship's own engine.\nRam attacks made by this ship deal +3d10×10 bonus damage and this ship takes no self-damage from the ram.\nPiston Thrust (1/combat): after a successful ram, immediately disengage and ram again this round at no additional movement cost.\nRequires: Coal Engine (Firebox or Ember Drive) installed.\nDRAWBACK: Speed –1 sq permanently — the reinforced prow adds significant weight to the bow."},
-  {id:'combustion_forced_induction',name:'Forced Induction Manifold',type:'Engine',category:'Combustion',cost:8500,desc:"Force-feeds the firebox raw coal dust and oil together for an unstable power spike.\nOverboost (1/combat): 1 round of double Speed and +2d10×10 on all Combustion weapons. Afterward, roll d6 — on a 1, backfires for 4d10×10 to this ship.\nRequires: Coal Engine (Firebox or Ember Drive) installed.\nDRAWBACK: while active, flooding severity increases twice as fast — the extra intakes are exposed."},
-  {id:'combustion_backdraft_chamber',name:'Backdraft Chamber',type:'Engine',category:'Combustion',cost:7500,desc:"A secondary chamber that vents built-up smoke and unburned fuel vapor directly behind the ship, ready to be set off.\nChoking Cloud (1/combat): vent a thick cloud of smoke and fuel vapor in a 3 sq radius behind this ship. Any ship that enters or starts its turn there must succeed a DC 13 Con save or be Blinded until it leaves.\nBackdraft Ignition (passive, requires Choking Cloud already deployed): any fire damage that touches the cloud ignites it instantly — every ship inside takes 3d10×10 fire damage.\nRequires: Coal Engine (Firebox or Ember Drive) installed.\nDRAWBACK: venting leaves the engine running lean for 1 round afterward — this ship's Combustion weapons deal half damage that round.\nIncompatible with Ash Recycling Injector — that upgrade's cleaner-burn system can't produce the raw vapor this needs."},
-  {id:'pressure_release_valve',name:'Pressure Release Valve',type:'Defense',category:'Combustion',cost:4000,desc:"An emergency pressure valve rigged to vent the boiler outward in a defensive burst.\nVent the Boiler (reaction, 1/combat): when this ship would take damage from a critical hit, vent instead — halve the damage, and any creature attempting to board this ship within 1 sq takes 2d10 scalding damage until the start of this ship's next turn.\nRequires: Coal Engine (Firebox or Ember Drive) installed.\nDRAWBACK: after venting, this ship's Speed drops by 2 sq for 1 round as pressure rebuilds."},
-  {id:'smokestack_array',name:'Smokestack Array',type:'Utility',category:'Combustion',cost:2800,desc:"Triple smokestacks that vent thick black coal smoke on command.\nSmoke Screen (1/combat): billow a 4 sq radius cloud of black smoke centered on this ship, lasting 2 rounds. Ranged attacks against any ship inside the cloud — including this one — are made at disadvantage.\nRequires: Coal Engine (Firebox or Ember Drive) installed.\nDRAWBACK: this ship cannot use any stealth or concealment upgrade at the same time — the smoke is visible for miles, defeating subtlety entirely."},
-  {id:'grinding_gear_drive',name:'Grinding Gear Drive',type:'Utility',category:'Combustion',cost:4500,desc:"A reinforced gearbox that lets the helmsman shift the engine's output between speed and torque on the fly.\nGear Shift (free action, 1/round): choose one — High Gear (+2 sq Speed, Turn cost +1 sq this round) or Low Gear (Turn cost –1 sq, Speed –2 sq this round).\nRequires: Coal Engine (Firebox or Ember Drive) installed.\nDRAWBACK: the gearbox grinds loudly — this ship cannot attempt stealth checks while the engine is running."},
-  {id:'reinforced_boiler_plating',name:'Reinforced Boiler Plating',type:'Defense',category:'Combustion',cost:5500,desc:"Extra iron plating welded around the boiler housing.\nThis ship's installed Coal Engine (Firebox or Ember Drive) gains +100 HP and cannot be disabled by system-targeting critical hits — only sustained damage can knock it offline.\nRequires: Coal Engine (Firebox or Ember Drive) installed.\nDRAWBACK: Speed –1 sq permanently — the extra plating adds weight directly around the engine block."},
-  {id:'combustion_ash_recycling',name:'Ash Recycling Injector',type:'Engine',category:'Combustion',cost:6000,desc:"Reclaims unburned soot and ash, feeding it back into the firebox.\nFuel Efficiency (passive): barrel-of-coal/oil session cost cut in half.\nCleaner Burn (passive): pollution trail dissipates in 30 minutes instead of 1 hour.\nRequires: Coal Engine (Firebox or Ember Drive) installed.\nDRAWBACK: clogs after 5 combats without a long rest, stops working until serviced at port.\nIncompatible with Backdraft Chamber."},
+  {id:'oil_slick_deployer',name:'Oil Slick Deployer',type:'Offense',category:'Combustion',cost:3500,desc:"Stern-mounted valves that dump reserve engine oil directly into this ship's wake.\n2 crew to operate · 3 uses per long rest.\nEach use (1 action): dump oil into a 4 sq radius patch of open water within 3 sq of this ship. The slick persists for 3 rounds or until ignited.\nIgnite (free action, requires an oil slick already deployed): any fire source — a cannon shot, an existing fire severity level, a dropped ember — sets the slick ablaze. All ships in the burning patch take 4d10×10 fire damage and gain one fire severity level; the fire keeps burning on the water for 2 more rounds.\nRequires: Coal Engine (Firebox or Firebox MkII) installed.\nDRAWBACK: this ship's engine takes 1d10 HP damage each time oil is dumped — draining the reserve tank strains the fuel line."},
+  {id:'piston_ram_prow',name:'Piston-Driven Ram Prow',type:'Offense',category:'Combustion',cost:6000,desc:"A reinforced iron prow with hydraulic pistons that punch forward on impact, fed directly off the ship's own engine.\nRam attacks made by this ship deal +3d10×10 bonus damage and this ship takes no self-damage from the ram.\nPiston Thrust (1/combat): after a successful ram, immediately disengage and ram again this round at no additional movement cost.\nRequires: Coal Engine (Firebox or Firebox MkII) installed.\nDRAWBACK: Speed –1 sq permanently — the reinforced prow adds significant weight to the bow."},
+  {id:'combustion_forced_induction',name:'Forced Induction Manifold',type:'Engine',category:'Combustion',cost:8500,desc:"Force-feeds the firebox raw coal dust and oil together for an unstable power spike.\nOverboost (1/combat): 1 round of double Speed and +2d10×10 on all Combustion weapons. Afterward, roll d6 — on a 1, backfires for 4d10×10 to this ship.\nRequires: Coal Engine (Firebox or Firebox MkII) installed.\nDRAWBACK: while active, flooding severity increases twice as fast — the extra intakes are exposed."},
+  {id:'combustion_backdraft_chamber',name:'Backdraft Chamber',type:'Engine',category:'Combustion',cost:7500,desc:"A secondary chamber that vents built-up smoke and unburned fuel vapor directly behind the ship, ready to be set off.\nChoking Cloud (1/combat): vent a thick cloud of smoke and fuel vapor in a 3 sq radius behind this ship. Any ship that enters or starts its turn there must succeed a DC 13 Con save or be Blinded until it leaves.\nBackdraft Ignition (passive, requires Choking Cloud already deployed): any fire damage that touches the cloud ignites it instantly — every ship inside takes 3d10×10 fire damage.\nRequires: Coal Engine (Firebox or Firebox MkII) installed.\nDRAWBACK: venting leaves the engine running lean for 1 round afterward — this ship's Combustion weapons deal half damage that round.\nIncompatible with Ash Recycling Injector — that upgrade's cleaner-burn system can't produce the raw vapor this needs."},
+  {id:'pressure_release_valve',name:'Pressure Release Valve',type:'Defense',category:'Combustion',cost:4000,desc:"An emergency pressure valve rigged to vent the boiler outward in a defensive burst.\nVent the Boiler (reaction, 1/combat): when this ship would take damage from a critical hit, vent instead — halve the damage, and any creature attempting to board this ship within 1 sq takes 2d10 scalding damage until the start of this ship's next turn.\nRequires: Coal Engine (Firebox or Firebox MkII) installed.\nDRAWBACK: after venting, this ship's Speed drops by 2 sq for 1 round as pressure rebuilds."},
+  {id:'smokestack_array',name:'Smokestack Array',type:'Utility',category:'Combustion',cost:2800,desc:"Triple smokestacks that vent thick black coal smoke on command.\nSmoke Screen (1/combat): billow a 4 sq radius cloud of black smoke centered on this ship, lasting 2 rounds. Ranged attacks against any ship inside the cloud — including this one — are made at disadvantage.\nRequires: Coal Engine (Firebox or Firebox MkII) installed.\nDRAWBACK: this ship cannot use any stealth or concealment upgrade at the same time — the smoke is visible for miles, defeating subtlety entirely."},
+  {id:'grinding_gear_drive',name:'Grinding Gear Drive',type:'Utility',category:'Combustion',cost:4500,desc:"A reinforced gearbox that lets the helmsman shift the engine's output between speed and torque on the fly.\nGear Shift (free action, 1/round): choose one — High Gear (+2 sq Speed, Turn cost +1 sq this round) or Low Gear (Turn cost –1 sq, Speed –2 sq this round).\nRequires: Coal Engine (Firebox or Firebox MkII) installed.\nDRAWBACK: the gearbox grinds loudly — this ship cannot attempt stealth checks while the engine is running."},
+  {id:'reinforced_boiler_plating',name:'Reinforced Boiler Plating',type:'Defense',category:'Combustion',cost:5500,desc:"Extra iron plating welded around the boiler housing.\nThis ship's installed Coal Engine (Firebox or Firebox MkII) gains +100 HP and cannot be disabled by system-targeting critical hits — only sustained damage can knock it offline.\nRequires: Coal Engine (Firebox or Firebox MkII) installed.\nDRAWBACK: Speed –1 sq permanently — the extra plating adds weight directly around the engine block."},
+  {id:'combustion_ash_recycling',name:'Ash Recycling Injector',type:'Engine',category:'Combustion',cost:6000,desc:"Reclaims unburned soot and ash, feeding it back into the firebox.\nFuel Efficiency (passive): barrel-of-coal/oil session cost cut in half.\nCleaner Burn (passive): pollution trail dissipates in 30 minutes instead of 1 hour.\nRequires: Coal Engine (Firebox or Firebox MkII) installed.\nDRAWBACK: clogs after 5 combats without a long rest, stops working until serviced at port.\nIncompatible with Backdraft Chamber."},
   {id:'stellar_tokamak',name:'The Stellar Tokamak',type:'Engine',cost:150000,desc:"A sphere of contained anima plasma suspended in a magnetic confinement chamber — a captive, artificial star bolted into the ship's keel. Superconducting rings shape and stabilize it; anima injectors feed it.\nCounts as an Electric Generator for all system requirements — and then some.\nStellar Output (passive): every weapon mount aboard, of any type, deals +2d10x10 damage, and this ship's Speed increases by +3 sq — the reactor feeds every system simultaneously.\nMana Shield (passive): this ship and all allies within 3 sq have resistance to force and lightning damage, and advantage on saves against planar or summoned effects.\nDRAWBACK — Containment Failure: if this ship takes 300+ damage in a single hit, or is reduced to 0 HP, the magnetic field fails and the star breaches — 10d10x10 damage to every ship within 5 sq, including this one, no save.\nRequires a specialist arcane engineering crew and a 10-day installation at a major port. Incompatible with every other Engine-type upgrade — the tokamak's field can't coexist with any other power source."},
-  {id:'oil_fed_ignition_chamber',name:'Oil-Fed Ignition Chamber',type:'Offense',category:'Combustion',cost:7000,desc:"Routes refined lamp oil into the cannon breach for a superheated ignition charge.\nAll cannon mounts on this ship deal +1d10×10 fire damage on a hit.\nRequires: Coal Engine (Firebox or Ember Drive) installed.\nDRAWBACK: if this ship reaches Moderate fire severity, the oil feed ignites — 4d10×10 internal fire damage, no save."},
-  {id:'ash_scrubber_filters',name:'Ash Scrubber Filters',type:'Utility',category:'Combustion',cost:3200,desc:"Filtration baffles fitted to the smokestacks that scrub soot and ash before it vents.\nThis ship's Coal Engine (Firebox or Ember Drive) no longer produces a visible smoke trail, and no longer imposes disadvantage on this ship's own stealth checks.\nRequires: Coal Engine (Firebox or Ember Drive) installed.\nDRAWBACK: the filters clog under prolonged use — this ship's Speed bonus from its engine is reduced by 1 sq while installed."},
-  {id:'flywheel_momentum_drive',name:'Flywheel Momentum Drive',type:'Utility',category:'Combustion',cost:4800,desc:"A heavy flywheel spins continuously off the main driveshaft, storing rotational momentum.\nEach round this ship moves its full Speed, it stores 1 Momentum charge (max 3).\nRelease Momentum (free action): spend all stored charges — gain +2 sq Speed per charge spent for this round only, then the flywheel resets to 0.\nRequires: Coal Engine (Firebox or Ember Drive) installed.\nDRAWBACK: if this ship comes to a complete stop (Speed 0) for a full round, all stored Momentum charges are lost."},
-  {id:'backdraft_vents',name:'Backdraft Vents',type:'Defense',category:'Combustion',cost:4200,desc:"Reversible exhaust vents that dump superheated backdraft outward from the hull.\nBackdraft (reaction, 1/combat, when a ship attempts to ram or board this vessel): trigger the vents — the attacking ship or boarding party takes 3d10×10 fire damage, and a boarding party is thrown clear of the deck and must restart the boarding action.\nRequires: Coal Engine (Firebox or Ember Drive) installed.\nDRAWBACK: the vents take a full round to reset after use — this ship's Speed is halved during that round as exhaust pressure re-routes."},
+  {id:'voltaic_furnace',name:'The Voltaic Furnace',type:'Engine',cost:50000,desc:"A single reactor housing running a coal-fed boiler and a brine-salt resonance coil side by side, wired into one shared output line. Neither system runs at its full potential, but it's the only engine that lets a ship draw on electric and combustion technology at once.\nCounts as both an Electric Generator and a Coal Engine for all system requirements — unlocks electric and combustion weapons, upgrades, and rooms simultaneously from a single install.\nNo inherent combat bonuses — like the base-tier Firebox and Brine Core, this is the raw dual engine with nothing added on top.\nFlooded Out (passive): if this ship reaches Flooding severity 2 or higher, the coal side shuts down immediately, same as a Firebox — the brine side keeps running independently.\nDRAWBACK: Cannot stealth — same smoke and pollution trail as any combustion engine.\nDRAWBACK: Meltdown risk (passive) — same brine volatility as a Brine Core; any system hitting 0 HP triggers a meltdown check, roll d6, cascade on 1–2.\nDrawback: Consumes both a barrel of coal/oil (1,000 gp) and a barrel of brine salt (1,000 gp) each session — 2,000 gp/session total, running two fuel systems at once.\nWhile offline for any reason, every system this engine powers goes with it — including movement."},
+  {id:'oil_fed_ignition_chamber',name:'Oil-Fed Ignition Chamber',type:'Offense',category:'Combustion',cost:7000,desc:"Routes refined lamp oil into the cannon breach for a superheated ignition charge.\nAll cannon mounts on this ship deal +1d10×10 fire damage on a hit.\nRequires: Coal Engine (Firebox or Firebox MkII) installed.\nDRAWBACK: if this ship reaches Moderate fire severity, the oil feed ignites — 4d10×10 internal fire damage, no save."},
+  {id:'ash_scrubber_filters',name:'Ash Scrubber Filters',type:'Utility',category:'Combustion',cost:3200,desc:"Filtration baffles fitted to the smokestacks that scrub soot and ash before it vents.\nThis ship's Coal Engine (Firebox or Firebox MkII) no longer produces a visible smoke trail, and no longer imposes disadvantage on this ship's own stealth checks.\nRequires: Coal Engine (Firebox or Firebox MkII) installed.\nDRAWBACK: the filters clog under prolonged use — this ship's Speed bonus from its engine is reduced by 1 sq while installed."},
+  {id:'flywheel_momentum_drive',name:'Flywheel Momentum Drive',type:'Utility',category:'Combustion',cost:4800,desc:"A heavy flywheel spins continuously off the main driveshaft, storing rotational momentum.\nEach round this ship moves its full Speed, it stores 1 Momentum charge (max 3).\nRelease Momentum (free action): spend all stored charges — gain +2 sq Speed per charge spent for this round only, then the flywheel resets to 0.\nRequires: Coal Engine (Firebox or Firebox MkII) installed.\nDRAWBACK: if this ship comes to a complete stop (Speed 0) for a full round, all stored Momentum charges are lost."},
+  {id:'backdraft_vents',name:'Backdraft Vents',type:'Defense',category:'Combustion',cost:4200,desc:"Reversible exhaust vents that dump superheated backdraft outward from the hull.\nBackdraft (reaction, 1/combat, when a ship attempts to ram or board this vessel): trigger the vents — the attacking ship or boarding party takes 3d10×10 fire damage, and a boarding party is thrown clear of the deck and must restart the boarding action.\nRequires: Coal Engine (Firebox or Firebox MkII) installed.\nDRAWBACK: the vents take a full round to reset after use — this ship's Speed is halved during that round as exhaust pressure re-routes."},
 ];
 
 const FIRE_STEPS  = ['None','Minor','Moderate','Severe'];
@@ -6634,8 +6645,8 @@ function getUpgIncompat(uid, inst){
 
 // Electric-category weapons/upgrades need one of these installed to function;
 // Combustion-category weapons/upgrades need one of these instead.
-const ELECTRIC_GENERATOR_IDS=['anima_core_vessel','arcane_battery','brine_core','brine_core_mk2','stellar_tokamak'];
-const COMBUSTION_ENGINE_IDS=['iron_heart','scorched_heart'];
+const ELECTRIC_GENERATOR_IDS=['anima_core_vessel','arcane_battery','brine_core','brine_core_mk2','stellar_tokamak','voltaic_furnace'];
+const COMBUSTION_ENGINE_IDS=['iron_heart','scorched_heart','voltaic_furnace'];
 
 function _isZadelianShip(inst){
   const ship=_shipMap[inst.shipId];
@@ -6679,6 +6690,20 @@ function _lightningRodMastBlocked(inst){
   }
   return blocked;
 }
+// Only one primary engine may be installed at a time — covers every base
+// generator (not their sub-upgrades, which are meant to attach to whichever
+// engine you picked). Computed dynamically off this id list so adding a
+// future engine only requires appending it here.
+const PRIMARY_ENGINE_IDS=['iron_heart','scorched_heart','brine_core','brine_core_mk2','arcane_battery','anima_core_vessel','stellar_tokamak','voltaic_furnace'];
+function _primaryEngineBlocked(inst){
+  const blocked=new Map();
+  const installed=(inst.upgrades||[]).filter(function(u){ return PRIMARY_ENGINE_IDS.indexOf(u)!==-1; });
+  if(!installed.length) return blocked;
+  PRIMARY_ENGINE_IDS.forEach(function(id){
+    if(installed.indexOf(id)===-1) blocked.set(id,'Only one primary engine may be installed at a time');
+  });
+  return blocked;
+}
 // The Stellar Tokamak is incompatible with every other Engine-type upgrade
 // (any base generator, engine, or engine add-on) and vice versa — computed
 // dynamically against every UPGRADES entry with an Engine-family type, so
@@ -6697,6 +6722,7 @@ function _stellarTokamakBlocked(inst){
   return blocked;
 }
 
+const STELLAR_TOKAMAK_WEAPON_IDS=['stellar_lance','stellar_coronal_ejection','stellar_singularity_bore','stellar_photosphere_battery'];
 function getPowerBlocked(inst){
   const blocked=new Map(); // id -> reason string
   if(!inst) return blocked;
@@ -6713,8 +6739,16 @@ function getPowerBlocked(inst){
   if(_hasNonElectricMount(inst)){
     blocked.set('elec_static_discharge_cloak','Requires an all-electric mount loadout');
   }
+  // Stellar Tokamak weapons are stricter than the general Electric line —
+  // they need the Tokamak specifically, not just any Electric Generator
+  // (a Brine Core or Arcane Battery does NOT power these).
+  const hasTokamak=(inst.upgrades||[]).indexOf('stellar_tokamak')!==-1;
+  if(!hasTokamak){
+    STELLAR_TOKAMAK_WEAPON_IDS.forEach(function(id){ blocked.set(id,'Requires the Stellar Tokamak installed — no other engine powers this'); });
+  }
   _lightningRodMastBlocked(inst).forEach(function(reason,id){ blocked.set(id,reason); });
   _stellarTokamakBlocked(inst).forEach(function(reason,id){ blocked.set(id,reason); });
+  _primaryEngineBlocked(inst).forEach(function(reason,id){ blocked.set(id,reason); });
   return blocked;
 }
 
@@ -6946,7 +6980,7 @@ const SHIP_ROOMS = [
   {id:"dye_works",name:"Marine Dye Works & Ink House",cat:"production",catLabel:"⚗️ Production",sub:"Rare pigment and magical ink",cost:"3,000 gp",minTier:1,workers:2,buyer:"Fashion Houses",tip:"<b>Marine Dye Works & Ink House</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 3,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Rare pigment and magical ink</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Bioluminescent Ink — 3 vials per 9 days · 143 gp/vial · 429 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Applied to a surface: dim light in a 5 ft radius for 30 days without flame. Applied to a weapon: it glows faintly in darkness.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Fashion Houses — pay +50% for this good.</span>"},
   {id:"chart_press",name:"Cartographic Press & Chart Room",cat:"production",catLabel:"⚗️ Production",sub:"Exploration chart production and sale",cost:"3,500 gp",minTier:1,workers:2,buyer:"Navigators' Guilds",tip:"<b>Cartographic Press & Chart Room</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 3,500 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Exploration chart production and sale</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Nautical Charts — 5 charts per 6 days · 67 gp/chart · 335 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Crew using their own charts have advantage on Navigation checks. Never pay for charts again at port.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Navigators' Guilds — pay +50% for this good.</span>"},
   {id:"elem_still",name:"Elemental Distillation Chamber",cat:"production",catLabel:"⚗️ Production",sub:"Pure elemental essence extraction",cost:"6,500 gp",minTier:2,workers:3,buyer:"Wizards' Circles",tip:"<b>Elemental Distillation Chamber</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 6,500 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Pure elemental essence extraction</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Elemental Essence Vial — 2 vials per 14 days · 465 gp/vial · 930 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Thrown as a grenade — 3d10 elemental damage, 15 ft radius, DC 14 Dex save for half. Or drink for 1 hour of resistance to that element.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
-  {id:"monster_render",name:"Monster Rendering & Trophy Works",cat:"production",catLabel:"⚗️ Production",sub:"Complete creature harvesting",cost:"3,000 gp",minTier:1,workers:2,buyer:"Alchemists & Taxidermists",tip:"<b>Monster Rendering & Trophy Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 3,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Complete creature harvesting</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Rendered Creature Goods — 1 batch per creature processed · CR × 60 gp per creature</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>A displayed trophy grants +1 morale at the start of combat. The party may claim requested components (hide, bone, organs) at no cost.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Alchemists & Taxidermists — pay +50% for this good.</span>"},
+  {id:"monster_render",name:"Monster Rendering & Trophy Works",cat:"production",catLabel:"⚗️ Production",sub:"Complete creature harvesting",cost:"3,000 gp",minTier:1,workers:2,buyer:"Alchemists & Taxidermists",tip:"<b>Monster Rendering & Trophy Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 3,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Complete creature harvesting</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Rendered Creature Goods — 2 batches per 7 days · 120 gp/batch, a steady baseline of routine hunting and salvage. A specific notable kill (GM's discretion) can still be processed as a one-off bonus batch worth CR × 60 gp instead, outside the normal cycle.</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>A displayed trophy grants +1 morale at the start of combat. The party may claim requested components (hide, bone, organs) at no cost.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Alchemists & Taxidermists — pay +50% for this good.</span>"},
   {id:"provisions",name:"Luxury Provisions Pantry",cat:"production",catLabel:"⚗️ Production",sub:"Premium preserved food production",cost:"2,000 gp",minTier:0,workers:2,buyer:"Nobility",tip:"<b>Luxury Provisions Pantry</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 2,000 gp · T0+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Premium preserved food production</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Luxury Provisions — 12 portions per 4 days · 9 gp/portion · 108 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>+1d4 temporary HP from a quality meal. Used for diplomatic hosting: social DCs at port are reduced by 2.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Nobility — pay +50% for this good.</span>"},
   {id:"candle_works",name:"Scrimshaw & Candle Works",cat:"production",catLabel:"⚗️ Production",sub:"Artisan light sources and artwork",cost:"1,500 gp",minTier:0,workers:1,buyer:"Temples & Shrines",tip:"<b>Scrimshaw & Candle Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 1 worker · 1,500 gp · T0+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Artisan light sources and artwork</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Navigational Candles — 8 candles per 3 days · 7 gp/candle · 56 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Each candle burns at a precisely calibrated rate — advantage on Survival checks to track time and position at sea. Doubles as a dim light source lasting 8 hours.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Temples & Shrines — pay +50% for this good.</span>"},
   {id:"fermentation",name:"Vinegar & Fermentation Works",cat:"production",catLabel:"⚗️ Production",sub:"Preservation acids and cultured foods",cost:"2,000 gp",minTier:0,workers:2,buyer:"Taverns & Dockside Inns",tip:"<b>Vinegar & Fermentation Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 2,000 gp · T0+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Preservation acids and cultured foods</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Aged Sea Spirit — 1 cask (20 units) per 5 days · 7 gp/unit · 140 gp/cask</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Drinking a unit grants advantage on Con saves vs ingested poison and disease for 24 hours. Used as a wound disinfectant it prevents infection.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Taverns & Dockside Inns — pay +50% for this good.</span>"},
@@ -7120,12 +7154,100 @@ const SHIP_ROOMS = [
    tip:"<b>Arc-Welded Drydock Bay</b><br><span style='color:#1A3A6B;font-size:10px;'>🔧 Utility · 2 workers · 15,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>A full induction-welding rig meant for real repair work, not battlefield patching.<br>Once per long rest, fully restore this ship's hull to maximum HP and repair every disabled system — no port visit required, though the ship must be stationary for the full rest to complete the work.<br>Requires: Electric Generator (any) installed. Non-functional if disabled."},
   {id:"galvanic_drill_hall",name:"Galvanic Drill Hall",cat:"crew",catLabel:"👥 Crew",sub:"Electrified sparring ring — a fast, painful teacher",cost:"22,000 gp",minTier:2,workers:1,
    tip:"<b>Galvanic Drill Hall</b><br><span style='color:#3A3A3A;font-size:10px;'>👥 Crew · 1 worker · 22,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>A sparring ring wired to deliver a jolt on every solid hit — painful, humiliating, and an extremely fast teacher.<br>Shock Drilling (passive): any crew member who spends a long rest here gains 10 XP × their current level. If that crew member enters personal combat (boarding actions, shore encounters, normal D&D combat) before their next long rest, they have advantage on their own initiative roll.<br>Requires: Electric Generator (any) installed. Non-functional if disabled."},
+
+  {id:"refined_fuel_cracking_still",name:"Refined Fuel Cracking Still",cat:"production",catLabel:"⚗️ Production",sub:"Cracks crude oil into refined engine fuel",cost:"45,000 gp",minTier:2,workers:3,buyer:"Industrialists",
+   tip:"<b>Refined Fuel Cracking Still</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 45,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Takes raw Crude Oil Barrels and cracks them down into refined lamp oil and engine-grade fuel — worth far more than the crude feedstock, but it takes a lot of crude to make a little refined fuel.<br>Output: 1 barrel per 5 days.<br>Value: 9,360 gp/barrel.<br>Supply Chain (passive): consumes 3 Crude Oil Barrels from the fleet's cargo per cycle to produce 1 barrel of Refined Fuel. If there isn't enough crude oil in cargo when a cycle would complete, production pauses (progress is banked, not lost) until more oil is available. Requires an Oil Derrick Platform somewhere in the fleet actively stocking cargo.<br>Requires: Coal Engine (Firebox or Firebox MkII) installed.<br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Industrialists — pay +50% for this good.</span>"},
+  {id:"gilded_table",name:"The Gilded Table",cat:"production",catLabel:"⚗️ Production",sub:"A ship's own dining hall, refined into a five-course kitchen",cost:"50,000 gp",minTier:2,workers:3,buyer:"Nobility",
+   tip:"<b>The Gilded Table</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 50,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>A proper kitchen and dining hall staffed by a trained chef, built to turn raw pantry stock into a genuine luxury feast — plated, paired, and worth a fortune to the right table.<br>Output: 2 feasts per 6 days.<br>Supply Chain (passive): consumes 4 Luxury Provisions and 4 Spiced Cacao Bricks from the fleet's cargo per cycle — both ingredients required, and the scarcer one sets the pace. Progress is banked, not lost, if either runs short.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Gourmet Feast — 650 gp/feast · 1,300 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>A single feast, eaten before combat or a long rest, grants temporary HP equal to 3× the consuming character's level — the richest ration available anywhere in the fleet.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Nobility — pay +50% for this good.</span>"},
+  {id:"salt_cure_house",name:"Salt Cure House",cat:"production",catLabel:"⚗️ Production",sub:"Refines preserved provisions into aged delicacies",cost:"8,000 gp",minTier:1,workers:2,buyer:"Naval Quartermasters",
+   tip:"<b>Salt Cure House</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 8,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Takes the ship's own bulk-salted rations and cures them slowly, aging them into an actual delicacy instead of just travel food.<br>Output: 2 units per 5 days.<br>Supply Chain (passive): consumes 3 Salt-Cured Provisions from the fleet's cargo per cycle.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Aged Delicacies — 234 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>+1d4 temporary HP, and advantage on the next Con save against poison or disease.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Naval Quartermasters — pay +50% for this good.</span>"},
+  {id:"wax_sealant_works",name:"Wax Sealant Works",cat:"production",catLabel:"⚗️ Production",sub:"Reclaims spent candle wax into waterproof sealant",cost:"6,000 gp",minTier:1,workers:1,buyer:"Naval Quartermasters",
+   tip:"<b>Wax Sealant Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 1 worker · 6,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Reclaims and re-renders spent candle wax into a dense waterproof sealant, packed into ready-to-use casks.<br>Output: 2 casks per 4 days.<br>Supply Chain (passive): consumes 4 Navigational Candles from the fleet's cargo per cycle.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Waterproof Sealant Casks — 117 gp/cask</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Applying a cask to a hull breach counts as an automatic success on the next hull-patch check.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Naval Quartermasters — pay +50% for this good.</span>"},
+  {id:"tanning_yard",name:"Tanning Yard",cat:"production",catLabel:"⚗️ Production",sub:"Cures rendered creature hides into usable leather",cost:"7,500 gp",minTier:1,workers:2,buyer:"Mercenary Companies",
+   tip:"<b>Tanning Yard</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 7,500 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Cures raw hides from the Monster Rendering deck into genuine tanned leather instead of selling them unprocessed.<br>Output: 3 units per 5 days.<br>Supply Chain (passive): consumes 2 Rendered Creature Goods from the fleet's cargo per cycle.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Tanned Leather — 156 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Crafted into gear for one crew member: +1 AC until the next time they take damage in combat (single use).</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
+  {id:"ink_refinery",name:"Ink Refinery",cat:"production",catLabel:"⚗️ Production",sub:"Concentrates bioluminescent ink into a scribing-grade reagent",cost:"9,000 gp",minTier:2,workers:1,buyer:"Wizards' Circles",
+   tip:"<b>Ink Refinery</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 1 worker · 9,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Reduces the Dye Works' bioluminescent ink down to a concentrated form pure enough for actual spell scribing.<br>Output: 1 unit per 6 days.<br>Supply Chain (passive): consumes 2 Bioluminescent Ink from the fleet's cargo per cycle.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Concentrated Scribing Ink — 520 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>A spellcaster scribing a scroll with this ink does so in half the normal time.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
+  {id:"herbal_distillate_still",name:"Herbal Distillate Still",cat:"production",catLabel:"⚗️ Production",sub:"Distills sea-blossom mead into a concentrated tonic",cost:"7,000 gp",minTier:1,workers:1,buyer:"Wizards' Circles",
+   tip:"<b>Herbal Distillate Still</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 1 worker · 7,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Distills the Apiary's own mead down to its medicinal essence, discarding everything but the concentrated herbal core.<br>Output: 2 units per 5 days.<br>Supply Chain (passive): consumes 3 Sea-Blossom Mead from the fleet's cargo per cycle.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Herbal Distillate — 195 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Removes one level of exhaustion when consumed.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
+  {id:"alchemical_reagent_concentrate",name:"Alchemical Reagent Concentrate",cat:"production",catLabel:"⚗️ Production",sub:"Stabilizes healing tonics with pure elemental essence",cost:"40,000 gp",minTier:3,workers:3,buyer:"Wizards' Circles",
+   tip:"<b>Alchemical Reagent Concentrate</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 40,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Combines the Alchemist's Nook's healing tonics with pure elemental essence, stabilizing something well beyond a normal potion.<br>Output: 1 unit per 8 days.<br>Supply Chain (passive): consumes 3 Healing Tonics and 2 Elemental Essence Vial from the fleet's cargo per cycle — both required, scarcer one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Reagent Concentrate — 4,940 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>A spellcaster consuming one may cast a prepared spell of 2nd level or lower without expending a spell slot (single use).</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
+  {id:"runic_warding_atelier",name:"Runic Warding Atelier",cat:"production",catLabel:"⚗️ Production",sub:"Inscribes elemental essence into scribing ink to bind wards",cost:"45,000 gp",minTier:3,workers:3,buyer:"Wizards' Circles",
+   tip:"<b>Runic Warding Atelier</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 45,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Takes concentrated scribing ink already refined once and binds raw elemental essence into it — the resulting ink can hold a ward.<br>Output: 1 unit per 7 days.<br>Supply Chain (passive): consumes 2 Concentrated Scribing Ink and 2 Elemental Essence Vial from the fleet's cargo per cycle — both required, scarcer one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Runic Warding Ink — 6,760 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Inscribing a ward on a hull section grants that section resistance to one chosen damage type until the ward is broken by a critical hit.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
+  {id:"incendiary_munitions_works",name:"Incendiary Munitions Works",cat:"production",catLabel:"⚗️ Production",sub:"Rebuilds black powder bombs around refined engine fuel",cost:"42,000 gp",minTier:3,workers:3,buyer:"Mercenary Companies",
+   tip:"<b>Incendiary Munitions Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 42,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Rebuilds the Bomb Deck's black powder charges around a core of already-refined engine fuel, burning far hotter than powder alone.<br>Output: 4 units per 6 days.<br>Supply Chain (passive): consumes 3 Black Powder Bombs and 1 Refined Fuel from the fleet's cargo per cycle — both required, scarcer one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Incendiary Rounds — 3,640 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>A cannon loaded with Incendiary Rounds deals +1d10×10 fire damage on its next shot (single use, consumed on firing).</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
+  {id:"captains_table",name:"The Captain's Table",cat:"production",catLabel:"⚗️ Production",sub:"Elevates the Gilded Table's own feast into a grand banquet",cost:"60,000 gp",minTier:3,workers:4,buyer:"Nobility",
+   tip:"<b>The Captain's Table</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 4 workers · 60,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Takes an already-plated Gourmet Feast and elevates it further — fine leather-bound service ware, a formal seating, the full ceremony. The one true second-stage refinement in the fleet's kitchens.<br>Output: 1 unit per 8 days.<br>Supply Chain (passive): consumes 2 Gourmet Feast and 3 Tanned Leather from the fleet's cargo per cycle — both required, scarcer one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Grand Banquet Service — 5,200 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Grants temporary HP equal to 5× the consuming character's level, plus advantage on their next Charisma check at a formal function.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Nobility — pay +50% for this good.</span>"},
+  {id:"voidglass_lens_grinder",name:"Voidglass Lens Grinder",cat:"production",catLabel:"⚗️ Production",sub:"Grinds inverted void fluid into a scrying lens",cost:"38,000 gp",minTier:3,workers:2,buyer:"Wizards' Circles",
+   tip:"<b>Voidglass Lens Grinder</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 38,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Grinds inverted void-bell fluid and stabilizes it with bioluminescent ink into an actual scrying lens.<br>Output: 1 unit per 6 days.<br>Supply Chain (passive): consumes 1 Inversion Phials and 2 Bioluminescent Ink from the fleet's cargo per cycle — both required, scarcer one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Voidglass Lens — 6,240 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Advantage on Perception checks to detect invisible, ethereal, or otherwise concealed creatures for 24 hours (single use).</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
+  {id:"pearl_gold_jewelry_atelier",name:"Pearl & Gold Jewelry Atelier",cat:"production",catLabel:"⚗️ Production",sub:"Sets pearls in cast gold amalgam, paid labor and all",cost:"50,000 gp",minTier:3,workers:3,buyer:"Merchant Consortiums",
+   tip:"<b>Pearl & Gold Jewelry Atelier</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 50,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Sets Clam Chamber pearls into the Golden Cacao Press's own gold amalgam byproduct — genuine jewelry, not just raw materials.<br>Output: 2 units per 7 days.<br>Supply Chain (passive): consumes 4 Pearls, 3 Spiced Cacao Bricks, and 800 gp from the fleet's Treasury per cycle — every input required, scarcest one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Pearl Jewelry — 3,250 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>A worn piece grants advantage on the next Persuasion or Deception check at a formal social occasion (single use).</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Merchant Consortiums — pay +50% for this good.</span>"},
+  {id:"bespoke_armory",name:"Bespoke Armory",cat:"production",catLabel:"⚗️ Production",sub:"Commissions masterwork sidearms from powder, hide, and coin",cost:"55,000 gp",minTier:4,workers:3,buyer:"Mercenary Companies",
+   tip:"<b>Bespoke Armory</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 55,000 gp · T4+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Commissions a master gunsmith to build a single named weapon at a time — black powder, rare creature parts as decorative inlay, and real coin to pay for the craftsmanship.<br>Output: 1 unit per 14 days.<br>Supply Chain (passive): consumes 4 Black Powder Bombs, 2 Rendered Creature Goods, and 1,500 gp from the fleet's Treasury per cycle.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Masterwork Sidearm — 7,800 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Equips one crew member (captain's choice) with a permanent masterwork weapon: +1 to attack and damage rolls.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
+  {id:"chartered_trade_license_office",name:"Chartered Trade License Office",cat:"production",catLabel:"⚗️ Production",sub:"Charts, hospitality, and a licensing fee become a legal writ",cost:"35,000 gp",minTier:2,workers:2,buyer:"Merchant Consortiums",
+   tip:"<b>Chartered Trade License Office</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 35,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Nautical charts, hosted negotiations, and the actual licensing fee combine into a real, transferable trade writ — an intangible good, not a physical one.<br>Output: 1 unit per 10 days.<br>Supply Chain (passive): consumes 3 Nautical Charts, 2 Luxury Provisions, and 1,000 gp from the fleet's Treasury per cycle.<br><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods only</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Trade License — 5,850 gp/unit. GM's discretion: the fleet may instead hold onto a license for a passive port-access benefit rather than selling it.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Merchant Consortiums — pay +50% for this good.</span>"},
+  {id:"ceremonial_regalia_workshop",name:"Ceremonial Regalia Workshop",cat:"production",catLabel:"⚗️ Production",sub:"Combines pigment, ink, and gold amalgam into court regalia",cost:"48,000 gp",minTier:3,workers:3,buyer:"Nobility",
+   tip:"<b>Ceremonial Regalia Workshop</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 48,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Combines coral pigment, bioluminescent ink, and the Golden Cacao Press's gold amalgam into elaborate court regalia — pure craftsmanship, too ornate and fragile for practical use.<br>Output: 1 unit per 9 days.<br>Supply Chain (passive): consumes 2 Coral Pigment Vials, 2 Bioluminescent Ink, and 2 Spiced Cacao Bricks from the fleet's cargo per cycle — all three required, scarcest one sets the pace.<br><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods only</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Ceremonial Regalia — 4,550 gp/unit.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Nobility — pay +50% for this good.</span>"},
+  {id:"chromatic_paints_workshop",name:"Chromatic Paints Workshop",cat:"production",catLabel:"⚗️ Production",sub:"Binds luminance and pigment into pigment stabilized by refined fuel",cost:"48,000 gp",minTier:3,workers:3,buyer:"Merchant Consortiums",
+   tip:"<b>Chromatic Paints Workshop</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 48,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Binds Glasswarden luminance and coral pigment into a stable paint base using refined fuel as a solvent and fixative — colors that hold true regardless of light or weather.<br>Output: 2 units per 7 days.<br>Supply Chain (passive): consumes 2 Luminance Vials, 2 Coral Pigment Vials, and 1 Refined Fuel (already refined) from the fleet's cargo per cycle — all three required, scarcest one sets the pace.<br><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods only</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Chromatic Paints — 10,500 gp/unit.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Merchant Consortiums — pay +50% for this good.</span>"},
+  {id:"luxury_leather_works",name:"Luxury Leather Works",cat:"production",catLabel:"⚗️ Production",sub:"Dyes tanned leather with chromatic paint into a genuine luxury hide",cost:"55,000 gp",minTier:3,workers:3,buyer:"Merchant Consortiums",
+   tip:"<b>Luxury Leather Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 55,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Takes tanned leather already refined once and works chromatic paint straight into the grain — a hide dyed this way is unmistakably a luxury good, not a practical one.<br>Output: 1 unit per 8 days.<br>Supply Chain (passive): consumes 2 Chromatic Paints and 3 Tanned Leather (both already refined) from the fleet's cargo per cycle — scarcest one sets the pace.<br><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods only</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Luxury Leather — 43,000 gp/unit.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Merchant Consortiums — pay +50% for this good.</span>"},
+  {id:"haute_couture_atelier",name:"Haute Couture Atelier",cat:"production",catLabel:"⚗️ Production",sub:"The deepest refinement chain in the fleet — silk, pearls, and luxury leather",cost:"85,000 gp",minTier:4,workers:4,buyer:"Nobility",
+   tip:"<b>Haute Couture Atelier</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 4 workers · 85,000 gp · T4+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>The pinnacle of the fleet's craft economy — seaweed silk, set pearls, and leather already dyed with chromatic paint, cut and tailored into a single finished piece. Nothing else in the fleet requires this many refinement stages to produce.<br>Output: 1 unit per 10 days.<br>Supply Chain (passive): consumes 2 Seaweed Silk, 2 Pearl Jewelry (already refined), 1 Luxury Leather (refined twice over), and 3,000 gp from the fleet's Treasury per cycle — every input required, scarcest one sets the pace.<br><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods only</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Haute Couture Fashion — 100,000 gp/unit, the single most expensive good in the fleet's entire trade catalogue.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Nobility — pay +50% for this good.</span>"},
+  {id:"superior_healing_potion_distillery",name:"Superior Healing Potion Distillery",cat:"production",catLabel:"⚗️ Production",sub:"Stabilizes reagent concentrate into a top-tier healing draught",cost:"50,000 gp",minTier:3,workers:3,buyer:"Wizards' Circles",
+   tip:"<b>Superior Healing Potion Distillery</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 50,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>A precision distillery built for one purpose — takes an already-stabilized reagent concentrate and cuts it with brineblood tonic and herbal distillate into the strongest healing draught the fleet can make.<br>Output: 1 unit per 8 days.<br>Supply Chain (passive): consumes 1 Reagent Concentrate (already refined), 3 Brineblood Tonic, and 3 Herbal Distillate (already refined) from the fleet's cargo per cycle — scarcest one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Superior Healing Potion — 2,000 gp/unit.</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Restores this ship's crew to full HP and removes one negative condition from one crew member (single use) — the strongest healing item available anywhere in the fleet.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
+  {id:"pharmaceutical_works",name:"Pharmaceutical Works",cat:"production",catLabel:"⚗️ Production",sub:"Combines four separate goods into medicinal-grade pharmaceuticals",cost:"45,000 gp",minTier:3,workers:3,buyer:"Wizards' Circles",
+   tip:"<b>Pharmaceutical Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 45,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>The most ingredient-heavy process in the fleet — perfume, rendered creature extract, herbal distillate, and healing tonic, refined together into genuine medicinal-grade pharmaceuticals.<br>Output: 2 units per 7 days.<br>Supply Chain (passive): consumes 2 Sea Mist Perfume, 2 Rendered Creature Goods, 2 Herbal Distillate (already refined), and 2 Healing Tonics from the fleet's cargo per cycle — four ingredients required, scarcest one sets the pace.<br><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods only</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Pharmaceuticals — 1,800 gp/unit.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
 ];
 
 // Production rooms that produce a single raw/passive resource rather than a
 // choosable Trade Goods vs Crew Goods good — these skip the toggle UI and
 // use buildProdInfo's 'raw' rendering branch instead (see D[id].raw:true).
-const RAW_PROD_ROOMS=['brine_lab','clam_chamber','nutrient_processor','oil_derrick_platform'];
+const RAW_PROD_ROOMS=['brine_lab','clam_chamber','nutrient_processor','oil_derrick_platform','refined_fuel_cracking_still','chartered_trade_license_office','ceremonial_regalia_workshop','chromatic_paints_workshop','luxury_leather_works','haute_couture_atelier','pharmaceutical_works'];
+// Rooms that consume other trade goods (or Treasury gp) as input — kept in
+// sync with CARGO_CONSUMING_ROOMS in simulateWeek(). Used purely to color
+// these rooms differently (purple) wherever they're displayed, so they
+// read as visually distinct from plain raw-material producers.
+const REFINERY_ROOM_IDS=['refined_fuel_cracking_still','gilded_table','salt_cure_house','wax_sealant_works','tanning_yard','ink_refinery','herbal_distillate_still','alchemical_reagent_concentrate','runic_warding_atelier','incendiary_munitions_works','captains_table','voidglass_lens_grinder','pearl_gold_jewelry_atelier','bespoke_armory','chartered_trade_license_office','ceremonial_regalia_workshop','chromatic_paints_workshop','luxury_leather_works','haute_couture_atelier','superior_healing_potion_distillery','pharmaceutical_works'];
+// Rooms where a specific natural die result on 1d(sides) produces one
+// special item instead of a regular one (e.g. Clam Chamber's natural 4
+// yielding a rare black pearl). Tracked separately from the regular
+// item so the ledger log can show the real split, not just a lumped total.
+const DICE_SPECIAL_ROLL={
+  clam_chamber:{onNatural:4,specialItem:'Black Pearl',specialValue:2000}
+};
+// Rooms that consume other cargo goods as input instead of producing from
+// nothing — e.g. the Refined Fuel Cracking Still needs Crude Oil Barrels
+// on hand to run. `inputs` is a list since some rooms (like a multi-good
+// feast kitchen) need several different goods simultaneously, not just one.
+// An input with item:'__gold__' draws from the Treasury balance instead
+// of a cargo good — e.g. a jewelry room needing both raw pearls and gp
+// to actually cast and set them. This is the single source of truth for
+// every refinery's supply chain — both simulateWeek() and the in-app
+// Production Flowchart (Menu -> Production Flowchart) read from here.
+const CARGO_CONSUMING_ROOMS={
+  refined_fuel_cracking_still:{inputs:[{item:'Crude Oil Barrels',qty:3}]},
+  gilded_table:{inputs:[{item:'Luxury Provisions',qty:4},{item:'Spiced Cacao Bricks',qty:4}]},
+  salt_cure_house:{inputs:[{item:'Salt-Cured Provisions',qty:3}]},
+  wax_sealant_works:{inputs:[{item:'Navigational Candles',qty:4}]},
+  tanning_yard:{inputs:[{item:'Rendered Creature Goods',qty:2}]},
+  ink_refinery:{inputs:[{item:'Bioluminescent Ink',qty:2}]},
+  herbal_distillate_still:{inputs:[{item:'Sea-Blossom Mead',qty:3}]},
+  alchemical_reagent_concentrate:{inputs:[{item:'Healing Tonics',qty:3},{item:'Elemental Essence Vial',qty:2}]},
+  runic_warding_atelier:{inputs:[{item:'Concentrated Scribing Ink',qty:2},{item:'Elemental Essence Vial',qty:2}]},
+  incendiary_munitions_works:{inputs:[{item:'Black Powder Bombs',qty:3},{item:'Refined Fuel',qty:1}]},
+  captains_table:{inputs:[{item:'Gourmet Feast',qty:2},{item:'Tanned Leather',qty:3}]},
+  voidglass_lens_grinder:{inputs:[{item:'Inversion Phials',qty:1},{item:'Bioluminescent Ink',qty:2}]},
+  pearl_gold_jewelry_atelier:{inputs:[{item:'Pearls',qty:4},{item:'Spiced Cacao Bricks',qty:3},{item:'__gold__',qty:800}]},
+  bespoke_armory:{inputs:[{item:'Black Powder Bombs',qty:4},{item:'Rendered Creature Goods',qty:2},{item:'__gold__',qty:1500}]},
+  chartered_trade_license_office:{inputs:[{item:'Nautical Charts',qty:3},{item:'Luxury Provisions',qty:2},{item:'__gold__',qty:1000}]},
+  ceremonial_regalia_workshop:{inputs:[{item:'Coral Pigment Vials',qty:2},{item:'Bioluminescent Ink',qty:2},{item:'Spiced Cacao Bricks',qty:2}]},
+  chromatic_paints_workshop:{inputs:[{item:'Luminance Vials',qty:2},{item:'Coral Pigment Vials',qty:2},{item:'Refined Fuel',qty:1}]},
+  luxury_leather_works:{inputs:[{item:'Chromatic Paints',qty:2},{item:'Tanned Leather',qty:3}]},
+  haute_couture_atelier:{inputs:[{item:'Seaweed Silk',qty:2},{item:'Pearl Jewelry',qty:2},{item:'Luxury Leather',qty:1},{item:'__gold__',qty:3000}]},
+  superior_healing_potion_distillery:{inputs:[{item:'Reagent Concentrate',qty:1},{item:'Brineblood Tonic',qty:3},{item:'Herbal Distillate',qty:3}]},
+  pharmaceutical_works:{inputs:[{item:'Sea Mist Perfume',qty:2},{item:'Rendered Creature Goods',qty:2},{item:'Herbal Distillate',qty:2},{item:'Healing Tonics',qty:2}]}
+};
+const REFINERY_COLOR='#8a3ac8';
 
 const TIER_ROOM_SLOTS={0:2,1:4,2:5,3:8,4:10};
 let currentDeckTab = 'above';
@@ -7688,7 +7810,7 @@ function renderBelowDeck(inst,ship,slots){
       return '<div class="room-slot filled" '+_roomEvt+'>'+
         '<div class="room-slot-head">'+
           '<div class="room-slot-name">'+room.name+'</div>'+
-          '<span class="room-slot-cat" style="background:'+catBg[room.cat]+';color:'+catColor[room.cat]+';">'+room.catLabel+'</span>'+
+          '<span class="room-slot-cat" style="background:'+(REFINERY_ROOM_IDS.indexOf(room.id)!==-1?'#EEE0FA':catBg[room.cat])+';color:'+(REFINERY_ROOM_IDS.indexOf(room.id)!==-1?REFINERY_COLOR:catColor[room.cat])+';">'+(REFINERY_ROOM_IDS.indexOf(room.id)!==-1?'⚗️ Refinery':room.catLabel)+'</span>'+
           '<span class="room-rm" onclick="removeRoom('+ri+')" title="Remove room">×</span>'+
         '</div>'+
         '<div class="room-slot-meta">'+room.cost+' · '+workers+' worker'+(workers!==1?'s':'')+' required</div>'+((room.cat==='production'&&getProdData(room.id))?(()=>{const isRaw=RAW_PROD_ROOMS.includes(room.id);const mode=isRaw?'raw':((inst.roomMode&&inst.roomMode['room_'+ri])||'trade');const toggle=isRaw?'':'<div class="prod-toggle">'+'<button class="prod-tab'+(mode==='trade'?' active':'')+'" onclick="setProdMode(\''+inst.uid+'\','+ri+',\'trade\')">🏪 Trade Goods</button>'+'<button class="prod-tab'+(mode==='crew'?' active':'')+'" onclick="setProdMode(\''+inst.uid+'\','+ri+',\'crew\')">⚓ Crew Goods</button>'+'</div>';return toggle+'<div class="prod-info">'+buildProdInfo(room.id,mode,inst)+'</div>';})():'')+
@@ -7839,11 +7961,12 @@ function _roomPickerCard(r,inst){
   const powerReason=atMax?null:_roomPowerBlocked(inst,r);
   const blocked=atMax||!!powerReason;
   const clickAttr=blocked?'':`onclick="window.innerWidth<=700?_mobRoomSheet('${r.id}',true):addRoom('${r.id}')"`;
-  const style=blocked?'opacity:0.35;filter:grayscale(0.7);cursor:not-allowed;':'';
+  const isRefinery=REFINERY_ROOM_IDS.indexOf(r.id)!==-1;
+  const style=(blocked?'opacity:0.35;filter:grayscale(0.7);cursor:not-allowed;':'')+(isRefinery?'border-left:3px solid '+REFINERY_COLOR+';':'');
   const label=atMax?'max installed':(powerReason?'no power':'');
   return `<div class="rpc" style="${style}" ${clickAttr}
       onmouseenter="showRoomTip(event,'${r.id}')" onmouseleave="hideRoomTip()">
-      <div class="rpc-name">${r.name}</div>
+      <div class="rpc-name">${r.name}${isRefinery?' <span style="font-size:8px;color:'+REFINERY_COLOR+';background:'+REFINERY_COLOR+'22;padding:1px 5px;border-radius:99px;vertical-align:1px;">⚗️ REFINERY</span>':''}</div>
       <div class="rpc-sub">${r.sub}</div>
       <div class="rpc-meta">${r.cost} · ${r.workers} worker${r.workers!==1?'s':''}${label?' · <span style="color:#c85040;">'+label+'</span>':''}</div>
     </div>`;
@@ -7915,6 +8038,33 @@ function showRoomTip(e,roomId){
   } else {
     RTIP.innerHTML='';
   }
+  RTIP.style.display='block';
+  moveRoomTip(e);
+}
+// Finds which production room produces a given good name, by scanning
+// every production room's getProdData entry for a matching item name.
+function getGoodProducerInfo(itemName){
+  const rooms=SHIP_ROOMS.filter(function(r){return r.cat==='production';});
+  for(let i=0;i<rooms.length;i++){
+    const d=getProdData(rooms[i].id);
+    if(d&&d.item===itemName) return {room:rooms[i],d:d};
+  }
+  return null;
+}
+function showGoodTip(e,itemName){
+  if(window.innerWidth<=700) return;
+  const info=getGoodProducerInfo(itemName);
+  const isRefined=info&&REFINERY_ROOM_IDS.indexOf(info.room.id)!==-1;
+  let h='<b>'+itemName+'</b>';
+  if(info){
+    const price=info.d.trade||info.d.value||'';
+    h+='<br><span style="color:'+(isRefined?REFINERY_COLOR:'#5a9abc')+';font-size:10px;">'+(isRefined?'Refined good':'Raw good')+' · produced by '+info.room.name+'</span>';
+    h+="<hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'>";
+    h+='<span style="color:#c8961e;font-size:10px;">'+price+'</span>';
+  } else {
+    h+='<br><span style="color:#4a7a9a;font-size:10px;">Consumed from Treasury balance.</span>';
+  }
+  RTIP.innerHTML=h;
   RTIP.style.display='block';
   moveRoomTip(e);
 }
@@ -8019,8 +8169,8 @@ function buildProdInfo(roomId, mode, inst){
     },
     monster_render:{
       item:'Rendered Creature Goods',
-      output:'Varies by creature — 1 per creature processed',
-      trade:'CR × 60 gp per creature (hide, oils, organs combined)',
+      output:'2 batches per 7 days',
+      trade:'120 gp/batch, a steady baseline of routine hunting and salvage',
       crew:'A displayed trophy grants +1 morale at combat start. Party members may claim specific components (bone, venom, hide) from any creature they provide at no cost.'
     },
     provisions:{
@@ -8060,7 +8210,28 @@ function buildProdInfo(roomId, mode, inst){
     golden_cacao_press:{item:'Spiced Cacao Bricks',output:'30 units per 6 days',trade:'14 gp/unit · 420 gp/batch',crew:'Shared as a gesture of goodwill: +1 to the giver\'s next Cha check (once per recipient).'},
     coral_pigment_works:{item:'Coral Pigment Vials',output:'10 vials per 8 days',trade:'70 gp/vial · 700 gp/batch',crew:'Worn as war-paint: +1 to Intimidation or Performance checks for 1 hour.'},
     ashen_charm_workshop:{item:'Storm Charms',output:'8 charms per 7 days',trade:'56 gp/charm · 448 gp/batch',crew:'Worn charm grants advantage on the next save vs a fear or intimidation effect (single use, consumed).'},
-    oil_derrick_platform:{raw:true,item:'Crude Oil Barrels',output:'5 barrels per 4 days',value:'800 gp/barrel · 4,000 gp/batch'}
+    oil_derrick_platform:{raw:true,item:'Crude Oil Barrels',output:'5 barrels per 4 days',value:'800 gp/barrel · 4,000 gp/batch'},
+    refined_fuel_cracking_still:{raw:true,item:'Refined Fuel',output:'1 barrel per 5 days',value:'9,360 gp/barrel'},
+    gilded_table:{item:'Gourmet Feast',output:'2 feasts per 6 days',trade:'650 gp/feast · 1,300 gp/batch',crew:'A single feast grants temporary HP equal to 3× the level of the character who eats it, before combat or a long rest.'},
+    salt_cure_house:{item:'Aged Delicacies',output:'2 units per 5 days',trade:'234 gp/unit',crew:'+1d4 temporary HP, and advantage on the next Con save against poison or disease.'},
+    wax_sealant_works:{item:'Waterproof Sealant Casks',output:'2 casks per 4 days',trade:'117 gp/cask',crew:'Applying a cask to a hull breach counts as an automatic success on the next hull-patch check.'},
+    tanning_yard:{item:'Tanned Leather',output:'3 units per 5 days',trade:'156 gp/unit',crew:'Crafted into gear for one crew member: +1 AC until the next time they take damage in combat (single use).'},
+    ink_refinery:{item:'Concentrated Scribing Ink',output:'1 unit per 6 days',trade:'520 gp/unit',crew:'A spellcaster scribing a scroll with this ink does so in half the normal time.'},
+    herbal_distillate_still:{item:'Herbal Distillate',output:'2 units per 5 days',trade:'195 gp/unit',crew:'Removes one level of exhaustion when consumed.'},
+    alchemical_reagent_concentrate:{item:'Reagent Concentrate',output:'1 unit per 8 days',trade:'4,940 gp/unit',crew:'A spellcaster consuming one may cast a prepared spell of 2nd level or lower without expending a spell slot (single use).'},
+    runic_warding_atelier:{item:'Runic Warding Ink',output:'1 unit per 7 days',trade:'6,760 gp/unit',crew:'Inscribing a ward on a hull section grants that section resistance to one chosen damage type until the ward is broken by a critical hit.'},
+    incendiary_munitions_works:{item:'Incendiary Rounds',output:'4 units per 6 days',trade:'3,640 gp/unit',crew:'A cannon loaded with Incendiary Rounds deals +1d10x10 fire damage on its next shot (single use, consumed on firing).'},
+    captains_table:{item:'Grand Banquet Service',output:'1 unit per 8 days',trade:'5,200 gp/unit',crew:'Grants temporary HP equal to 5x the level of the character who eats it, plus advantage on their next Charisma check at a formal function.'},
+    voidglass_lens_grinder:{item:'Voidglass Lens',output:'1 unit per 6 days',trade:'6,240 gp/unit',crew:'Advantage on Perception checks to detect invisible, ethereal, or otherwise concealed creatures for 24 hours (single use).'},
+    pearl_gold_jewelry_atelier:{item:'Pearl Jewelry',output:'2 units per 7 days',trade:'3,250 gp/unit',crew:'A worn piece grants advantage on the next Persuasion or Deception check at a formal social occasion (single use).'},
+    bespoke_armory:{item:'Masterwork Sidearm',output:'1 unit per 14 days',trade:'7,800 gp/unit',crew:'Equips one crew member, chosen by the captain, with a permanent masterwork weapon: +1 to attack and damage rolls.'},
+    chartered_trade_license_office:{raw:true,item:'Trade License',output:'1 unit per 10 days',value:'5,850 gp/unit'},
+    ceremonial_regalia_workshop:{raw:true,item:'Ceremonial Regalia',output:'1 unit per 9 days',value:'4,550 gp/unit'},
+    chromatic_paints_workshop:{raw:true,item:'Chromatic Paints',output:'2 units per 7 days',value:'10,500 gp/unit'},
+    luxury_leather_works:{raw:true,item:'Luxury Leather',output:'1 unit per 8 days',value:'43,000 gp/unit'},
+    haute_couture_atelier:{raw:true,item:'Haute Couture Fashion',output:'1 unit per 10 days',value:'100,000 gp/unit'},
+    superior_healing_potion_distillery:{item:'Superior Healing Potion',output:'1 unit per 8 days',trade:'2,000 gp/unit',crew:'Restores this ship\'s crew to full HP and removes one negative condition from one crew member (single use).'},
+    pharmaceutical_works:{raw:true,item:'Pharmaceuticals',output:'2 units per 7 days',value:'1,800 gp/unit'}
   };
   const d=D[roomId];
   if(!d) return '<span style="color:#3a6a8a;font-size:10px;">No production data.</span>';
@@ -8103,8 +8274,9 @@ function buildProdInfo(roomId, mode, inst){
 function buildRoomTip(room){
   const HR="<hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'>";
   const catColors={combat:'#8B1A1A',crew:'#3A3A3A',utility:'#1A3A6B',arcane:'#3C3489',production:'#1A6B1A',creature:'#7A5500',exploration:'#1A4A6B'};
-  const tc=catColors[room.cat]||'#1A6B1A';
-  let h=`<b>${room.name}</b><br><span style='color:${tc};font-size:10px;'>⚗️ Production · ${room.workers} worker${room.workers!==1?'s':''} · ${room.cost} · T${room.minTier}+</span>${HR}`;
+  const isRefinery=REFINERY_ROOM_IDS.indexOf(room.id)!==-1;
+  const tc=isRefinery?REFINERY_COLOR:(catColors[room.cat]||'#1A6B1A');
+  let h=`<b>${room.name}</b><br><span style='color:${tc};font-size:10px;'>${isRefinery?'⚗️ Refinery':'⚗️ Production'} · ${room.workers} worker${room.workers!==1?'s':''} · ${room.cost} · T${room.minTier}+</span>${HR}`;
   h+=`<i style='color:#5a8aaa;font-size:10px;'>${room.sub}</i>${HR}`;
   // Get production data from buildProdInfo
   const rawHtml=buildProdInfo(room.id,'trade');
@@ -8608,10 +8780,14 @@ function getShipPrimeBuyer(inst){
     });
   });
 
-  const UPGRADE_BUYER_OVERRIDE={ crownbearer_growth:'Coralborn', stellar_tokamak:'Artificers' };
+  const UPGRADE_BUYER_OVERRIDE={ crownbearer_growth:'Coralborn', stellar_tokamak:'Artificers', voltaic_furnace:['Artificers','Industrialists'] };
   (inst.upgrades||[]).forEach(function(uid){
     if(!uid) return;
-    if(UPGRADE_BUYER_OVERRIDE[uid]){ vote(UPGRADE_BUYER_OVERRIDE[uid],2); return; }
+    if(UPGRADE_BUYER_OVERRIDE[uid]){
+      const buyers=UPGRADE_BUYER_OVERRIDE[uid];
+      (Array.isArray(buyers)?buyers:[buyers]).forEach(function(b){ vote(b,2); });
+      return;
+    }
     const u=UPGRADES.find(function(x){return x.id===uid;});
     if(!u) return;
     if(/brine/i.test(uid)){ vote('Brinengineers',1); return; }
@@ -9967,7 +10143,7 @@ function getProdData(roomId){
     dye_works:{item:'Bioluminescent Ink',output:'3 vials per 9 days',trade:'143 gp/vial · 429 gp/batch',crew:'Applied to a surface: dim light in a 5 ft radius for 30 days without flame. Applied to a weapon: it glows faintly in darkness.'},
     chart_press:{item:'Nautical Charts',output:'5 charts per 6 days',trade:'67 gp/chart · 335 gp/batch',crew:'Crew using their own charts have advantage on Navigation checks. Never pay for charts again at port.'},
     elem_still:{item:'Elemental Essence Vial',output:'2 vials per 14 days',trade:'465 gp/vial · 930 gp/batch',crew:'Thrown as a grenade — 3d10 elemental damage, 15 ft radius, DC 14 Dex save for half. Or drink for 1 hour of resistance to that element.'},
-    monster_render:{item:'Rendered Creature Goods',output:'1 per creature processed',trade:'CR × 60 gp per creature',crew:'Displayed trophy: +1 morale at combat start. Party claims components at no cost.'},
+    monster_render:{item:'Rendered Creature Goods',output:'2 batches per 7 days',trade:'120 gp/batch',crew:'Displayed trophy: +1 morale at combat start. Party claims components at no cost.'},
     provisions:{item:'Luxury Provisions',output:'12 portions per 4 days',trade:'9 gp/portion · 108 gp/batch',crew:'+1d4 temporary HP from quality meals. Social DC –2 at diplomatic dinners.'},
     candle_works:{item:'Navigational Candles',output:'8 candles per 3 days',trade:'7 gp/candle · 56 gp/batch',crew:'Advantage on Survival checks to track position at sea.'},
     fermentation:{item:'Aged Sea Spirit',output:'1 cask (20 units) per 5 days',trade:'7 gp/unit · 140 gp/cask',crew:'Drinking a unit grants advantage on Con saves vs ingested poison and disease for 24 hours. Used as a wound disinfectant it prevents infection.'},
@@ -9990,7 +10166,28 @@ function getProdData(roomId){
     golden_cacao_press:{item:'Spiced Cacao Bricks',output:'30 units per 6 days',trade:'14 gp/unit · 420 gp/batch',crew:'Shared as a gesture of goodwill: +1 to the giver\'s next Cha check (once per recipient).'},
     coral_pigment_works:{item:'Coral Pigment Vials',output:'10 vials per 8 days',trade:'70 gp/vial · 700 gp/batch',crew:'Worn as war-paint: +1 to Intimidation or Performance checks for 1 hour.'},
     ashen_charm_workshop:{item:'Storm Charms',output:'8 charms per 7 days',trade:'56 gp/charm · 448 gp/batch',crew:'Worn charm grants advantage on the next save vs a fear or intimidation effect (single use, consumed).'},
-    oil_derrick_platform:{raw:true,item:'Crude Oil Barrels',output:'5 barrels per 4 days',value:'800 gp/barrel · 4,000 gp/batch'}
+    oil_derrick_platform:{raw:true,item:'Crude Oil Barrels',output:'5 barrels per 4 days',value:'800 gp/barrel · 4,000 gp/batch'},
+    refined_fuel_cracking_still:{raw:true,item:'Refined Fuel',output:'1 barrel per 5 days',value:'9,360 gp/barrel'},
+    gilded_table:{item:'Gourmet Feast',output:'2 feasts per 6 days',trade:'650 gp/feast · 1,300 gp/batch',crew:'A single feast grants temporary HP equal to 3× the level of the character who eats it, before combat or a long rest.'},
+    salt_cure_house:{item:'Aged Delicacies',output:'2 units per 5 days',trade:'234 gp/unit',crew:'+1d4 temporary HP, and advantage on the next Con save against poison or disease.'},
+    wax_sealant_works:{item:'Waterproof Sealant Casks',output:'2 casks per 4 days',trade:'117 gp/cask',crew:'Applying a cask to a hull breach counts as an automatic success on the next hull-patch check.'},
+    tanning_yard:{item:'Tanned Leather',output:'3 units per 5 days',trade:'156 gp/unit',crew:'Crafted into gear for one crew member: +1 AC until the next time they take damage in combat (single use).'},
+    ink_refinery:{item:'Concentrated Scribing Ink',output:'1 unit per 6 days',trade:'520 gp/unit',crew:'A spellcaster scribing a scroll with this ink does so in half the normal time.'},
+    herbal_distillate_still:{item:'Herbal Distillate',output:'2 units per 5 days',trade:'195 gp/unit',crew:'Removes one level of exhaustion when consumed.'},
+    alchemical_reagent_concentrate:{item:'Reagent Concentrate',output:'1 unit per 8 days',trade:'4,940 gp/unit',crew:'A spellcaster consuming one may cast a prepared spell of 2nd level or lower without expending a spell slot (single use).'},
+    runic_warding_atelier:{item:'Runic Warding Ink',output:'1 unit per 7 days',trade:'6,760 gp/unit',crew:'Inscribing a ward on a hull section grants that section resistance to one chosen damage type until the ward is broken by a critical hit.'},
+    incendiary_munitions_works:{item:'Incendiary Rounds',output:'4 units per 6 days',trade:'3,640 gp/unit',crew:'A cannon loaded with Incendiary Rounds deals +1d10x10 fire damage on its next shot (single use, consumed on firing).'},
+    captains_table:{item:'Grand Banquet Service',output:'1 unit per 8 days',trade:'5,200 gp/unit',crew:'Grants temporary HP equal to 5x the level of the character who eats it, plus advantage on their next Charisma check at a formal function.'},
+    voidglass_lens_grinder:{item:'Voidglass Lens',output:'1 unit per 6 days',trade:'6,240 gp/unit',crew:'Advantage on Perception checks to detect invisible, ethereal, or otherwise concealed creatures for 24 hours (single use).'},
+    pearl_gold_jewelry_atelier:{item:'Pearl Jewelry',output:'2 units per 7 days',trade:'3,250 gp/unit',crew:'A worn piece grants advantage on the next Persuasion or Deception check at a formal social occasion (single use).'},
+    bespoke_armory:{item:'Masterwork Sidearm',output:'1 unit per 14 days',trade:'7,800 gp/unit',crew:'Equips one crew member, chosen by the captain, with a permanent masterwork weapon: +1 to attack and damage rolls.'},
+    chartered_trade_license_office:{raw:true,item:'Trade License',output:'1 unit per 10 days',value:'5,850 gp/unit'},
+    ceremonial_regalia_workshop:{raw:true,item:'Ceremonial Regalia',output:'1 unit per 9 days',value:'4,550 gp/unit'},
+    chromatic_paints_workshop:{raw:true,item:'Chromatic Paints',output:'2 units per 7 days',value:'10,500 gp/unit'},
+    luxury_leather_works:{raw:true,item:'Luxury Leather',output:'1 unit per 8 days',value:'43,000 gp/unit'},
+    haute_couture_atelier:{raw:true,item:'Haute Couture Fashion',output:'1 unit per 10 days',value:'100,000 gp/unit'},
+    superior_healing_potion_distillery:{item:'Superior Healing Potion',output:'1 unit per 8 days',trade:'2,000 gp/unit',crew:'Restores this ship\'s crew to full HP and removes one negative condition from one crew member (single use).'},
+    pharmaceutical_works:{raw:true,item:'Pharmaceuticals',output:'2 units per 7 days',value:'1,800 gp/unit'}
   };
   return D[roomId]||null;
 }
@@ -10084,13 +10281,9 @@ function simulateWeek(){
   // Re-group by room id alone for cycle/progress tracking (shared across all
   // instances of that room regardless of which ship hosts them), while each
   // subgroup keeps its own per-ship production multiplier for quantity math.
-  // Rooms where a specific natural die result on 1d(sides) produces one
-  // special item instead of a regular one (e.g. Clam Chamber's natural 4
-  // yielding a rare black pearl). Tracked separately from the regular
-  // item so the ledger log can show the real split, not just a lumped total.
-  const DICE_SPECIAL_ROLL={
-    clam_chamber:{onNatural:4,specialItem:'Black Pearl',specialValue:2000}
-  };
+  // DICE_SPECIAL_ROLL and CARGO_CONSUMING_ROOMS are now declared globally
+  // (see near REFINERY_ROOM_IDS) so the Production Flowchart can read the
+  // exact same data this simulation uses.
   const byRid={};
   Object.values(groups).forEach(g=>{
     if(!g.d) return;
@@ -10104,8 +10297,43 @@ function simulateWeek(){
     const maxAssembly=Math.max(0,...subgroups.map(g=>g.assemblyCount||0));
     if(maxAssembly>0) info.days=Math.max(1,info.days-maxAssembly);
     _ledger.progress[rid]=(_ledger.progress[rid]||0)+7;
-    const completions=Math.floor(_ledger.progress[rid]/info.days);
+    let completions=Math.floor(_ledger.progress[rid]/info.days);
     if(completions<=0) return;
+    const consuming=CARGO_CONSUMING_ROOMS[rid];
+    // Production bonuses (Assembly Line, Merchant hulls) boost output, so
+    // they need to boost input consumption too, or a refinery would produce
+    // more finished goods from the same raw materials for free. Use the
+    // highest multiplier among contributing ships as the consumption rate —
+    // conservative, and correct in the overwhelmingly common case of a
+    // single ship running the room. Rounded up so the boost never lets a
+    // fractional saving slip through.
+    const maxMult=Math.max(1,...subgroups.map(function(g){return g.mult;}));
+    if(consuming){
+      // Every required input limits how many completions are affordable —
+      // the scarcest ingredient (or the Treasury balance) sets the pace.
+      // Affordability is checked against the BOOSTED consumption rate, not
+      // the base rate, so a production bonus can't let you afford more
+      // completions than you can actually supply materials for.
+      consuming.inputs.forEach(function(inp){
+        const boostedQty=Math.ceil(inp.qty*maxMult);
+        const available=inp.item==='__gold__'?(_ledger.gold||0):((_ledger.cargo[inp.item]&&_ledger.cargo[inp.item].qty)||0);
+        const affordable=Math.floor(available/boostedQty);
+        completions=Math.min(completions,affordable);
+      });
+      if(completions<=0){
+        // Not enough input stock. A refinery with nothing to work with is
+        // idle, not silently building up a backlog — cap the banked
+        // progress at one cycle's worth so a long shortage can't dump
+        // dozens of completions the moment materials finally show up.
+        _ledger.progress[rid]=Math.min(_ledger.progress[rid],info.days);
+        return;
+      }
+      consuming.inputs.forEach(function(inp){
+        const boostedQty=Math.ceil(inp.qty*maxMult);
+        if(inp.item==='__gold__') _ledger.gold=(_ledger.gold||0)-completions*boostedQty;
+        else _ledger.cargo[inp.item].qty-=completions*boostedQty;
+      });
+    }
     _ledger.progress[rid]-=completions*info.days;
     const special=DICE_SPECIAL_ROLL[rid];
     let totalQty=0, totalCount=0, hasMerchant=false, hasAssembly=false, specialCount=0;
@@ -10139,7 +10367,8 @@ function simulateWeek(){
     if(!_ledger.cargo[d.item]) _ledger.cargo[d.item]={qty:0,unitPrice:0,roomId:rid};
     _ledger.cargo[d.item].qty+=totalQty;
     _ledger.cargo[d.item].unitPrice=unitPrice;
-    entries.push({item:d.item,qty:totalQty,completions,roomCount:totalCount,value:totalValue,hasMerchant,hasAssembly});
+    const consumedSummary=consuming?consuming.inputs.map(function(inp){return completions*Math.ceil(inp.qty*maxMult)+' '+(inp.item==='__gold__'?'gp (Treasury)':inp.item);}).join(', '):null;
+    entries.push({item:d.item,qty:totalQty,completions,roomCount:totalCount,value:totalValue,hasMerchant,hasAssembly,consumedSummary});
     if(special&&specialCount>0){
       const specialValue=specialCount*special.specialValue;
       if(!_ledger.cargo[special.specialItem]) _ledger.cargo[special.specialItem]={qty:0,unitPrice:0,roomId:rid};
@@ -10171,26 +10400,36 @@ let _sellItem=null;
 let _sellMarket='normal';
 let _sellQty=null; // null = "use current item's max"
 
-function toggleSellPanel(){
-  _sellPanelOpen=!_sellPanelOpen;
-  if(_sellPanelOpen){
-    const items=Object.keys(_ledger.cargo).filter(k=>_ledger.cargo[k].qty>0);
-    _sellItem=items.length?items.sort()[0]:null;
-    _sellMarket='normal';
-    _sellQty=null;
-  }
-  renderTradeModal();
+function openSellGoodsModal(){
+  const items=Object.keys(_ledger.cargo).filter(k=>_ledger.cargo[k].qty>0);
+  if(!items.length) return;
+  _sellItem=items.sort()[0];
+  _sellMarket='normal';
+  _sellQty=null;
+  _sellPanelOpen=true;
+  refreshSellGoodsModal();
+}
+function refreshSellGoodsModal(){
+  const items=Object.keys(_ledger.cargo).filter(k=>_ledger.cargo[k].qty>0);
+  if(!items.length){ closeModal(); return; }
+  showModal('<div class="modal" style="max-width:420px;">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">'
+      +'<h2 style="margin:0;">Sell Goods</h2>'
+      +'<span onclick="closeModal()" style="cursor:pointer;color:#4a7a9a;font-size:18px;line-height:1;">&times;</span>'
+    +'</div>'
+    +renderSellPanel(items)
+  +'</div>');
 }
 function sellPanelSetItem(item){
   _sellItem=item;
   _sellQty=null;
   const buyer=getCargoBuyer(item);
   if(_sellMarket==='prime'&&!buyer) _sellMarket='normal';
-  renderTradeModal();
+  refreshSellGoodsModal();
 }
 function sellPanelSetMarket(mode){
   _sellMarket=mode;
-  renderTradeModal();
+  refreshSellGoodsModal();
 }
 function getCargoBuyer(item){
   const entry=_ledger.cargo[item];
@@ -10236,9 +10475,47 @@ function sellCargoConfirm(){
   const mult=isPrime?1.5:1;
   const totalValue=Math.round(qty*entry.unitPrice*mult);
   entry.qty-=qty;
+  _ledger.gold=(_ledger.gold||0)+totalValue;
   _ledger.log.unshift({type:'sale',day:_ledger.day,item,qty,value:totalValue,market:isPrime?'prime':'normal',buyer:isPrime?buyer:null});
   _sellPanelOpen=false;
   _sellQty=null;
+  closeModal();
+  renderTradeModal();
+}
+
+// ── Treasury deposit/withdraw ───────────────────────────────────────────
+// A manual note is required on every deposit or withdrawal so the ledger
+// log reads as an actual accounting trail, not just bare numbers.
+function openTreasuryModal(mode){
+  const gold=_ledger.gold||0;
+  const isWithdraw=mode==='withdraw';
+  if(isWithdraw && gold<=0) return;
+  showModal('<div class="modal" style="max-width:380px;">'
+    +'<h2>'+(isWithdraw?'Withdraw from':'Deposit into')+' Treasury</h2>'
+    +'<p style="font-size:11px;color:#4a7a9a;margin-bottom:10px;">Current balance: '+gold.toLocaleString()+' gp</p>'
+    +'<label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">Amount (gp)</label>'
+    +'<input type="number" id="treasury-amount-input" min="1" '+(isWithdraw?'max="'+gold+'"':'')+' style="width:100%;padding:8px;margin-bottom:10px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:13px;">'
+    +'<label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">Note (required)</label>'
+    +'<input type="text" id="treasury-note-input" placeholder="e.g. Funding the Shipwright'+"'"+'s Yard" maxlength="120" style="width:100%;padding:8px;margin-bottom:12px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:12px;">'
+    +'<div id="treasury-modal-error" style="font-size:10px;color:#c85040;margin-bottom:8px;display:none;"></div>'
+    +'<div class="modal-btns"><button class="btn" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-gold" onclick="confirmTreasuryAction(\''+mode+'\')">'+(isWithdraw?'Withdraw':'Deposit')+'</button></div>'
+  +'</div>');
+}
+function confirmTreasuryAction(mode){
+  const amtInput=document.getElementById('treasury-amount-input');
+  const noteInput=document.getElementById('treasury-note-input');
+  const errEl=document.getElementById('treasury-modal-error');
+  const amount=parseInt(amtInput&&amtInput.value)||0;
+  const note=(noteInput&&noteInput.value||'').trim();
+  const showErr=function(msg){ if(errEl){ errEl.textContent=msg; errEl.style.display='block'; } };
+  if(amount<=0){ showErr('Enter an amount greater than 0.'); return; }
+  if(!note){ showErr('A short note is required for every deposit or withdrawal.'); return; }
+  const gold=_ledger.gold||0;
+  if(mode==='withdraw' && amount>gold){ showErr('Cannot withdraw more than the current balance.'); return; }
+  _ledger.gold=mode==='withdraw'?gold-amount:gold+amount;
+  _ledger.log.unshift({type:'treasury',day:_ledger.day,mode,amount,note});
+  closeModal();
   renderTradeModal();
 }
 
@@ -10401,20 +10678,21 @@ function renderCargoTab(body){
     +'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#c8961e;">📦 Cargo Hold</div>'
     +'<div style="display:flex;align-items:center;gap:10px;">'
       +'<span style="font-size:10px;color:#4a7a9a;">Day '+_ledger.day+' · Week '+_ledger.week+'</span>'
-      +(items.length?'<button class="btn btn-gold" onclick="toggleSellPanel()" style="font-size:10px;padding:5px 10px;"><i class="ti ti-coin" aria-hidden="true"></i> '+(_sellPanelOpen?'Close':'Sell Goods')+'</button>':'')
+      +(items.length?'<button class="btn btn-gold" onclick="openSellGoodsModal()" style="font-size:10px;padding:5px 10px;"><i class="ti ti-coin" aria-hidden="true"></i> Sell Goods</button>':'')
     +'</div>'
   +'</div>';
 
-  if(gold>0){
-    html+='<div style="border:.5px solid #6a4a10;border-radius:8px;padding:9px 12px;margin-bottom:10px;background:#1a1000;display:flex;align-items:center;justify-content:space-between;">'
-      +'<div style="font-size:11px;color:#e0c890;"><i class="ti ti-anchor" aria-hidden="true"></i> Banked Gold <span style="color:#4a7a9a;font-size:9px;">(Merchant Galleon trade empire income)</span></div>'
-      +'<div style="font-size:13px;font-weight:700;color:#c8961e;">'+gold.toLocaleString()+' gp</div>'
-    +'</div>';
-  }
-
-  if(_sellPanelOpen && items.length){
-    html+=renderSellPanel(items);
-  }
+  html+='<div style="border:1.5px solid #c8961e;border-radius:10px;padding:12px 14px;margin-bottom:12px;background:linear-gradient(135deg,#241606,#1a1000);box-shadow:0 0 16px rgba(200,150,30,.18),inset 0 0 24px rgba(200,150,30,.05);">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;">'
+      +'<div style="font-size:11px;font-weight:600;color:#f0d8a0;letter-spacing:.03em;"><i class="ti ti-anchor" aria-hidden="true" style="color:#c8961e;"></i> TREASURY</div>'
+      +'<div style="font-size:22px;font-weight:800;color:#ffd966;text-shadow:0 0 10px rgba(255,217,102,.35);">'+gold.toLocaleString()+' <span style="font-size:13px;font-weight:600;color:#e0c890;">gp</span></div>'
+    +'</div>'
+    +'<div style="font-size:9px;color:#8a7040;margin-top:2px;">Sales + passive income · usable as a resource for some production rooms</div>'
+    +'<div style="display:flex;gap:6px;margin-top:10px;">'
+      +'<button class="btn" onclick="openTreasuryModal(\'deposit\')" style="font-size:10px;padding:5px 10px;flex:1;border-color:#c8961e;">+ Deposit</button>'
+      +'<button class="btn" onclick="openTreasuryModal(\'withdraw\')" style="font-size:10px;padding:5px 10px;flex:1;border-color:#c8961e;" '+(gold<=0?'disabled':'')+'>− Withdraw</button>'
+    +'</div>'
+  +'</div>';
 
   if(!items.length){
     html+='<div style="text-align:center;font-size:11px;color:#3a6a8a;padding:24px;">Cargo hold is empty.<br>Simulate weeks in the Ledger tab to produce goods.</div>';
@@ -10530,6 +10808,18 @@ function renderLedgerTab(body){
       +'</div>';
       return;
     }
+    if(week.type==='treasury'){
+      const isWithdraw=week.mode==='withdraw';
+      html+='<div style="border:.5px solid '+(isWithdraw?'#6a2a2a':'#6a4a10')+';border-radius:8px;padding:9px 12px;margin-bottom:8px;background:'+(isWithdraw?'#1a0a0a':'#1a1000')+';border-left:3px solid '+(isWithdraw?'#e05050':'#c8961e')+';">'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;">'
+          +'<span style="font-size:11px;font-weight:600;color:'+(isWithdraw?'#f0a0a0':'#e0c890')+';"><span style="background:'+(isWithdraw?'#3a1010':'#3a2a08')+';border:.5px solid '+(isWithdraw?'#e05050':'#c8961e')+';border-radius:4px;padding:1px 6px;font-size:9px;margin-right:6px;vertical-align:1px;">'+(isWithdraw?'− WITHDRAW':'+ DEPOSIT')+'</span>Treasury</span>'
+          +'<span style="font-size:11px;font-weight:700;color:'+(isWithdraw?'#e05050':'#c8961e')+';">'+(isWithdraw?'−':'+')+week.amount.toLocaleString()+' gp</span>'
+        +'</div>'
+        +'<div style="font-size:10px;color:#8ab8d8;margin-top:4px;padding-left:1px;font-style:italic;">"'+week.note.replace(/</g,'&lt;')+'"</div>'
+        +'<div style="font-size:9px;color:#4a7a9a;margin-top:2px;padding-left:1px;">Day '+week.day+'</div>'
+      +'</div>';
+      return;
+    }
     const total=week.entries.reduce((s,e)=>s+e.value,0);
     html+='<div style="border:.5px solid #1a3a55;border-radius:8px;padding:9px 12px;margin-bottom:8px;background:#06101a;">'
       +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:'+(week.entries.length?'6':'0')+'px;">'
@@ -10542,6 +10832,7 @@ function renderLedgerTab(body){
             +(e.completions>1||e.roomCount>1?' <span style="color:#4a7a9a;">('+e.completions+' batch'+(e.completions!==1?'es':'')+(e.roomCount>1?' × '+e.roomCount+' rooms':'')+')</span>':'')
             +(e.hasMerchant?' <span style="color:#c8961e;">⚜ Merchant bonus</span>':'')
             +(e.hasAssembly?' <span style="color:#5a9abc;">⚙ Assembly bonus</span>':'')
+            +(e.consumedSummary?' <span style="color:#c85a5a;">— consumed '+e.consumedSummary+'</span>':'')
             +(e.value?' <span style="color:#5a9abc;">— '+e.value.toLocaleString()+' gp</span>':'')
           +'</div>').join('')
         : '<div style="font-size:10px;color:#3a6a8a;padding-left:8px;">No batches completed this week.</div>')
@@ -10884,6 +11175,165 @@ function toggleMiscSection(id){
   el.style.display=open?'none':'block';
   if(arr)arr.textContent=open?'▾':'▴';
 }
+function openProductionFlowchart(){
+  showModal('<div class="modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;max-width:100vw;display:flex;flex-direction:column;padding:0;overflow:hidden;border-radius:0;border:none;">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#060e14;border-bottom:.5px solid #1a3a55;flex-shrink:0;">'
+    +'<div style="display:flex;align-items:center;gap:12px;">'
+    +'<span style="font-size:13px;font-weight:600;color:#e0d8c8;">Production &amp; Trade Goods Flowchart</span>'
+    +'<span style="font-size:10px;color:#4a7a9a;"><span style="color:#4a9a5a;">&#9632;</span> Base room &nbsp; <span style="color:'+REFINERY_COLOR+';">&#9632;</span> Refinery &nbsp; <span style="color:#888;">&#9632;</span> Trade good &nbsp; <span style="color:#e0b030;">&#9632;</span> Treasury &nbsp; <span style="color:#4a7a9a;">— click any box for details</span></span>'
+    +'</div>'
+    +'<button onclick="closeModal()" style="background:none;border:none;color:#4a7a9a;font-size:18px;cursor:pointer;line-height:1;">&times;</button>'
+    +'</div>'
+    +'<div style="flex:1;overflow:auto;background:#050f1a;padding:16px;display:flex;flex-direction:column;gap:12px;">'
+    +'<div id="pf-canvas" style="text-align:center;"><div style="color:#4a7a9a;font-size:11px;padding:40px;">Loading diagram…</div></div>'
+    +'<div id="pf-infopanel" style="display:none;position:relative;z-index:1;background:#0a1622;border:1px solid #1a3a55;border-radius:10px;padding:14px 16px;font-size:11px;color:#c8d8e8;line-height:1.7;max-width:520px;"></div>'
+    +'</div>'
+  +'</div>');
+  var bd=document.getElementById('modal-backdrop');
+  if(bd){bd.style.alignItems='flex-start';bd.style.justifyContent='flex-start';bd.style.background='none';}
+  _pfRender();
+}
+// nodeId -> {kind:'room'|'refinery'|'good'|'treasury', refId:<room id or good name>}
+var _pfNodeMap={};
+function _pfRender(){
+  if(typeof mermaid==='undefined'){
+    var s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js';
+    s.onload=function(){ mermaid.initialize({startOnLoad:false,theme:'dark',securityLevel:'loose'}); _pfDraw(); };
+    document.head.appendChild(s);
+  } else { _pfDraw(); }
+}
+function _pfDraw(){
+  const canvas=document.getElementById('pf-canvas');
+  if(!canvas) return;
+  const code=buildProductionMermaidCode();
+  const renderId='pfgraph'+Date.now();
+  mermaid.render(renderId,code).then(function(res){
+    canvas.innerHTML=res.svg;
+    const svg=canvas.querySelector('svg');
+    if(svg){ svg.style.maxWidth='100%'; svg.style.height='auto'; }
+    // Wire hover on every node we tagged, via the `click` directives'
+    // generated ids — mermaid attaches a matching DOM id to each node group.
+    // Hover (not click) so this matches every other tooltip in the app —
+    // the tooltip follows the cursor via the same showRoomTip/showGoodTip
+    // functions used everywhere else, not a separate fixed info panel.
+    Object.keys(_pfNodeMap).forEach(function(nodeId){
+      const el=canvas.querySelector('[id*="'+nodeId+'"]');
+      if(!el) return;
+      el.style.cursor='pointer';
+      const info=_pfNodeMap[nodeId];
+      el.addEventListener('mouseenter',function(e){
+        if(info.kind==='room'||info.kind==='refinery') showRoomTip(e,info.refId);
+        else if(info.kind==='good') showGoodTip(e,info.refId);
+        else if(info.kind==='treasury'){
+          RTIP.innerHTML='<b>Treasury</b><br><span style="color:#4a7a9a;font-size:10px;">Some refineries draw gp directly from the fleet Treasury balance as one of their required inputs.</span>';
+          RTIP.style.display='block';
+          moveRoomTip(e);
+        }
+      });
+      el.addEventListener('mousemove',function(e){ moveRoomTip(e); });
+      el.addEventListener('mouseleave',function(){ hideRoomTip(); });
+      // Hover skips itself on mobile widths (matching showRoomTip's own
+      // guard), so also wire a tap fallback into the fixed info panel.
+      el.addEventListener('click',function(){ if(window.innerWidth<=700) _pfShowInfo(nodeId); });
+    });
+  }).catch(function(err){
+    canvas.innerHTML='<div style="color:#c85040;font-size:11px;padding:20px;">Diagram failed to render: '+String(err.message||err).replace(/</g,'&lt;')+'</div>';
+  });
+}
+function _pfShowInfo(nodeId){
+  const info=_pfNodeMap[nodeId];
+  const panel=document.getElementById('pf-infopanel');
+  if(!info||!panel) return;
+  let html='';
+  if(info.kind==='room'||info.kind==='refinery'){
+    const room=SHIP_ROOMS.find(function(r){return r.id===info.refId;});
+    html=room?(room.tip||buildRoomTip(room)):'';
+  } else if(info.kind==='good'){
+    const gInfo=getGoodProducerInfo(info.refId);
+    const isRefined=gInfo&&REFINERY_ROOM_IDS.indexOf(gInfo.room.id)!==-1;
+    html='<b>'+info.refId+'</b><br><span style="color:'+(isRefined?REFINERY_COLOR:'#5a9abc')+';font-size:10px;">'+(isRefined?'Refined good':'Raw good')+(gInfo?' · produced by '+gInfo.room.name:'')+'</span>';
+    if(gInfo){
+      const price=gInfo.d.trade||gInfo.d.value||'';
+      html+="<hr style='border:none;border-top:.5px solid #1e3a55;margin:6px 0;'><span style='color:#c8961e;'>"+price+'</span>';
+    }
+  } else if(info.kind==='treasury'){
+    html='<b>Treasury</b><br><span style="color:#4a7a9a;font-size:10px;">Some refineries draw gp directly from the fleet Treasury balance as one of their required inputs.</span>';
+  }
+  panel.innerHTML=html;
+  panel.style.display='block';
+}
+function _pfSafeId(str){ return str.replace(/[^a-zA-Z0-9]/g,'_'); }
+function buildProductionMermaidCode(){
+  _pfNodeMap={};
+  let lines=['flowchart LR'];
+  const clicks=[];
+  const usedGoods={};
+  function regNode(nodeId,kind,refId){
+    if(!_pfNodeMap[nodeId]){ _pfNodeMap[nodeId]=kind==='good'?{kind:'good',refId:refId}:{kind:kind,refId:refId}; clicks.push('click '+nodeId+' call _pfNoop()'); }
+  }
+  lines.push('  TREASURY(("Treasury (gp)")):::treasury');
+  regNode('TREASURY','treasury',null);
+  lines.push('  subgraph CHAIN[Refinery Supply Chains]');
+  lines.push('  direction LR');
+  REFINERY_ROOM_IDS.forEach(function(rid){
+    const room=SHIP_ROOMS.find(function(r){return r.id===rid;});
+    const consuming=CARGO_CONSUMING_ROOMS[rid];
+    const outData=getProdData(rid);
+    if(!room||!consuming) return;
+    const rfNode='RF_'+_pfSafeId(rid);
+    regNode(rfNode,'refinery',rid);
+    lines.push('  '+rfNode+'["'+room.name.replace(/"/g,"'")+'"]:::refinery');
+    consuming.inputs.forEach(function(inp){
+      if(inp.item==='__gold__'){
+        lines.push('  TREASURY -->|"'+inp.qty.toLocaleString()+' gp"| '+rfNode);
+      } else {
+        const gNode='GD_'+_pfSafeId(inp.item);
+        regNode(gNode,'good',inp.item);
+        usedGoods[inp.item]=true;
+        if(!lines.some(function(l){return l.indexOf(gNode+'[')!==-1;})){
+          lines.push('  '+gNode+'["'+inp.item.replace(/"/g,"'")+'"]:::good');
+          const info=getGoodProducerInfo(inp.item);
+          if(info){
+            const rmNode='RM_'+_pfSafeId(info.room.id);
+            regNode(rmNode,'room',info.room.id);
+            if(!lines.some(function(l){return l.indexOf(rmNode+'[')!==-1;})){
+              lines.push('  '+rmNode+'["'+info.room.name.replace(/"/g,"'")+'"]:::baseRoom');
+            }
+            lines.push('  '+rmNode+' --> '+gNode);
+          }
+        }
+        lines.push('  '+gNode+' -->|"x'+inp.qty+'"| '+rfNode);
+      }
+    });
+    if(outData){
+      const outNode='GD_'+_pfSafeId(outData.item);
+      regNode(outNode,'good',outData.item);
+      usedGoods[outData.item]=true;
+      lines.push('  '+outNode+'["'+outData.item.replace(/"/g,"'")+'"]:::good');
+      lines.push('  '+rfNode+' --> '+outNode);
+    }
+  });
+  lines.push('  end');
+  lines.push('  subgraph STANDALONE[Standalone Production]');
+  lines.push('  direction TB');
+  SHIP_ROOMS.filter(function(r){return r.cat==='production';}).forEach(function(r){
+    if(REFINERY_ROOM_IDS.indexOf(r.id)!==-1) return;
+    const d=getProdData(r.id);
+    if(!d||usedGoods[d.item]) return;
+    const rmNode='RM_'+_pfSafeId(r.id), gNode='GD_'+_pfSafeId(d.item);
+    regNode(rmNode,'room',r.id);
+    regNode(gNode,'good',d.item);
+    lines.push('  '+rmNode+'["'+r.name.replace(/"/g,"'")+'"]:::baseRoom --> '+gNode+'["'+d.item.replace(/"/g,"'")+'"]:::good');
+  });
+  lines.push('  end');
+  lines.push('  classDef baseRoom fill:#2a6a3a,stroke:#4a9a5a,color:#eafaf0,stroke-width:1px');
+  lines.push('  classDef refinery fill:#6a2a9a,stroke:#a060d0,color:#f5eaff,stroke-width:2px');
+  lines.push('  classDef good fill:#1a1a1a,stroke:#555,color:#f0f0f0');
+  lines.push('  classDef treasury fill:#8a6a10,stroke:#e0b030,color:#fff8e0,stroke-width:2px');
+  return lines.join('\n');
+}
+function _pfNoop(){} // click directives require a callback to exist; actual handling is done via the DOM listeners in _pfDraw
 function openCombatRules(){
   showModal('<div class="modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;max-width:100vw;display:flex;flex-direction:column;padding:0;overflow:hidden;border-radius:0;border:none;">'
     +'<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#060e14;border-bottom:.5px solid #1a3a55;flex-shrink:0;">'
@@ -12808,7 +13258,7 @@ function btlNextTurn(){
   </div>
 </div>
 
-<div id="island-name-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:2200;align-items:center;justify-content:center;" onclick="if(event.target===this)closeIslandNameModal()">
+<div id="island-name-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:2150;align-items:center;justify-content:center;" onclick="if(event.target===this)closeIslandNameModal()">
   <div style="background:#0d1e30;border:1px solid #2a5a80;border-radius:14px;width:400px;max-width:92vw;box-shadow:0 12px 60px rgba(0,0,0,.8);padding:18px;">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
       <i class="ti ti-map-2" style="color:#c8961e;font-size:18px;"></i>
@@ -12835,7 +13285,7 @@ function btlNextTurn(){
   </div>
 </div>
 
-<div id="island-del-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:2100;align-items:center;justify-content:center;" onclick="if(event.target===this)closeIslandDeleteConfirm()">
+<div id="island-del-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:2050;align-items:center;justify-content:center;" onclick="if(event.target===this)closeIslandDeleteConfirm()">
   <div style="background:#0d1e30;border:1px solid #c86050;border-radius:14px;width:420px;max-width:92vw;box-shadow:0 12px 60px rgba(0,0,0,.8);padding:18px;">
     <div id="island-del-step1">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
