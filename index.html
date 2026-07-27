@@ -47,7 +47,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #app{display:flex;flex:1;overflow:hidden;}
 
 /* catalogue */
-#catalogue{width:220px;flex-shrink:0;background:#0d1e30;border-right:1px solid #1a3a55;display:flex;flex-direction:column;overflow:hidden;}
+#catalogue{width:220px;flex-shrink:0;background:#0d1e30;border-right:1px solid #1a3a55;display:flex;flex-direction:column;overflow:hidden;transition:width .18s ease;}
+#catalogue.collapsed{width:22px!important;}
+#catalogue.collapsed #cat-head h2,#catalogue.collapsed #tier-tabs,#catalogue.collapsed #cat-filter-row,#catalogue.collapsed #ship-list{display:none;}
+#catalogue.collapsed #cat-head{padding:8px 0;border-bottom:none;display:flex;justify-content:center;}
+.cat-collapse-btn{background:none;border:1px solid #6a4a20;border-radius:5px;color:#f0a040;font-size:12px;padding:1px 6px;cursor:pointer;line-height:1.4;opacity:.7;transition:opacity .15s,border-color .15s;}
+.cat-collapse-btn:hover{opacity:1;border-color:#f0a040;}
 #cat-head{padding:8px 10px 6px;border-bottom:1px solid #1a3a55;flex-shrink:0;}
 #cat-head h2{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#4a7a9a;margin-bottom:5px;}
 #tier-tabs{display:flex;gap:3px;flex-wrap:wrap;}
@@ -77,7 +82,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #water-area{flex:1;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 60%,#0d4f78 0%,#0a3d5c 40%,#061e2e 100%);}
 .water-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(30,90,128,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(30,90,128,.12) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;}
 #water-drop{position:absolute;inset:0;}
-#water-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#0e3a55;pointer-events:none;}
+#water-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#f0a040;pointer-events:none;}
 #water-hint i{font-size:36px;}
 #water-hint p{font-size:12px;margin-top:4px;}
 
@@ -97,7 +102,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* detail panel */
 #detail{width:400px;flex-shrink:0;background:#0d1e30;border-left:1px solid #1a3a55;display:flex;flex-direction:column;overflow:hidden;}
-#detail-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#1a3a55;}
+#detail-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#f0a040;}
 #detail-empty i{font-size:36px;}
 #detail-empty p{font-size:11px;}
 #detail-body{flex:1;overflow-y:auto;display:none;flex-direction:column;min-height:0;}
@@ -337,6 +342,9 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
 .rpc-meta{font-size:10px;color:#1a6b1a;font-weight:500;}
 .rpc-tier{font-size:10px;color:#4a7a9a;}
 .room-filter-tabs{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:8px;}
+.picker-search-btn{background:none;border:1px solid #1a3a55;border-radius:6px;color:#4a7a9a;font-size:13px;padding:4px 8px;cursor:pointer;line-height:1;transition:color .15s,border-color .15s,background .15s;}
+.picker-search-btn:hover{color:#8ab8d8;border-color:#2a5a80;}
+.picker-search-btn.active{color:#c8961e;border-color:#c8961e;background:#1a1400;}
 .rft{font-size:10px;padding:2px 8px;border-radius:99px;border:.5px solid #1a3a55;background:transparent;color:#4a7a9a;cursor:pointer;}
 .rft.active{background:#1a3a55;color:#c8d8e8;}
 
@@ -502,7 +510,6 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
 </style>
 </head>
 <body>
-<h2 class="sr-only">Broadsides! Armada Builder — drag ships from catalogue into water, select to configure systems</h2>
 
 <div id="topbar">
   <h1>BROADSIDES! <span style="color:#4a7a9a;font-size:12px;">Armada Builder</span></h1>
@@ -574,7 +581,7 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
     <div id="cat-head">
       <div style="display:flex;align-items:center;justify-content:space-between;">
         <h2>Ship Catalogue</h2>
-        <button id="cat-collapse-btn" onclick="toggleCatalogue()" title="Collapse catalogue" style="display:none;background:none;border:1px solid #2a5a80;border-radius:5px;color:#4a9abc;font-size:14px;padding:2px 7px;cursor:pointer;line-height:1;">‹</button>
+        <button id="cat-collapse-btn" onclick="toggleCatalogue()" title="Collapse catalogue" class="cat-collapse-btn">‹</button>
       </div>
       <div id="tier-tabs">
         <button class="tier-tab active" onclick="setTierFilter('all',this)">All</button>
@@ -1310,53 +1317,89 @@ anima:[
 
 zadelian_cannon:[
   {id:'zad_harmonic_culverin',name:'Harmonic Culverin',tier:3,cost:40000,
-   desc:"6d10 x10 hull damage only. Range 10 sq / 20 sq long. Hit +4. Reload 2 rounds. HP 140. Crew 2.\nZadelian relic — cannot be purchased. Estimated value: 40,000 gp.\nHarmonic tuning: each consecutive round firing at the same target, damage increases +1d10x10 (max +4d10x10). Resets on miss or target change.\nResonance crack: on a critical hit, target ship must DC 14 Con save or one random system goes offline for 2 rounds."},
+   desc:"6d10 x10 hull damage only. Range 10 sq / 20 sq long. Hit +4. Reload 2 rounds. HP 140. Crew 2.\nZadelian relic — cannot be purchased.\nHarmonic tuning: each consecutive round firing at the same target, damage increases +1d10x10 (max +4d10x10). Resets on miss or target change.\nResonance crack: on a critical hit, target ship must DC 14 Con save or one random system goes offline for 2 rounds."},
 
   {id:'zad_conduit_breacher',name:'Conduit Breacher',tier:3,cost:35000,
-   desc:"5d10 x10 hull damage only. Range 8 sq / 16 sq long. Hit +3. Reload 1 round. HP 120. Crew 2.\nZadelian relic — cannot be purchased. Estimated value: 35,000 gp.\nConduit disruption: hits disable magical upgrades and arcane engines on target for 1d4 rounds — no save. Affects oil engines, brine engines, and Anima cores.\nStructural focus: +2d10x10 damage against fortifications, port walls, and ship superstructures."},
+   desc:"5d10 x10 hull damage only. Range 8 sq / 16 sq long. Hit +3. Reload 1 round. HP 120. Crew 2.\nZadelian relic — cannot be purchased.\nConduit disruption: hits disable magical upgrades and arcane engines on target for 1d4 rounds — no save. Affects oil engines, brine engines, and Anima cores.\nStructural focus: +2d10x10 damage against fortifications, port walls, and ship superstructures."},
 
   {id:'zad_pylon_caster',name:'Pylon Caster',tier:2,cost:28000,
-   desc:"4d10 x10 hull damage only. Range 6 sq burst. Hit +3. Reload 2 rounds. HP 200. Crew 2.\nZadelian relic — cannot be purchased. Estimated value: 28,000 gp.\nRadiant burst: fires in 3 sq radius at point of impact — all ships in the burst take full damage.\nLeylight: blast leaves arcane marker — targeted area cannot benefit from concealment or invisibility for 2 rounds."},
+   desc:"4d10 x10 hull damage only. Range 6 sq burst. Hit +3. Reload 2 rounds. HP 200. Crew 2.\nZadelian relic — cannot be purchased.\nRadiant burst: fires in 3 sq radius at point of impact — all ships in the burst take full damage.\nLeylight: blast leaves arcane marker — targeted area cannot benefit from concealment or invisibility for 2 rounds."},
 
   {id:'zad_anchor_breaker',name:'Anchor Breaker',tier:2,cost:30000,
-   desc:"5d10 x10 hull damage only. Range 8 sq / 16 sq long. Hit +3. Reload 2 rounds. HP 110. Crew 2.\nZadelian relic — cannot be purchased. Estimated value: 30,000 gp.\nAnchor disruption: a hit severs any tether, chain, or boarding plank on the target instantly — no check required.\nDeep resonance: damage to underwater hulls or submerged targets is doubled. Effective against Leviathan-class vessels."},
+   desc:"5d10 x10 hull damage only. Range 8 sq / 16 sq long. Hit +3. Reload 2 rounds. HP 110. Crew 2.\nZadelian relic — cannot be purchased.\nAnchor disruption: a hit severs any tether, chain, or boarding plank on the target instantly — no check required.\nDeep resonance: damage to underwater hulls or submerged targets is doubled. Effective against Leviathan-class vessels."},
 
   {id:'zad_remembering_shot',name:'The Remembering Shot',tier:3,cost:50000,
-   desc:"5d10 x10 hull damage only. Range 10 sq / unlimited (memorised). Hit +4. Reload 3 rounds. HP 130. Crew 2.\nZadelian relic — cannot be purchased. Estimated value: 50,000 gp.\nEncoded targeting: after scoring a hit, memorises that ship's harmonic signature. Future shots against the same ship auto-hit (no roll), ignore cover and line-of-sight, range becomes unlimited against memorised targets.\nMemory limit: remembers up to 3 targets; a 4th overwrites the oldest."},
+   desc:"5d10 x10 hull damage only. Range 10 sq / unlimited (memorised). Hit +4. Reload 3 rounds. HP 130. Crew 2.\nZadelian relic — cannot be purchased.\nEncoded targeting: after scoring a hit, memorises that ship's harmonic signature. Future shots against the same ship auto-hit (no roll), ignore cover and line-of-sight, range becomes unlimited against memorised targets.\nMemory limit: remembers up to 3 targets; a 4th overwrites the oldest."},
+
+  {id:'zad_perdition_beam',name:'Perdition Beam',tier:3,cost:55000,
+   desc:"7d10 x10 hull damage only. Range 14 sq / 28 sq long, ignores all cover and concealment. Hit +5. Reload: none — a continuous beam, may fire every round. HP 150. Crew 3.\nZadelian relic — cannot be purchased.\nSustained perdition: each consecutive round the beam is aimed at the same target, damage increases +1d10x10 (max +5d10x10). Resets on miss or target change.\nAnnihilation threshold: if a single beam hit deals 300+ damage, the next system it reduces to 0 HP is destroyed outright — unrepairable even in port, must be fully replaced."},
+
+  {id:'zad_unspoken_gate',name:'The Unspoken Gate',tier:3,cost:48000,
+   desc:"5d10 x10 hull damage only. Range: unlimited within line of sight — space folds regardless of distance. Hit +4. Reload 2 rounds. HP 130. Crew 2.\nZadelian relic — cannot be purchased.\nFolded trajectory: the shot never crosses the space between — it exits a fold directly adjacent to the target. Cannot be intercepted or blocked in transit; ignores cover, smoke, and Dead Lanterns entirely.\nUnstable fold (drawback): 1-in-10 chance per shot the fold miscalculates — the shot appears adjacent to a random other ship within range instead (GM's choice of target, friend or foe)."},
+
+  {id:'zad_sentinel_loom',name:'The Sentinel Loom',tier:3,cost:52000,
+   desc:"3d10 x10 hull damage only. Range 8 sq. Hit +3. Reload 3 rounds. HP 140. Crew 2.\nZadelian relic — cannot be purchased.\nWoven sentinel (1/combat): instead of firing, weave a construct from raw resonance — a Medium autonomous guardian (AC 16, 80 HP, +5 to hit, 3d10x10 damage, acts on this ship's initiative) that fights for 5 rounds before unraveling.\nSentinel command: as a bonus action, redirect the sentinel's target, or have it use its action to shield an ally instead (+50 temp HP to that ship; the sentinel takes no other action that round)."},
+
+  {id:'zad_undertow_lens',name:'The Undertow Lens',tier:3,cost:46000,
+   desc:"4d10 x10 hull damage only. Range 8 sq. Hit +4. Reload 2 rounds. HP 150. Crew 2.\nZadelian relic — cannot be purchased.\nGravity crush: on a hit, target's Speed is halved for 2 rounds.\nInversion pulse (1/combat): instead of firing, invert gravity around the target — it's lifted bodily out of the water for 1 round (can't use waterline-dependent mounts, takes 4d10x10 fall damage when gravity restores, crew DC 15 Str save or thrown overboard)."},
+
+  {id:'zad_shockfront_emitter',name:'Shockfront Emitter',tier:2,cost:20000,
+   desc:"3d10 x10 hull damage only. Range 5 sq burst (cone). Hit +2. Reload 1 round. HP 160. Crew 2.\nZadelian relic — cannot be purchased.\nConcussive wave: fires a cone of pure kinetic force instead of a projectile — every ship in the 5 sq cone takes damage and is pushed 2 sq directly away from this ship (DC 13 Str negates the push, not the damage).\nHull-rattling: any ship pushed into another ship, obstacle, or the shoreline takes an additional 1d10x10 impact damage."},
+
+  {id:'zad_crystalcast_cannon',name:'Crystalcast Cannon',tier:2,cost:24000,
+   desc:"3d10 x10 hull damage only. Range 7 sq. Hit +3. Reload 2 rounds. HP 150. Crew 2.\nZadelian relic — cannot be purchased.\nCrystal encasement: on a hit, one random system on the target is encased in living crystal — unusable until broken (AC 16, 40 HP; a Rigger action can shatter it early).\nShatterpoint: if the encasement is destroyed by damage rather than a Rigger action, the shattering deals 1d10x10 to the target's hull as shards tear through."},
+
+  {id:'zad_seeker_volley_array',name:'Seeker Volley Array',tier:1,cost:13000,
+   desc:"3d10 x10 force damage. Range 8 sq. No attack roll — automatically hits. Reload 1 round. HP 120. Crew 1.\nZadelian relic — cannot be purchased.\nGuided bolts: fires a volley of self-correcting force bolts woven from raw resonance — they curve around obstacles and cover to find their target. Cannot miss, cannot be blocked by anything short of a ward or magical barrier. The volley can be split across up to 3 different targets within range instead of one, each taking 1d10x10 force damage, still auto-hitting.\nOmnidirectional casting: this mount isn't fixed to a firing arc — it can target any ship within range regardless of broadside facing or blind spots."},
+
+  {id:'zad_flux_caster',name:'Flux Caster',tier:2,cost:22000,
+   desc:"4d10 x10 damage, type rerolled each shot (fire, cold, lightning, or force — 1d4). Range 7 sq. Hit +3. Reload 1 round. HP 140. Crew 2.\nZadelian relic — cannot be purchased.\nUnstable flux: damage type changes every shot, so no single resistance reliably blocks it.\nElemental cascade: if the same damage type rolls twice in a row, the second hit deals +2d10x10 bonus damage as the flux destabilizes further."},
 ],
 
 zadelian_harpoon:[
   {id:'zad_resonance_tether',name:'Resonance Tether',tier:2,cost:25000,
-   desc:"3d10 x10 impact. Range 6 sq. 1 line. HP 200. Crew 2. · Hit +3\nZadelian relic — cannot be purchased. Estimated value: 25,000 gp.\nHarmonic lock: tethered ships cannot use speed upgrades or propulsion abilities — effective speed reduced to base while tethered. The tether conducts sound; both crews can hear each other clearly.\nResonant pulse (1/combat): send a harmonic pulse through the tether — target crew DC 14 Con save or stunned 1 round."},
+   desc:"3d10 x10 impact. Range 6 sq. 1 line. HP 200. Crew 2. · Hit +3\nZadelian relic — cannot be purchased.\nHarmonic lock: tethered ships cannot use speed upgrades or propulsion abilities — effective speed reduced to base while tethered. The tether conducts sound; both crews can hear each other clearly.\nResonant pulse (1/combat): send a harmonic pulse through the tether — target crew DC 14 Con save or stunned 1 round."},
 
   {id:'zad_deep_anchor_lance',name:'Deep Anchor Lance',tier:3,cost:38000,
-   desc:"4d10 x10 impact. Range 7 sq. 1 line. HP 130. Crew 2. · Hit +4\nZadelian relic — cannot be purchased. Estimated value: 38,000 gp.\nDeep anchor: bores through hull below the waterline and deploys a submerged anchor array -- inflicts one flooding severity level on the target and sets speed 0 until anchor destroyed (AC 18, HP 80, submerged).\nSeabed lock: in shallow waters, anchor pins target to seabed — DC 20 Str check as an action each round to break free."},
+   desc:"4d10 x10 impact. Range 7 sq. 1 line. HP 130. Crew 2. · Hit +4\nZadelian relic — cannot be purchased.\nDeep anchor: bores through hull below the waterline and deploys a submerged anchor array -- inflicts one flooding severity level on the target and sets speed 0 until anchor destroyed (AC 18, HP 80, submerged).\nSeabed lock: in shallow waters, anchor pins target to seabed — DC 20 Str check as an action each round to break free."},
 
   {id:'zad_grid_relay_hook',name:'Grid Relay Hook',tier:2,cost:22000,
-   desc:"2d10 x10 impact. Range 6 sq. 1 line. HP 90. Crew 1. · Hit +3\nZadelian relic — cannot be purchased. Estimated value: 22,000 gp.\nArcane relay: while tethered, allied ships within 4 sq of either ship can channel spells through the relay, extending casting range by the tether length.\nOverload transfer (1/combat): transfer any one ongoing negative magical effect from this ship through the tether to the target. No save."},
+   desc:"2d10 x10 impact. Range 6 sq. 1 line. HP 90. Crew 1. · Hit +3\nZadelian relic — cannot be purchased.\nArcane relay: while tethered, allied ships within 4 sq of either ship can channel spells through the relay, extending casting range by the tether length.\nOverload transfer (1/combat): transfer any one ongoing negative magical effect from this ship through the tether to the target. No save."},
 
   {id:'zad_pylon_spear',name:'Pylon Spear',tier:3,cost:32000,
-   desc:"3d10 x10 impact. Range 7 sq. 1 line. HP 110. Crew 2. · Hit +4\nZadelian relic — cannot be purchased. Estimated value: 32,000 gp.\nArcane suppression: while the spear is embedded, target ship and all crew cannot cast spells above 2nd level. Suppression conducted through the spear's internal lattice.\nPylon drain: each round the spear remains embedded, target loses one random upgrade slot effect for the duration of combat."},
+   desc:"3d10 x10 impact. Range 7 sq. 1 line. HP 110. Crew 2. · Hit +4\nZadelian relic — cannot be purchased.\nArcane suppression: while the spear is embedded, target ship and all crew cannot cast spells above 2nd level. Suppression conducted through the spear's internal lattice.\nPylon drain: each round the spear remains embedded, target loses one random upgrade slot effect for the duration of combat."},
 
   {id:'zad_memory_hook',name:'The Memory Hook',tier:3,cost:28000,
-   desc:"3d10 x10 impact. Range 8 sq. 1 line. HP 120. Crew 2. · Hit +4\nZadelian relic — cannot be purchased. Estimated value: 28,000 gp.\nEncoded recall: always retracts after firing, simultaneously pulling the target 2 sq toward this ship (DC 15 Str resists) before releasing.\nCargo extraction: called shot (–4 to hit) against a specific room — a hit allows remote extraction of one item or cargo piece via the tether."},
+   desc:"3d10 x10 impact. Range 8 sq. 1 line. HP 120. Crew 2. · Hit +4\nZadelian relic — cannot be purchased.\nEncoded recall: always retracts after firing, simultaneously pulling the target 2 sq toward this ship (DC 15 Str resists) before releasing.\nCargo extraction: called shot (–4 to hit) against a specific room — a hit allows remote extraction of one item or cargo piece via the tether."},
+
+  {id:'zad_seamless_hook',name:'The Seamless Hook',tier:3,cost:40000,
+   desc:"3d10 x10 impact. Range: unlimited within line of sight. 1 line. Cannot be targeted or cut by conventional means. Crew 2. · Hit +4\nZadelian relic — cannot be purchased.\nFolded tether: exists partially outside normal space — immune to weapons, boarding actions, or hull damage. Only the firing ship can release it.\nInstant reel (1/combat): collapse the fold entirely — instantly pull the tethered ship to point-blank range regardless of starting distance, no check or roll can resist."},
+
+  {id:'zad_skyward_barb',name:'The Skyward Barb',tier:2,cost:35000,
+   desc:"3d10 x10 impact. Range 7 sq. 1 line. HP 110. Crew 2. · Hit +3\nZadelian relic — cannot be purchased.\nLevitation barb: while embedded, the target rises — each round tethered, its effective Speed drops 1 sq as it lifts further from the water (fully airborne after 4 rounds).\nRelease drop (1/combat): sever the tether while the target is lifted — it plummets back down, taking 1d10x10 fall damage per sq it had risen and inflicting one Flooding severity level on impact."},
+
+  {id:'zad_lightbind_chains',name:'Lightbind Chains',tier:1,cost:10000,
+   desc:"2d10 x10 impact. Range 6 sq. 1 line (a chain of solid light). HP 100. Crew 1. · Hit +2\nZadelian relic — cannot be purchased.\nLightbind: the chain is pure hardened light — immune to physical weapons, only broken by a dispel (DC 15) or brute force (Str DC 18).\nBinding pulse (1/combat): tighten the chain — target's Speed becomes 0 and it can't take reactions until the start of its next turn."},
+
+  {id:'zad_hush_barb',name:'Hush Barb',tier:2,cost:18000,
+   desc:"2d10 x10 impact. Range 6 sq. 1 line. HP 110. Crew 1. · Hit +3\nZadelian relic — cannot be purchased.\nField of hush: while embedded, a 3 sq radius zone of magical silence surrounds the target — nobody inside can cast spells, friend or foe.\nSilent strike: attacks made by this ship against anything inside the hush field gain advantage — they never hear it coming."},
 ],
 
 zadelian_focus:[
   {id:'zad_harmonic_projector',name:'Harmonic Projector',tier:2,cost:30000,
-   desc:"4d10 x10 hull damage only. Range 12 sq. Spell atk +2. Reload 1 round. HP 90. Crew 1.\nZadelian relic — cannot be purchased. Estimated value: 30,000 gp.\nResonance amplification: spells channelled through this mount treated as 2 slot levels higher. Mount damage adds to spell damage if both hit same target in same round.\nLeyline lens (1/combat): focus on a point — one crew spellcaster gains advantage on every spell cast this round."},
+   desc:"Max spell level: 5th. Spell atk +2. Reaction cap: 2nd level. HP 90. Crew 1.\nZadelian relic — cannot be purchased.\nResonance amplification: spells channelled through this mount are treated as 2 slot levels higher.\nLeyline lens (1/combat): focus on a point — one crew spellcaster gains advantage on every spell cast this round."},
 
   {id:'zad_chorus_array',name:'Chorus Array',tier:3,cost:42000,
-   desc:"5d10 x10 hull damage only. Range 14 sq. Spell atk +4. Reload 2 rounds. HP 120. Crew 2.\nZadelian relic — cannot be purchased. Estimated value: 42,000 gp.\nChorus resonance: up to 3 additional spellcasters aboard may each contribute a spell slot when firing — each adds +1d10x10 to damage. All contributors must ready their action simultaneously.\nHarmonic echo (1/combat): automatically repeat last round's attack against same target at start of next round — no roll required."},
+   desc:"Max spell level: 6th. Spell atk +4. Reaction cap: 3rd level. HP 120. Crew 2.\nZadelian relic — cannot be purchased.\nChorus resonance: up to 3 additional spellcasters aboard may each contribute a spell slot when a spell is cast through this focus — each adds +1d10x10 to that spell's damage. All contributors must ready their action simultaneously.\nHarmonic echo (1/combat): automatically repeat last round's spell cast through this focus against the same target at the start of next round — no roll required."},
 
   {id:'zad_suppression_lens',name:'Suppression Lens',tier:2,cost:35000,
-   desc:"3d10 x10 hull damage only. Range 10 sq. Spell atk +2. Reload 2 rounds. HP 200. Crew 1.\nZadelian relic — cannot be purchased. Estimated value: 35,000 gp.\nSuppression beam: on a hit, target ship and all crew cannot cast spells of 4th level or higher until start of this ship's next turn. No save.\nNullification zone (1/long rest): 6 sq radius, 3 rounds — no spells of any level can be cast inside. This ship is immune."},
+   desc:"Max spell level: 4th. Spell atk +2. Reaction cap: 2nd level. HP 200. Crew 1.\nZadelian relic — cannot be purchased.\nSuppression beam: when a spell cast through this focus hits, target ship and all crew cannot cast spells of 4th level or higher until start of this ship's next turn. No save.\nNullification zone (1/long rest): 6 sq radius, 3 rounds — no spells of any level can be cast inside. This ship is immune."},
 
   {id:'zad_remembering_eye',name:'The Remembering Eye',tier:3,cost:48000,
-   desc:"4d10 x10 hull damage only. Range 16 sq / unlimited (memorised). Spell atk +4. Reload 2 rounds. HP 110. Crew 2.\nZadelian relic — cannot be purchased. Estimated value: 48,000 gp.\nMemory crystal: after scoring a hit, encodes harmonic signature. Future shots auto-hit and bypass invisibility, concealment, and illusions. Range becomes unlimited against encoded targets.\nShared memory: broadcasts encoded target data to all other Zadelian mounts on the same ship — all gain the auto-hit benefit against the same target."},
+   desc:"Max spell level: 5th. Spell atk +4. Reaction cap: 3rd level. HP 110. Crew 2.\nZadelian relic — cannot be purchased.\nMemory crystal: after a spell cast through this focus hits, encodes the target's harmonic signature. Future spells through this focus auto-hit that target and bypass invisibility, concealment, and illusions, at unlimited range.\nShared memory: broadcasts encoded target data to all other Zadelian mounts on the same ship — all gain the auto-hit benefit against the same target."},
 
   {id:'zad_deep_relay_beacon',name:'Deep Relay Beacon',tier:2,cost:28000,
-   desc:"3d10 x10 hull damage only. Range 10 sq. Spell atk +2. Reload 1 round. HP 95. Crew 1.\nZadelian relic — cannot be purchased. Estimated value: 28,000 gp.\nGrid node (passive): while active and not reloading, all other Zadelian mounts on this ship or allied Zadelian ships within 4 sq gain +1d10x10 to damage.\nOverload beacon (1/combat): all enemy ships within 4 sq with Zadelian, Anima, or arcane-powered mounts take 2d10x10 force per qualifying mount as energy forces back through their systems."},
+   desc:"Max spell level: 4th. Spell atk +2. Reaction cap: 2nd level. HP 95. Crew 1.\nZadelian relic — cannot be purchased.\nGrid node (passive): while active, all other Zadelian mounts on this ship or allied Zadelian ships within 4 sq gain +1d10x10 to damage.\nOverload beacon (1/combat): all enemy ships within 4 sq with Zadelian, Anima, or arcane-powered mounts take 2d10x10 force per qualifying mount as energy forces back through their systems."},
 ],
 
 leviathan_cannon:[
@@ -5629,6 +5672,20 @@ let _pendingDeleteIslandId=null;
 
 function getIslandById(id){ return _islands.find(function(x){return x.id===id;}); }
 function currentWaterName(){ return _currentWaterId==='home' ? 'Home' : (getIslandById(_currentWaterId)||{}).name||'Unknown'; }
+// Returns every ship in the fleet regardless of which water it's currently
+// docked at. The live `armada` array only ever holds whichever water is
+// on screen right now — every other location's ships sit parked in
+// _homeArmadaStash or that island's own .armada until you sail there.
+// Used anywhere that needs to treat the fleet as one whole (production
+// simulation, fleet-wide totals), not just whatever's currently visible.
+function getAllFleetShipsEverywhere(){
+  let all=armada.slice();
+  if(_currentWaterId!=='home') all=all.concat(_homeArmadaStash);
+  _islands.forEach(function(isl){
+    if(isl.id!==_currentWaterId) all=all.concat(isl.armada);
+  });
+  return all;
+}
 // Finds a ship instance no matter which water it's actually docked in —
 // _armadaGet() only searches the currently active water's live array, which
 // made crew assigned to ships on a different island incorrectly show as
@@ -7080,12 +7137,12 @@ const SHIP_ROOMS = [
   {id:"clam_chamber",name:"Clam Chamber",cat:"production",catLabel:"⚗️ Production",sub:"Pearl-producing giant clam bed",cost:"3,500 gp",minTier:1,workers:1,buyer:"Jewelers' Guilds",tip:"<b>Clam Chamber</b><br><span style='color:#8a3a8a;font-size:10px;'>🐚 Aquatic Bio · 1 worker · 3,500 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Pearl-producing giant clam bed.<br>Produces 1d4 pearls per 10 days. 200 gp/pearl (natural 4 on the roll: one pearl is a rare black pearl worth 2,000 gp).<br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Jewelers' Guilds — pay +50% for this good.</span>"},
   {id:"brine_distillery",name:"Brine Distillery",cat:"production",catLabel:"⚗️ Production",sub:"Coral filtration organ producing alchemical brine",cost:"5,000 gp",minTier:1,workers:1,buyer:"Brinengineers",tip:"<b>Brine Distillery</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 1 worker · 5,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Coral filtration organ producing alchemical brine</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Concentrated Brine Vials — 2 vials per 10 days · 357 gp/vial · 714 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Load into the Brine Cannon to double its on-hit save DC for one shot.</div></div><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Brinengineers — pay +50% for this good.</span>"},
   {id:"spawn_sac",name:"Spawn Sac",cat:"combat",catLabel:"🐚 Aquatic Bio",sub:"Biological swarm release chamber",cost:"4,500 gp",minTier:1,workers:1,tip:"<b>Spawn Sac</b><br><span style='color:#3a8a9a;font-size:10px;'>🐚 Aquatic Bio · 1 worker · 4,500 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>A pulsing chamber that cultivates juvenile sea creatures.<br>Once per combat: release a swarm across the enemy deck — free area hazard, DC 12 Dex or creature restrained for one personal turn.<br>Produces 1 swarm charge per long rest.<br><span style='color:#5a9abc;font-size:10px;'>Activation is a station action from any crew on deck.</span>"},
-  {id:"coral_forge",name:"Coral Forge",cat:"defense",catLabel:"🐚 Aquatic Bio",sub:"Living coral hull reinforcement",cost:"7,000 gp",minTier:2,workers:2,tip:"<b>Coral Forge</b><br><span style='color:#3a8a9a;font-size:10px;'>🐚 Aquatic Bio · 2 workers · 7,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Living coral growth chambers that slowly reinforce hull plates between combats.<br>Grants +100 temporary hull HP at the start of each combat.<br>DRAWBACK: Coral plating is brittle against fire — fire severity escalates one level faster on this ship.<br><span style='color:#5a9abc;font-size:10px;'>Incompatible with iron hull upgrades.</span>"},
+  {id:"coral_forge",name:"Coral Forge",cat:"combat",catLabel:"🐚 Aquatic Bio",sub:"Living coral hull reinforcement",cost:"7,000 gp",minTier:2,workers:2,tip:"<b>Coral Forge</b><br><span style='color:#3a8a9a;font-size:10px;'>🐚 Aquatic Bio · 2 workers · 7,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Living coral growth chambers that slowly reinforce hull plates between combats.<br>Grants +100 temporary hull HP at the start of each combat.<br>DRAWBACK: Coral plating is brittle against fire — fire severity escalates one level faster on this ship.<br><span style='color:#5a9abc;font-size:10px;'>Incompatible with iron hull upgrades.</span>"},
   {id:"tide_organ",name:"Tide Organ",cat:"utility",catLabel:"🐚 Aquatic Bio",sub:"Biological ocean current sensor",cost:"6,000 gp",minTier:2,workers:1,tip:"<b>Tide Organ</b><br><span style='color:#3a8a9a;font-size:10px;'>🐚 Aquatic Bio · 1 worker · 6,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>A biological pressure organ tuned to ocean currents.<br>Passive: always know exact wind direction and current speed.<br>Active (once per combat, station action): helmsman moves the ship 3 sq in any direction as a free action, ignoring wind direction for that move.<br><span style='color:#5a9abc;font-size:10px;'>Active use does not spend Speed.</span>"},
   {id:"inkwell",name:"Inkwell",cat:"production",catLabel:"⚗️ Production",sub:"Giant squid ink gland reserve",cost:"4,000 gp",minTier:1,workers:1,buyer:"Scribes' Guilds",tip:"<b>Inkwell</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 1 worker · 4,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Giant squid ink gland reserve</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Squid Ink Charges — 3 charges per 8 days · 127 gp/charge · 381 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Use for a free Ink Cannon reload, or dump overboard to create a 4 sq inky hazard.</div></div><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Scribes' Guilds — pay +50% for this good.</span>"},
   {id:"nutrient_processor",name:"Nutrient Processor",cat:"production",catLabel:"⚗️ Production",sub:"Necrotic organ converting corpses to rations",cost:"4,000 gp",minTier:1,workers:1,buyer:"Cultists",tip:"<b>Nutrient Processor</b><br><span style='color:#8a3a8a;font-size:10px;'>🦴 Necro Bio · 1 worker · 4,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>A necrotic organ that breaks down organic matter into dense caloric paste.<br>Medium creature: 25 rations · Large: 60 rations · Small: 8 rations.<br>Rations are grey and odourless but perfectly nutritious. Crew prefer not to think about it.<br><span style='color:#5a9abc;font-size:10px;'>Processing takes 10 minutes per creature. Cannot process undead or constructs.</span><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Cultists — pay +50% for this good.</span>"},
   {id:"marrow_tap",name:"Marrow Tap",cat:"production",catLabel:"⚗️ Production",sub:"Living bone-marrow extraction chamber",cost:"5,500 gp",minTier:2,workers:1,buyer:"Cultists",tip:"<b>Marrow Tap</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 1 worker · 5,500 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Living bone-marrow extraction chamber</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Necrotic Marrow Vials — 2 vials per 7 days · 306 gp/vial · 612 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Load into Marrow Harpoon (rot cannot be cleared for 2 rounds instead of 1) or apply to a personal weapon for 1d4 necrotic per hit for 1 hour.</div></div><span style='color:#5a9abc;font-size:10px;'>Synergy: Marrow Harpoon — extends the rot effect.</span><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Cultists — pay +50% for this good.</span>"},
-  {id:"skin_locker",name:"Skin Locker",cat:"defense",catLabel:"🦴 Necro Bio",sub:"Preserved necrotic flesh hull patches",cost:"4,500 gp",minTier:1,workers:1,tip:"<b>Skin Locker</b><br><span style='color:#8a3a8a;font-size:10px;'>🦴 Necro Bio · 1 worker · 4,500 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Sheets of preserved necrotic flesh maintained in brine, used to patch hull breaches.<br>Once per combat: Rigger spends a Skin Locker charge instead of a repair charge — heals 2d10×10 hull HP as a bonus action. 3 charges per long rest. Regrows overnight.<br><span style='color:#5a9abc;font-size:10px;'>Does not cost a Rigger kit charge. Stacks with standard repairs.</span>"},
+  {id:"skin_locker",name:"Skin Locker",cat:"combat",catLabel:"🦴 Necro Bio",sub:"Preserved necrotic flesh hull patches",cost:"4,500 gp",minTier:1,workers:1,tip:"<b>Skin Locker</b><br><span style='color:#8a3a8a;font-size:10px;'>🦴 Necro Bio · 1 worker · 4,500 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Sheets of preserved necrotic flesh maintained in brine, used to patch hull breaches.<br>Once per combat: Rigger spends a Skin Locker charge instead of a repair charge — heals 2d10×10 hull HP as a bonus action. 3 charges per long rest. Regrows overnight.<br><span style='color:#5a9abc;font-size:10px;'>Does not cost a Rigger kit charge. Stacks with standard repairs.</span>"},
   {id:"bile_bladder",name:"Bile Bladder",cat:"combat",catLabel:"🦴 Necro Bio",sub:"Pressurised stomach organ anti-ram defence",cost:"5,000 gp",minTier:1,workers:1,tip:"<b>Bile Bladder</b><br><span style='color:#8a3a8a;font-size:10px;'>🦴 Necro Bio · 1 worker · 5,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>A pressurised stomach organ mounted below the waterline.<br>Passive: when this ship takes ram damage, automatically vents bile across the ramming ship's bow — ramming ship crew make DC 12 Con save or have disadvantage on all actions for 1 round.<br>No action required. Triggers automatically on any ram hit.<br><span style='color:#5a9abc;font-size:10px;'>Pairs well with Reinforced Keel to survive the initial impact.</span>"},
   {id:"ossuary_rack",name:"Ossuary Rack",cat:"production",catLabel:"⚗️ Production",sub:"Bone cluster stockpile for Bone Cannon",cost:"6,000 gp",minTier:2,workers:1,buyer:"Cultists",tip:"<b>Ossuary Rack</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 1 worker · 6,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Bone cluster stockpile for Bone Cannon</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Excess Bone Stock — 35 units per 10 days · 27 gp/unit · 945 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Installed permanently: the Bone Cannon no longer requires a reload action — it fires every round.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Cultists — pay +50% for this good.</span>"},
   {id:"the_gut",name:"The Gut",cat:"combat",catLabel:"🦴 Necro Bio",sub:"Fermenting necrotic gas production chamber",cost:"7,500 gp",minTier:2,workers:2,tip:"<b>The Gut</b><br><span style='color:#8a3a8a;font-size:10px;'>🦴 Necro Bio · 2 workers · 7,500 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>A large fermenting necrotic chamber producing flammable gas. 1 gas charge per long rest.<br>Station action: vent a charge overboard — creates 3 sq cloud of flammable gas. Any fire source in that area (including fire severity damage) triggers explosion: 4d10×10 fire to all ships in the cloud.<br>DRAWBACK: Highly dangerous if your own ship has any fire severity.<br><span style='color:#5a9abc;font-size:10px;'>The Gut explodes automatically if this ship reaches Severe fire severity.</span>"},
@@ -7181,8 +7238,8 @@ const SHIP_ROOMS = [
    tip:"<b>Voidglass Lens Grinder</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 38,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Grinds inverted void-bell fluid and stabilizes it with bioluminescent ink into an actual scrying lens.<br>Output: 1 unit per 6 days.<br>Supply Chain (passive): consumes 1 Inversion Phials and 2 Bioluminescent Ink from the fleet's cargo per cycle — both required, scarcer one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Voidglass Lens — 6,240 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Advantage on Perception checks to detect invisible, ethereal, or otherwise concealed creatures for 24 hours (single use).</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
   {id:"pearl_gold_jewelry_atelier",name:"Pearl & Gold Jewelry Atelier",cat:"production",catLabel:"⚗️ Production",sub:"Sets pearls in cast gold amalgam, paid labor and all",cost:"50,000 gp",minTier:3,workers:3,buyer:"Merchant Consortiums",
    tip:"<b>Pearl & Gold Jewelry Atelier</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 50,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Sets Clam Chamber pearls into the Golden Cacao Press's own gold amalgam byproduct — genuine jewelry, not just raw materials.<br>Output: 2 units per 7 days.<br>Supply Chain (passive): consumes 4 Pearls, 3 Spiced Cacao Bricks, and 800 gp from the fleet's Treasury per cycle — every input required, scarcest one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Pearl Jewelry — 3,250 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>A worn piece grants advantage on the next Persuasion or Deception check at a formal social occasion (single use).</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Merchant Consortiums — pay +50% for this good.</span>"},
-  {id:"bespoke_armory",name:"Bespoke Armory",cat:"production",catLabel:"⚗️ Production",sub:"Commissions masterwork sidearms from powder, hide, and coin",cost:"55,000 gp",minTier:4,workers:3,buyer:"Mercenary Companies",
-   tip:"<b>Bespoke Armory</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 55,000 gp · T4+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Commissions a master gunsmith to build a single named weapon at a time — black powder, rare creature parts as decorative inlay, and real coin to pay for the craftsmanship.<br>Output: 1 unit per 14 days.<br>Supply Chain (passive): consumes 4 Black Powder Bombs, 2 Rendered Creature Goods, and 1,500 gp from the fleet's Treasury per cycle.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Masterwork Sidearm — 7,800 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Equips one crew member (captain's choice) with a permanent masterwork weapon: +1 to attack and damage rolls.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
+  {id:"bespoke_armory",name:"Bespoke Armory",cat:"production",catLabel:"⚗️ Production",sub:"Commissions masterwork sidearms from powder, hide, and coin",cost:"55,000 gp",minTier:3,workers:3,buyer:"Mercenary Companies",
+   tip:"<b>Bespoke Armory</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 55,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Commissions a master gunsmith to build a single named weapon at a time — black powder, rare creature parts as decorative inlay, and real coin to pay for the craftsmanship.<br>Output: 1 unit per 14 days.<br>Supply Chain (passive): consumes 4 Black Powder Bombs, 2 Rendered Creature Goods, and 1,500 gp from the fleet's Treasury per cycle.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Masterwork Sidearm — 7,800 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Equips one crew member (captain's choice) with a permanent masterwork weapon: +1 to attack and damage rolls.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
   {id:"chartered_trade_license_office",name:"Chartered Trade License Office",cat:"production",catLabel:"⚗️ Production",sub:"Charts, hospitality, and a licensing fee become a legal writ",cost:"35,000 gp",minTier:2,workers:2,buyer:"Merchant Consortiums",
    tip:"<b>Chartered Trade License Office</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 35,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Nautical charts, hosted negotiations, and the actual licensing fee combine into a real, transferable trade writ — an intangible good, not a physical one.<br>Output: 1 unit per 10 days.<br>Supply Chain (passive): consumes 3 Nautical Charts, 2 Luxury Provisions, and 1,000 gp from the fleet's Treasury per cycle.<br><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods only</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Trade License — 5,850 gp/unit. GM's discretion: the fleet may instead hold onto a license for a passive port-access benefit rather than selling it.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Merchant Consortiums — pay +50% for this good.</span>"},
   {id:"ceremonial_regalia_workshop",name:"Ceremonial Regalia Workshop",cat:"production",catLabel:"⚗️ Production",sub:"Combines pigment, ink, and gold amalgam into court regalia",cost:"48,000 gp",minTier:3,workers:3,buyer:"Nobility",
@@ -7197,17 +7254,19 @@ const SHIP_ROOMS = [
    tip:"<b>Superior Healing Potion Distillery</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 50,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>A precision distillery built for one purpose — takes an already-stabilized reagent concentrate and cuts it with brineblood tonic and herbal distillate into the strongest healing draught the fleet can make.<br>Output: 1 unit per 8 days.<br>Supply Chain (passive): consumes 1 Reagent Concentrate (already refined), 3 Brineblood Tonic, and 3 Herbal Distillate (already refined) from the fleet's cargo per cycle — scarcest one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Superior Healing Potion — 2,000 gp/unit.</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Restores this ship's crew to full HP and removes one negative condition from one crew member (single use) — the strongest healing item available anywhere in the fleet.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
   {id:"pharmaceutical_works",name:"Pharmaceutical Works",cat:"production",catLabel:"⚗️ Production",sub:"Combines four separate goods into medicinal-grade pharmaceuticals",cost:"45,000 gp",minTier:3,workers:3,buyer:"Wizards' Circles",
    tip:"<b>Pharmaceutical Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 45,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>The most ingredient-heavy process in the fleet — perfume, rendered creature extract, herbal distillate, and healing tonic, refined together into genuine medicinal-grade pharmaceuticals.<br>Output: 2 units per 7 days.<br>Supply Chain (passive): consumes 2 Sea Mist Perfume, 2 Rendered Creature Goods, 2 Herbal Distillate (already refined), and 2 Healing Tonics from the fleet's cargo per cycle — four ingredients required, scarcest one sets the pace.<br><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods only</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Pharmaceuticals — 1,800 gp/unit.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
+  {id:"depth_charge_foundry",name:"Depth Charge Foundry",cat:"production",catLabel:"⚗️ Production",sub:"Packs black powder into a pressure-sealed, oil-fed underwater charge",cost:"40,000 gp",minTier:3,workers:3,buyer:"Mercenary Companies",
+   tip:"<b>Depth Charge Foundry</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 40,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Packs a black powder charge into a waterproof-sealed casing and feeds it with crude oil for a bigger detonation — built to be dropped, not fired, and to go off well below the waterline.<br>Output: 10 units per 6 days.<br>Supply Chain (passive): consumes 5 Black Powder Bombs, 3 Waterproof Sealant Casks (already refined), and 2 Crude Oil Barrels from the fleet's cargo per cycle — all three required, scarcest one sets the pace.<br>Use: dropped over the side and left to sink onto a target below the waterline — 10d10×10 damage, no attack roll needed, consumed on use.<br><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods only</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Depth Charges — 2,000 gp/unit.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
 ];
 
 // Production rooms that produce a single raw/passive resource rather than a
 // choosable Trade Goods vs Crew Goods good — these skip the toggle UI and
 // use buildProdInfo's 'raw' rendering branch instead (see D[id].raw:true).
-const RAW_PROD_ROOMS=['brine_lab','clam_chamber','nutrient_processor','oil_derrick_platform','refined_fuel_cracking_still','chartered_trade_license_office','ceremonial_regalia_workshop','chromatic_paints_workshop','luxury_leather_works','haute_couture_atelier','pharmaceutical_works'];
+const RAW_PROD_ROOMS=['brine_lab','clam_chamber','nutrient_processor','oil_derrick_platform','refined_fuel_cracking_still','chartered_trade_license_office','ceremonial_regalia_workshop','chromatic_paints_workshop','luxury_leather_works','haute_couture_atelier','pharmaceutical_works','depth_charge_foundry'];
 // Rooms that consume other trade goods (or Treasury gp) as input — kept in
 // sync with CARGO_CONSUMING_ROOMS in simulateWeek(). Used purely to color
 // these rooms differently (purple) wherever they're displayed, so they
 // read as visually distinct from plain raw-material producers.
-const REFINERY_ROOM_IDS=['refined_fuel_cracking_still','gilded_table','salt_cure_house','wax_sealant_works','tanning_yard','ink_refinery','herbal_distillate_still','alchemical_reagent_concentrate','runic_warding_atelier','incendiary_munitions_works','captains_table','voidglass_lens_grinder','pearl_gold_jewelry_atelier','bespoke_armory','chartered_trade_license_office','ceremonial_regalia_workshop','chromatic_paints_workshop','luxury_leather_works','haute_couture_atelier','superior_healing_potion_distillery','pharmaceutical_works'];
+const REFINERY_ROOM_IDS=['refined_fuel_cracking_still','gilded_table','salt_cure_house','wax_sealant_works','tanning_yard','ink_refinery','herbal_distillate_still','alchemical_reagent_concentrate','runic_warding_atelier','incendiary_munitions_works','captains_table','voidglass_lens_grinder','pearl_gold_jewelry_atelier','bespoke_armory','chartered_trade_license_office','ceremonial_regalia_workshop','chromatic_paints_workshop','luxury_leather_works','haute_couture_atelier','superior_healing_potion_distillery','pharmaceutical_works','depth_charge_foundry'];
 // Rooms where a specific natural die result on 1d(sides) produces one
 // special item instead of a regular one (e.g. Clam Chamber's natural 4
 // yielding a rare black pearl). Tracked separately from the regular
@@ -7245,7 +7304,8 @@ const CARGO_CONSUMING_ROOMS={
   luxury_leather_works:{inputs:[{item:'Chromatic Paints',qty:2},{item:'Tanned Leather',qty:3}]},
   haute_couture_atelier:{inputs:[{item:'Seaweed Silk',qty:2},{item:'Pearl Jewelry',qty:2},{item:'Luxury Leather',qty:1},{item:'__gold__',qty:3000}]},
   superior_healing_potion_distillery:{inputs:[{item:'Reagent Concentrate',qty:1},{item:'Brineblood Tonic',qty:3},{item:'Herbal Distillate',qty:3}]},
-  pharmaceutical_works:{inputs:[{item:'Sea Mist Perfume',qty:2},{item:'Rendered Creature Goods',qty:2},{item:'Herbal Distillate',qty:2},{item:'Healing Tonics',qty:2}]}
+  pharmaceutical_works:{inputs:[{item:'Sea Mist Perfume',qty:2},{item:'Rendered Creature Goods',qty:2},{item:'Herbal Distillate',qty:2},{item:'Healing Tonics',qty:2}]},
+  depth_charge_foundry:{inputs:[{item:'Black Powder Bombs',qty:5},{item:'Waterproof Sealant Casks',qty:3},{item:'Crude Oil Barrels',qty:2}]}
 };
 const REFINERY_COLOR='#8a3ac8';
 
@@ -7982,15 +8042,65 @@ function openRoomPicker(){
     const available=SHIP_ROOMS.filter(r=>r.minTier<=ship.tier&&(filter==='all'||r.cat===filter));
     return available.map(r=>_roomPickerCard(r,inst)).join('')||'<p style="font-size:11px;color:#4a7a9a;padding:8px;">No rooms available in this category.</p>';
   };
+  _pickerSearchActive=false;
   showModal(`<div class="modal" style="max-width:520px;">
-    <h2>Add Room</h2>
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <h2>Add Room</h2>
+      <button class="picker-search-btn" id="picker-search-toggle" onclick="togglePickerSearch()" title="Search"><i class="ti ti-search" aria-hidden="true"></i></button>
+    </div>
     <p style="font-size:11px;color:#4a7a9a;margin-bottom:6px;">Hover over a room to see full details. T${ship.tier} ship: ${slots-used} slot${slots-used!==1?'s':''} remaining.</p>
     <div class="room-filter-tabs" id="rft-bar">
       ${cats.map(c=>`<button class="rft${roomPickerFilter===c?' active':''}" onclick="setRoomFilter('${c}')">${c}</button>`).join('')}
     </div>
+    <input type="text" id="picker-search-input" placeholder="Search name or description…" style="display:none;width:100%;padding:8px 10px;margin-bottom:8px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:12px;" oninput="onPickerSearchInput(this.value)">
     <div class="room-picker-grid" id="room-picker-grid">${renderGrid(roomPickerFilter)}</div>
     <div class="modal-btns" style="margin-top:10px;"><button class="btn" onclick="closeModal()">Cancel</button></div>
   </div>`);
+}
+// Toggles between the category filter tabs and a free-text search box —
+// shared by the room picker and the upgrade/system picker. Searches both
+// the item's name and its full description/tip text, not just the name.
+var _pickerSearchActive=false;
+function togglePickerSearch(){
+  _pickerSearchActive=!_pickerSearchActive;
+  const input=document.getElementById('picker-search-input');
+  const searchBtn=document.getElementById('picker-search-toggle');
+  if(searchBtn) searchBtn.classList.toggle('active',_pickerSearchActive);
+  // Every filter-tab bar in the currently-open picker (there can be one or
+  // two rows depending on context) toggles opposite the search box.
+  document.querySelectorAll('.room-filter-tabs').forEach(function(bar){
+    bar.style.display=_pickerSearchActive?'none':'';
+  });
+  if(input){
+    input.style.display=_pickerSearchActive?'block':'none';
+    if(_pickerSearchActive){ input.value=''; input.focus(); }
+  }
+  // Restore the normal filtered view when search turns off.
+  if(!_pickerSearchActive) onPickerSearchInput('',true);
+}
+function _pickerSearchMatches(name,desc,query){
+  const q=query.toLowerCase();
+  return name.toLowerCase().indexOf(q)!==-1 || (desc||'').toLowerCase().indexOf(q)!==-1;
+}
+function onPickerSearchInput(query,forceRestore){
+  const roomGrid=document.getElementById('room-picker-grid');
+  if(roomGrid){
+    const inst=_armadaGet(selectedUid);if(!inst)return;
+    const ship=_shipMap[inst.shipId];
+    if(!_pickerSearchActive||forceRestore){
+      const cats=['all','combat','crew','utility','production','creature','exploration'];
+      const available=SHIP_ROOMS.filter(r=>r.minTier<=ship.tier&&(roomPickerFilter==='all'||r.cat===roomPickerFilter));
+      roomGrid.innerHTML=available.map(r=>_roomPickerCard(r,inst)).join('')||'<p style="font-size:11px;color:#4a7a9a;padding:8px;">No rooms available in this category.</p>';
+      return;
+    }
+    const q=(query||'').trim();
+    if(!q){ roomGrid.innerHTML='<p style="font-size:11px;color:#4a7a9a;padding:8px;">Type to search room names and descriptions…</p>'; return; }
+    const matches=SHIP_ROOMS.filter(function(r){ return r.minTier<=ship.tier && _pickerSearchMatches(r.name,r.tip||r.sub,q); });
+    roomGrid.innerHTML=matches.map(r=>_roomPickerCard(r,inst)).join('')||'<p style="font-size:11px;color:#4a7a9a;padding:8px;">No matches.</p>';
+    return;
+  }
+  const pickerGrid=document.getElementById('picker-grid');
+  if(pickerGrid) _pickerRefreshUpgSysGrid(query,forceRestore);
 }
 
 function setRoomFilter(cat){
@@ -8231,7 +8341,8 @@ function buildProdInfo(roomId, mode, inst){
     luxury_leather_works:{raw:true,item:'Luxury Leather',output:'1 unit per 8 days',value:'43,000 gp/unit'},
     haute_couture_atelier:{raw:true,item:'Haute Couture Fashion',output:'1 unit per 10 days',value:'100,000 gp/unit'},
     superior_healing_potion_distillery:{item:'Superior Healing Potion',output:'1 unit per 8 days',trade:'2,000 gp/unit',crew:'Restores this ship\'s crew to full HP and removes one negative condition from one crew member (single use).'},
-    pharmaceutical_works:{raw:true,item:'Pharmaceuticals',output:'2 units per 7 days',value:'1,800 gp/unit'}
+    pharmaceutical_works:{raw:true,item:'Pharmaceuticals',output:'2 units per 7 days',value:'1,800 gp/unit'},
+    depth_charge_foundry:{raw:true,item:'Depth Charges',output:'10 units per 6 days',value:'2,000 gp/unit'}
   };
   const d=D[roomId];
   if(!d) return '<span style="color:#3a6a8a;font-size:10px;">No production data.</span>';
@@ -8526,6 +8637,7 @@ function showStatTip(e,id){
   TIP.style.display='block';
   moveTip(e);
 }function showTipById(e,id,isUpg){
+  if(window.innerWidth<=700) return;
   const item=isUpg?UPGRADES.find(u=>u.id===id):findSys(id);
   if(!item){hideTip();return;}
   TIP.innerHTML=isUpg?formatUpgTip(item):formatTip(item);
@@ -8536,6 +8648,7 @@ function showStatTip(e,id){
   TIP.style.left=x+'px';TIP.style.top=y+'px';
 }
 function showTipRaw(e,txt){
+  if(window.innerWidth<=700) return;
   if(!txt) return;
   TIP.innerHTML=txt;
   TIP.style.display='block';
@@ -8568,7 +8681,7 @@ function _showMobTip(item,isUpg){
   if(existing){existing.remove();return;}
   var el=document.createElement('div');
   el.id='mob-tip-overlay';
-  el.style.cssText='position:fixed;bottom:70px;left:8px;right:8px;z-index:1200;background:#050f1a;border:1px solid #2a5a80;border-radius:10px;padding:10px 12px;font-size:10px;color:#8ab8d8;line-height:1.5;max-height:40vh;overflow-y:auto;box-shadow:0 4px 20px rgba(0,0,0,.8);';
+  el.style.cssText='position:fixed;bottom:70px;left:8px;right:8px;z-index:2400;background:#050f1a;border:1px solid #2a5a80;border-radius:10px;padding:10px 12px;font-size:10px;color:#8ab8d8;line-height:1.5;max-height:40vh;overflow-y:auto;box-shadow:0 4px 20px rgba(0,0,0,.8);';
   el.innerHTML=(isUpg?formatUpgTip(item):formatTip(item))+'<button onclick="_closeMobTip()" style="margin-top:8px;width:100%;background:#0a1820;border:1px solid #2a5a80;border-radius:6px;color:#4a9abc;font-size:11px;padding:6px;cursor:pointer;touch-action:manipulation;">✕ Close</button>';
   document.body.appendChild(el);
   setTimeout(function(){
@@ -9633,13 +9746,18 @@ function openPicker(acceptType, arrayKey, slotIdx){
     : buildPickerGrid(defaultCat, isUpg);
   if(_pickCtx) _pickCtx.filterCat=defaultCat;
 
+  _pickerSearchActive=false;
   showModal(
     '<div class="modal" style="max-width:500px;">'
     +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
       +'<h2 style="margin:0;">'+title+'</h2>'
-      +'<span style="font-size:10px;color:#3a6a8a;">'+openCount+' slot'+(openCount!==1?'s':'')+' open</span>'
+      +'<div style="display:flex;align-items:center;gap:8px;">'
+        +'<span style="font-size:10px;color:#3a6a8a;">'+openCount+' slot'+(openCount!==1?'s':'')+' open</span>'
+        +'<button class="picker-search-btn" id="picker-search-toggle" onclick="togglePickerSearch()" title="Search"><i class="ti ti-search" aria-hidden="true"></i></button>'
+      +'</div>'
     +'</div>'
     +tabsHtml
+    +'<input type="text" id="picker-search-input" placeholder="Search name or description…" style="display:none;width:100%;padding:8px 10px;margin-bottom:8px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:12px;" oninput="onPickerSearchInput(this.value)">'
     +'<div id="picker-grid" style="max-height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;">'
       +initialGrid
     +'</div>'
@@ -9739,7 +9857,7 @@ function _mobRoomSheet(roomId, canAdd){
 
   var sheet=document.createElement('div');
   sheet.id='mob-picker-sheet';
-  sheet.style.cssText='position:fixed;bottom:0;left:0;right:0;z-index:1400;background:#050f1a;border-top:2px solid #2a5a80;border-radius:16px 16px 0 0;padding:16px 16px 32px;max-height:65vh;overflow-y:auto;box-shadow:0 -6px 30px rgba(0,0,0,.9);';
+  sheet.style.cssText='position:fixed;bottom:0;left:0;right:0;z-index:2400;background:#050f1a;border-top:2px solid #2a5a80;border-radius:16px 16px 0 0;padding:16px 16px 32px;max-height:65vh;overflow-y:auto;box-shadow:0 -6px 30px rgba(0,0,0,.9);';
 
   // Header
   var hdr=document.createElement('div');
@@ -9796,7 +9914,7 @@ function _mobPickerSheet(id){
 
   var sheet=document.createElement('div');
   sheet.id='mob-picker-sheet';
-  sheet.style.cssText='position:fixed;bottom:0;left:0;right:0;z-index:1400;background:#050f1a;border-top:2px solid #2a5a80;border-radius:16px 16px 0 0;padding:16px 16px 32px;max-height:65vh;overflow-y:auto;box-shadow:0 -6px 30px rgba(0,0,0,.9);';
+  sheet.style.cssText='position:fixed;bottom:0;left:0;right:0;z-index:2400;background:#050f1a;border-top:2px solid #2a5a80;border-radius:16px 16px 0 0;padding:16px 16px 32px;max-height:65vh;overflow-y:auto;box-shadow:0 -6px 30px rgba(0,0,0,.9);';
 
   // Content
   var content=document.createElement('div');
@@ -9912,6 +10030,80 @@ function buildPickerGrid(filterCat, isUpg){
   }).join('');
 }
 
+// Gathers every item potentially relevant to the currently-open
+// upgrade/system picker (bypassing category tabs entirely) so search can
+// look across the whole set, then filters by name+description match.
+function _pickerRefreshUpgSysGrid(query,forceRestore){
+  const grid=document.getElementById('picker-grid');
+  if(!grid||!_pickCtx) return;
+  const isUpg=_pickCtx.isUpg;
+  const acceptType=_pickCtx.acceptType;
+  if(!_pickerSearchActive||forceRestore){
+    // Restore whatever the normal category-filtered view currently is.
+    const isSysType=acceptType==='helm'||acceptType==='nest'||_pickCtx.arrayKey==='riggers';
+    grid.innerHTML=isSysType
+      ? buildSysGrid(acceptType,window._sysFilterCat||'all',window._sysFilterTier||'all')
+      : buildPickerGrid(_pickCtx.filterCat||acceptType,isUpg);
+    return;
+  }
+  const q=(query||'').trim();
+  if(!q){ grid.innerHTML='<div style="font-size:11px;color:#3a6a8a;padding:12px;">Type to search names and descriptions…</div>'; return; }
+
+  let items=[];
+  if(isUpg){
+    items=(UPGRADES||[]).map(function(u){ return {id:u.id,name:u.name,desc:u.desc||'',cost:u.cost,isUpg:true}; });
+  } else if(acceptType==='helm'||acceptType==='nest'||_pickCtx.arrayKey==='riggers'){
+    const key=_pickCtx.arrayKey==='riggers'?'rigger':acceptType;
+    items=(SYSTEMS[key]||[]).map(function(s){ return {id:s.id,name:s.name,desc:s.desc||'',cost:s.cost,isUpg:false}; });
+  } else {
+    // Cannon/harpoon/focus/flex — search across every relevant weapon family.
+    const families=acceptType==='cannon'?['cannon','anima_cannon','zadelian_cannon','electric_cannon','leviathan_cannon','combustion_cannon']
+      :acceptType==='harpoon'?['harpoon','anima_harpoon','zadelian_harpoon','electric_harpoon','leviathan_harpoon','combustion_harpoon']
+      :acceptType==='focus'?['focus','anima_focus','zadelian_focus','leviathan_focus']
+      :['cannon','harpoon','focus','anima','zadelian_cannon','zadelian_harpoon','zadelian_focus','electric_cannon','electric_harpoon','combustion_cannon','combustion_harpoon'];
+    families.forEach(function(fam){
+      (SYSTEMS[fam]||[]).forEach(function(s){ items.push({id:s.id,name:s.name,desc:s.desc||'',cost:s.cost,isUpg:false}); });
+    });
+    // De-dupe — some families overlap (e.g. 'anima' covers all three mount types).
+    const seen={};
+    items=items.filter(function(it){ if(seen[it.id])return false; seen[it.id]=true; return true; });
+  }
+
+  const matches=items.filter(function(it){ return _pickerSearchMatches(it.name,it.desc,q); });
+  grid.innerHTML=_renderPickerSearchCards(matches);
+}
+function _renderPickerSearchCards(items){
+  if(!items.length) return '<div style="font-size:11px;color:#3a6a8a;padding:12px;">No matches.</div>';
+  const _inst=selectedUid?_armadaGet(selectedUid):null;
+  const _blocked=_inst?getUpgIncompat(null,_inst):new Set();
+  const _powerBlocked=_inst?getPowerBlocked(_inst):new Map();
+  const _installed=new Set((_inst&&_inst.upgrades||[]).filter(Boolean));
+  return items.map(function(item){
+    const tc='#4a7a9a';
+    const sub=item.desc.split('\n')[0].slice(0,110);
+    const costStr=item.cost!=null?item.cost.toLocaleString()+' gp':'';
+    const conflictBlocked=item.isUpg&&_blocked.has(item.id);
+    const powerReason=_powerBlocked.get(item.id);
+    const isBlocked=conflictBlocked||!!powerReason;
+    const isInstalled=item.isUpg&&_installed.has(item.id);
+    const isMob=window.innerWidth<=700;
+    const hoverIn=isMob?'':'showTipById(event,&quot;'+item.id+'&quot;,'+(item.isUpg?'true':'false')+');if(!'+isBlocked+')this.style.background=\'#0d1e0a\';this.style.borderColor=\''+tc+'\'';
+    const hoverOut=isMob?'':'hideTip();this.style.background=\'#06101a\';this.style.borderColor=\''+tc+'30\'';
+    const blockedStyle=isBlocked?'opacity:0.35;filter:grayscale(0.7);cursor:not-allowed;':'cursor:pointer;touch-action:manipulation;';
+    const blockedLabel=isBlocked?'<span style="font-size:9px;color:#c85040;margin-left:auto;font-style:italic;">'+(powerReason?(/^Requires/.test(powerReason)?'no power':'conflict'):'conflict')+'</span>':'';
+    return '<div '+(isBlocked?'':'onclick="pickItem(&quot;'+item.id+'&quot;)"')+' style="border:.5px solid '+tc+'30;border-radius:8px;padding:9px 11px;'+blockedStyle+'background:#06101a;"'
+      +(hoverIn?' onmouseenter="'+hoverIn+'"':'')
+      +(hoverOut?' onmouseleave="'+hoverOut+'"':'')
+      +'>'
+      +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:'+(sub?'3':'0')+'px;">'
+        +'<span style="font-size:12px;font-weight:500;color:'+(isBlocked?'#4a5a6a':'#c8d8e8')+';">'+item.name+'</span>'
+        +(costStr?'<span style="font-size:10px;color:#3a7a3a;margin-left:auto;">'+costStr+'</span>':'')
+        +blockedLabel
+      +'</div>'
+      +(sub?'<div style="font-size:10px;color:'+(isBlocked?'#2a4a5a':'#5a8aaa')+';line-height:1.4;">'+sub+'</div>':'')
+    +'</div>';
+  }).join('');
+}
 function pickItem(sysId){
   if(!_pickCtx||!selectedUid) return;
   const inst=_armadaGet(selectedUid); if(!inst)return;
@@ -10187,7 +10379,8 @@ function getProdData(roomId){
     luxury_leather_works:{raw:true,item:'Luxury Leather',output:'1 unit per 8 days',value:'43,000 gp/unit'},
     haute_couture_atelier:{raw:true,item:'Haute Couture Fashion',output:'1 unit per 10 days',value:'100,000 gp/unit'},
     superior_healing_potion_distillery:{item:'Superior Healing Potion',output:'1 unit per 8 days',trade:'2,000 gp/unit',crew:'Restores this ship\'s crew to full HP and removes one negative condition from one crew member (single use).'},
-    pharmaceutical_works:{raw:true,item:'Pharmaceuticals',output:'2 units per 7 days',value:'1,800 gp/unit'}
+    pharmaceutical_works:{raw:true,item:'Pharmaceuticals',output:'2 units per 7 days',value:'1,800 gp/unit'},
+    depth_charge_foundry:{raw:true,item:'Depth Charges',output:'10 units per 6 days',value:'2,000 gp/unit'}
   };
   return D[roomId]||null;
 }
@@ -10249,8 +10442,16 @@ function getShipProdMultiplier(inst){
   return mult;
 }
 function getLedgerProductionGroups(){
+  // Ships can be split across Home and any number of Islands, each with
+  // its own separate storage array — only whichever one is currently being
+  // viewed lives in the live `armada` variable, the rest sit parked in
+  // _homeArmadaStash / island.armada. Production needs to run for the
+  // WHOLE fleet regardless of where each ship is currently docked, not
+  // just whichever water happens to be on screen, so gather every ship
+  // from every location here rather than just iterating `armada`.
+  const allShips=getAllFleetShipsEverywhere();
   const groups={};
-  armada.forEach(inst=>{
+  allShips.forEach(inst=>{
     const mult=getShipProdMultiplier(inst);
     const assemblyCount=Math.min(3,(inst.rooms||[]).filter(function(r){return r==='induction_assembly_line';}).length);
     const isMerchantHull=inst.shipId==='cog'||inst.shipId==='caravel'||inst.shipId==='galleon';
@@ -10379,11 +10580,22 @@ function simulateWeek(){
   });
   // Merchant Galleons run a passive trade empire — 500 gp/week each, banked
   // directly rather than added as sellable cargo.
-  const galleonCount=armada.filter(inst=>inst.shipId==='galleon').length;
+  const galleonCount=getAllFleetShipsEverywhere().filter(inst=>inst.shipId==='galleon').length;
   if(galleonCount>0){
     const passiveIncome=galleonCount*500;
     _ledger.gold=(_ledger.gold||0)+passiveIncome;
     _ledger.log.unshift({type:'passive',day:_ledger.day,value:passiveIncome,count:galleonCount});
+  }
+  // Weekly crew wages — star crew salaries plus regular crew at a flat
+  // 2 gp/week each (party members are unpaid). Same formula the Crew Pool
+  // panel already displays, now actually deducted rather than just shown.
+  const starWages=(globalCrew||[]).filter(function(c){return c.type==='star';}).reduce(function(s,c){return s+(c.salary||0);},0);
+  const regularCrewCount=(globalCrew||[]).filter(function(c){return c.type==='crew';}).length;
+  const regularWages=regularCrewCount*2;
+  const totalCrewWages=starWages+regularWages;
+  if(totalCrewWages>0){
+    _ledger.gold=(_ledger.gold||0)-totalCrewWages;
+    _ledger.log.unshift({type:'wages',day:_ledger.day,starWages:starWages,regularWages:regularWages,regularCrewCount:regularCrewCount,total:totalCrewWages});
   }
   _ledger.log.unshift({type:'production',week:_ledger.week,startDay,endDay:_ledger.day,entries});
   renderTradeModal();
@@ -10795,6 +11007,19 @@ function renderLedgerTab(body){
       +'</div>';
       return;
     }
+    if(week.type==='wages'){
+      html+='<div style="border:.5px solid #6a2a2a;border-radius:8px;padding:9px 12px;margin-bottom:8px;background:#1a0a0a;border-left:3px solid #e05050;">'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;">'
+          +'<span style="font-size:11px;font-weight:600;color:#f0a0a0;"><span style="background:#3a1010;border:.5px solid #e05050;border-radius:4px;padding:1px 6px;font-size:9px;margin-right:6px;vertical-align:1px;">⚙ WAGES</span>Weekly crew pay</span>'
+          +'<span style="font-size:11px;font-weight:700;color:#e05050;">−'+week.total.toLocaleString()+' gp</span>'
+        +'</div>'
+        +'<div style="font-size:9px;color:#9a5a5a;margin-top:3px;padding-left:1px;">Day '+week.day
+          +(week.starWages>0?' · '+week.starWages.toLocaleString()+' gp star crew salaries':'')
+          +(week.regularCrewCount>0?' · '+week.regularCrewCount+' regular crew × 2 gp':'')
+        +'</div>'
+      +'</div>';
+      return;
+    }
     if(week.type==='sale'){
       const isPrime=week.market==='prime';
       html+='<div style="border:.5px solid #2a6a4a;border-radius:8px;padding:9px 12px;margin-bottom:8px;background:#0a2018;border-left:3px solid #40e0a0;">'
@@ -11180,7 +11405,7 @@ function openProductionFlowchart(){
     +'<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#060e14;border-bottom:.5px solid #1a3a55;flex-shrink:0;">'
     +'<div style="display:flex;align-items:center;gap:12px;">'
     +'<span style="font-size:13px;font-weight:600;color:#e0d8c8;">Production &amp; Trade Goods Flowchart</span>'
-    +'<span style="font-size:10px;color:#4a7a9a;"><span style="color:#4a9a5a;">&#9632;</span> Base room &nbsp; <span style="color:'+REFINERY_COLOR+';">&#9632;</span> Refinery &nbsp; <span style="color:#888;">&#9632;</span> Trade good &nbsp; <span style="color:#e0b030;">&#9632;</span> Treasury &nbsp; <span style="color:#4a7a9a;">— click any box for details</span></span>'
+    +'<span style="font-size:10px;color:#4a7a9a;"><span style="color:#4a9a5a;">&#9632;</span> Base room &nbsp; <span style="color:'+REFINERY_COLOR+';">&#9632;</span> Refinery &nbsp; <span style="color:#888;">&#9632;</span> Trade good &nbsp; <span style="color:#e0b030;">&#9632;</span> Treasury &nbsp; <span style="color:#4a7a9a;">— hover for details, click to trace its full supply chain, click again (or the background) to clear</span></span>'
     +'</div>'
     +'<button onclick="closeModal()" style="background:none;border:none;color:#4a7a9a;font-size:18px;cursor:pointer;line-height:1;">&times;</button>'
     +'</div>'
@@ -11195,6 +11420,8 @@ function openProductionFlowchart(){
 }
 // nodeId -> {kind:'room'|'refinery'|'good'|'treasury', refId:<room id or good name>}
 var _pfNodeMap={};
+var _pfEdges=[]; // {from,to} using our own node ids, captured while generating the diagram
+var _pfHighlighted=null; // node id currently selected for chain-tracing, or null
 function _pfRender(){
   if(typeof mermaid==='undefined'){
     var s=document.createElement('script');
@@ -11212,34 +11439,122 @@ function _pfDraw(){
     canvas.innerHTML=res.svg;
     const svg=canvas.querySelector('svg');
     if(svg){ svg.style.maxWidth='100%'; svg.style.height='auto'; }
-    // Wire hover on every node we tagged, via the `click` directives'
-    // generated ids — mermaid attaches a matching DOM id to each node group.
-    // Hover (not click) so this matches every other tooltip in the app —
-    // the tooltip follows the cursor via the same showRoomTip/showGoodTip
-    // functions used everywhere else, not a separate fixed info panel.
-    Object.keys(_pfNodeMap).forEach(function(nodeId){
-      const el=canvas.querySelector('[id*="'+nodeId+'"]');
-      if(!el) return;
-      el.style.cursor='pointer';
-      const info=_pfNodeMap[nodeId];
-      el.addEventListener('mouseenter',function(e){
-        if(info.kind==='room'||info.kind==='refinery') showRoomTip(e,info.refId);
-        else if(info.kind==='good') showGoodTip(e,info.refId);
-        else if(info.kind==='treasury'){
-          RTIP.innerHTML='<b>Treasury</b><br><span style="color:#4a7a9a;font-size:10px;">Some refineries draw gp directly from the fleet Treasury balance as one of their required inputs.</span>';
-          RTIP.style.display='block';
-          moveRoomTip(e);
-        }
-      });
-      el.addEventListener('mousemove',function(e){ moveRoomTip(e); });
-      el.addEventListener('mouseleave',function(){ hideRoomTip(); });
-      // Hover skips itself on mobile widths (matching showRoomTip's own
-      // guard), so also wire a tap fallback into the fixed info panel.
-      el.addEventListener('click',function(){ if(window.innerWidth<=700) _pfShowInfo(nodeId); });
-    });
+    _pfWireHover(canvas);
+    canvas.addEventListener('click',function(e){ if(e.target===canvas||e.target.tagName==='svg') _pfClearHighlight(canvas); });
   }).catch(function(err){
     canvas.innerHTML='<div style="color:#c85040;font-size:11px;padding:20px;">Diagram failed to render: '+String(err.message||err).replace(/</g,'&lt;')+'</div>';
   });
+}
+// Finds every rendered node element and matches it back to our node map by
+// precisely parsing Mermaid's own id format (flowchart-<nodeId>-<index>),
+// rather than a loose substring search — substring matching can silently
+// grab the wrong element (an edge, a marker def, another node whose id
+// happens to contain this one as a fragment) and produce no visible hover
+// at all with no error to signal why.
+// Returns the set of node ids that can reach targetId by following edges
+// backward (i.e. everything upstream of it, all the way to base production).
+function _pfGetAncestors(targetId){
+  const visited=new Set([targetId]);
+  const queue=[targetId];
+  while(queue.length){
+    const cur=queue.pop();
+    _pfEdges.forEach(function(edge){
+      if(edge.to===cur && !visited.has(edge.from)){
+        visited.add(edge.from);
+        queue.push(edge.from);
+      }
+    });
+  }
+  return visited;
+}
+function _pfClearHighlight(canvas){
+  _pfHighlighted=null;
+  canvas.querySelectorAll('g.node, .node').forEach(function(el){ el.style.opacity=''; });
+  const svg=canvas.querySelector('svg');
+  if(svg) svg.querySelectorAll('*').forEach(function(el){ if(!el.closest('.node')) el.style.opacity=''; });
+}
+// Matches an SVG element's DOM id back to one of our own node ids, using
+// whole-segment boundaries so e.g. "RM_dye" never matches "RM_dye_extra".
+function _pfMatchNodeId(elId){
+  return Object.keys(_pfNodeMap).find(function(id){
+    const re=new RegExp('(^|[-_])'+id.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'($|[-_])');
+    return re.test(elId||'');
+  });
+}
+function _pfApplyHighlight(canvas,nodeId){
+  if(_pfHighlighted===nodeId){ _pfClearHighlight(canvas); return; }
+  _pfHighlighted=nodeId;
+  const keep=_pfGetAncestors(nodeId);
+  canvas.querySelectorAll('g.node, .node').forEach(function(el){
+    const matched=_pfMatchNodeId(el.id);
+    el.style.opacity=(matched&&keep.has(matched))?'1':'0.12';
+  });
+  // Everything else in the SVG that ISN'T part of a node box is treated as
+  // an edge/connector/label and faded unless it resolves to a kept edge.
+  // Deliberately not filtered by class name (.edgePath, .edgeLabel, etc.)
+  // — different Mermaid builds/themes use different internal class names,
+  // and guessing wrong silently leaves every line untouched with no error.
+  // Walking every element and excluding only what's inside .node is class-
+  // name-agnostic and can't miss an edge because of a naming mismatch.
+  const svg=canvas.querySelector('svg');
+  if(!svg) return;
+  svg.querySelectorAll('*').forEach(function(el){
+    if(el.closest('.node')||el.tagName==='marker'||el.closest('marker')||el.tagName==='defs'||el.closest('defs')||el.tagName==='style') return;
+    let on=false, probe=el, hops=0;
+    while(probe && hops<5 && !on){
+      const elId=probe.id||'';
+      if(elId){
+        const matchedEdge=_pfEdges.find(function(edge){
+          const reFrom=new RegExp('(^|[-_])'+edge.from.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'($|[-_])');
+          const reTo=new RegExp('(^|[-_])'+edge.to.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'($|[-_])');
+          return reFrom.test(elId)&&reTo.test(elId)&&keep.has(edge.from)&&keep.has(edge.to);
+        });
+        if(matchedEdge) on=true;
+      }
+      probe=probe.parentElement;
+      hops++;
+    }
+    if(on) el.style.opacity='1';
+    else if(el.children.length===0) el.style.opacity='0.08'; // only set on leaf elements — setting it on every ancestor group too is redundant and can fight with per-child overrides
+  });
+}
+function _pfWireHover(canvas){
+  let wired=0;
+  // Mermaid wraps every actual node box in <g class="node ...">, while
+  // edges use "edgePath"/"edgeLabel" and arrowheads use <marker> — scoping
+  // to .node specifically keeps hover off the connecting lines, which
+  // otherwise also match since edge ids embed both connected node names
+  // (e.g. an edge id like "L-RM_oil_derrick-GD_crude-0" contains a full
+  // valid node id as a substring).
+  const candidates=canvas.querySelectorAll('g.node[id], .node[id]');
+  candidates.forEach(function(el){
+    const matchedNodeId=_pfMatchNodeId(el.id);
+    if(!matchedNodeId) return;
+    const info=_pfNodeMap[matchedNodeId];
+    el.style.cursor='pointer';
+    el.style.pointerEvents='all';
+    el.addEventListener('mouseenter',function(e){
+      if(info.kind==='room'||info.kind==='refinery') showRoomTip(e,info.refId);
+      else if(info.kind==='good') showGoodTip(e,info.refId);
+      else if(info.kind==='treasury'){
+        RTIP.innerHTML='<b>Treasury</b><br><span style="color:#4a7a9a;font-size:10px;">Some refineries draw gp directly from the fleet Treasury balance as one of their required inputs.</span>';
+        RTIP.style.display='block';
+        moveRoomTip(e);
+      }
+    });
+    el.addEventListener('mousemove',function(e){ moveRoomTip(e); });
+    el.addEventListener('mouseleave',function(){ hideRoomTip(); });
+    el.addEventListener('click',function(){ _pfApplyHighlight(canvas,matchedNodeId); if(window.innerWidth<=700) _pfShowInfo(matchedNodeId); });
+    wired++;
+  });
+  if(wired===0){
+    // Mermaid's id format didn't match what we expected — fall back to a
+    // visible notice rather than a silently non-interactive diagram.
+    const notice=document.createElement('div');
+    notice.style.cssText='color:#c8961e;font-size:10px;padding:6px 0;text-align:center;';
+    notice.textContent='Hover detection could not attach to this diagram render — try re-opening the flowchart.';
+    canvas.appendChild(notice);
+  }
 }
 function _pfShowInfo(nodeId){
   const info=_pfNodeMap[nodeId];
@@ -11266,11 +11581,15 @@ function _pfShowInfo(nodeId){
 function _pfSafeId(str){ return str.replace(/[^a-zA-Z0-9]/g,'_'); }
 function buildProductionMermaidCode(){
   _pfNodeMap={};
+  _pfEdges=[];
   let lines=['flowchart LR'];
-  const clicks=[];
   const usedGoods={};
   function regNode(nodeId,kind,refId){
-    if(!_pfNodeMap[nodeId]){ _pfNodeMap[nodeId]=kind==='good'?{kind:'good',refId:refId}:{kind:kind,refId:refId}; clicks.push('click '+nodeId+' call _pfNoop()'); }
+    if(!_pfNodeMap[nodeId]){ _pfNodeMap[nodeId]=kind==='good'?{kind:'good',refId:refId}:{kind:kind,refId:refId}; }
+  }
+  function addEdge(from,to,lineSuffix){
+    _pfEdges.push({from:from,to:to});
+    lines.push('  '+from+' -->'+(lineSuffix||'')+' '+to);
   }
   lines.push('  TREASURY(("Treasury (gp)")):::treasury');
   regNode('TREASURY','treasury',null);
@@ -11286,7 +11605,7 @@ function buildProductionMermaidCode(){
     lines.push('  '+rfNode+'["'+room.name.replace(/"/g,"'")+'"]:::refinery');
     consuming.inputs.forEach(function(inp){
       if(inp.item==='__gold__'){
-        lines.push('  TREASURY -->|"'+inp.qty.toLocaleString()+' gp"| '+rfNode);
+        addEdge('TREASURY',rfNode,'|"'+inp.qty.toLocaleString()+' gp"|');
       } else {
         const gNode='GD_'+_pfSafeId(inp.item);
         regNode(gNode,'good',inp.item);
@@ -11300,10 +11619,10 @@ function buildProductionMermaidCode(){
             if(!lines.some(function(l){return l.indexOf(rmNode+'[')!==-1;})){
               lines.push('  '+rmNode+'["'+info.room.name.replace(/"/g,"'")+'"]:::baseRoom');
             }
-            lines.push('  '+rmNode+' --> '+gNode);
+            addEdge(rmNode,gNode);
           }
         }
-        lines.push('  '+gNode+' -->|"x'+inp.qty+'"| '+rfNode);
+        addEdge(gNode,rfNode,'|"x'+inp.qty+'"|');
       }
     });
     if(outData){
@@ -11311,7 +11630,7 @@ function buildProductionMermaidCode(){
       regNode(outNode,'good',outData.item);
       usedGoods[outData.item]=true;
       lines.push('  '+outNode+'["'+outData.item.replace(/"/g,"'")+'"]:::good');
-      lines.push('  '+rfNode+' --> '+outNode);
+      addEdge(rfNode,outNode);
     }
   });
   lines.push('  end');
@@ -11324,7 +11643,9 @@ function buildProductionMermaidCode(){
     const rmNode='RM_'+_pfSafeId(r.id), gNode='GD_'+_pfSafeId(d.item);
     regNode(rmNode,'room',r.id);
     regNode(gNode,'good',d.item);
-    lines.push('  '+rmNode+'["'+r.name.replace(/"/g,"'")+'"]:::baseRoom --> '+gNode+'["'+d.item.replace(/"/g,"'")+'"]:::good');
+    lines.push('  '+rmNode+'["'+r.name.replace(/"/g,"'")+'"]:::baseRoom');
+    lines.push('  '+gNode+'["'+d.item.replace(/"/g,"'")+'"]:::good');
+    addEdge(rmNode,gNode);
   });
   lines.push('  end');
   lines.push('  classDef baseRoom fill:#2a6a3a,stroke:#4a9a5a,color:#eafaf0,stroke-width:1px');
