@@ -172,6 +172,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* tooltip */
 #tooltip{position:fixed;background:#050f1a;border:1px solid #2a5a80;border-radius:9px;padding:10px 12px;font-size:10px;color:#8ab8d8;pointer-events:auto;z-index:2200;max-width:290px;line-height:1.6;display:none;box-shadow:0 4px 20px rgba(0,0,0,.5);}
+@keyframes glitter-sparkle{0%,100%{opacity:.5;text-shadow:0 0 2px #fff8d0;}50%{opacity:1;text-shadow:0 0 6px #fff8d0,0 0 10px #ffd966;}}
+@keyframes glitter-sparkle-svg{0%,100%{opacity:.6;filter:drop-shadow(0 0 2px #fff8d0);}50%{opacity:1;filter:drop-shadow(0 0 4px #fff8d0) drop-shadow(0 0 7px #ffd966);}}
+.consumable-star{display:inline-block;color:#ffd966;font-size:12px;cursor:default;animation:glitter-sparkle 1.8s ease-in-out infinite;margin-left:3px;vertical-align:1px;}
 .roll-btn{display:inline-block;background:#0e1a2a;border:1px solid #2a4a6a;border-radius:6px;color:#6a9aba;font-size:10px;font-weight:600;padding:3px 9px;margin:2px 2px 0 0;cursor:pointer;line-height:1.5;}
 .roll-btn:hover{background:#1a2a3a;border-color:#4a7a9a;color:#8ab8d8;}
 .slot.filled:hover{background:#0f2a40;border-color:#5a9abc!important;transform:translateY(-2px);box-shadow:0 4px 12px rgba(60,140,200,.25);}
@@ -475,9 +478,11 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
 .topmenu-orange{color:#f0a040!important;}
 .topmenu-green{color:#40e080!important;}
 .topmenu-purple{color:#c8a0f0!important;}
+.topmenu-blue{color:#4a9eff!important;}
 .topmenu-orange:hover{background:rgba(240,160,64,0.1);text-shadow:0 0 8px #f0a04099;}
 .topmenu-green:hover{background:rgba(64,224,128,0.1);text-shadow:0 0 8px #40e08099;}
 .topmenu-purple:hover{background:rgba(200,160,240,0.1);text-shadow:0 0 8px #c8a0f099;}
+.topmenu-blue:hover{background:rgba(74,158,255,0.1);text-shadow:0 0 8px #4a9eff99;}
 .battle-conn-box textarea{background:#0a1820;border:1px solid #1e3a55;border-radius:6px;color:#c8d8e8;font-size:10px;padding:8px;resize:vertical;font-family:monospace;}
 .battle-conn-box button{padding:7px 16px;border-radius:6px;cursor:pointer;font-size:11px;}
 @media(max-width:700px){
@@ -555,6 +560,7 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
       <button onclick="openBattleModal();closeTopMenu()" id="battle-btn" class="topmenu-item topmenu-green"><i class="ti ti-sword-off"></i> Battle</button>
       <button onclick="openBestiary();closeTopMenu()" class="topmenu-item topmenu-purple"><i class="ti ti-book"></i> Bestiary</button>
       <button onclick="openProductionFlowchart();closeTopMenu()" class="topmenu-item topmenu-orange"><i class="ti ti-sitemap"></i> Production Flowchart</button>
+      <button onclick="openBrineRules();closeTopMenu()" class="topmenu-item topmenu-blue"><i class="ti ti-droplet"></i> Brine</button>
     </div>
   </div>
 
@@ -572,6 +578,7 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
     <div class="mob-dd-sep"></div>
     <button class="mob-dd-item" onclick="openCombatRules();closeMobMenu()" style="color:#f0a040;"><i class="ti ti-sword"></i> Combat Rules</button>
     <button class="mob-dd-item" onclick="openProductionFlowchart();closeMobMenu()" style="color:#f0a040;"><i class="ti ti-sitemap"></i> Production Flowchart</button>
+    <button class="mob-dd-item" onclick="openBrineRules();closeMobMenu()" style="color:#4a9eff;"><i class="ti ti-droplet"></i> Brine</button>
     <button class="mob-dd-item" onclick="openBestiary();closeMobMenu()" style="color:#c8a0f0;"><i class="ti ti-book"></i> Bestiary</button>
   </div>
 </div>
@@ -7029,15 +7036,15 @@ const SHIP_ROOMS = [
    tip:"<b>Maelstrom Engine Room</b><br><span style='color:#3C3489;font-size:10px;'>🔮 Arcane · 3 workers · 9,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Emergency burst: +8 sq Speed for 1 round (once/day). Weather shift: 5-mile radius for 1 hour (once/day). Ship immune to forced drift from whirlpools, undertow, and riptides. Recharges every 24 hours.<br><span style='color:#5a9abc;font-size:10px;'>Synergy: Stormcaller Mast — combined tempest: –4 sq Speed and disadvantage all attacks for enemies.</span>"},
   {id:"brewery",name:"Saltwater Brewery",cat:"production",catLabel:"⚗️ Production",sub:"Artisan sea-grain fermentation",cost:"3,000 gp",minTier:0,workers:2,buyer:"Taverns & Dockside Inns",tip:"<b>Saltwater Brewery</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 3,000 gp · T0+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Artisan sea-grain fermentation</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Saltwater Stout — 1 cask (30 units) per 6 days · 10 gp/unit · 300 gp/cask</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>+1 morale for 1 round when consumed before combat. Each unit counts as 1 ration.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Taverns & Dockside Inns — pay +50% for this good.</span>"},
   {id:"silk_loom",name:"Seaweed Silk Loom",cat:"production",catLabel:"⚗️ Production",sub:"Rare textile from deep-sea kelp",cost:"5,000 gp",minTier:1,workers:3,buyer:"Fashion Houses",tip:"<b>Seaweed Silk Loom</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 5,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Rare textile from deep-sea kelp</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Seaweed Silk — 1 bolt (10 yards) per 21 days · 1,050 gp/bolt</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Garments grant advantage on saves vs water-based hazards.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Fashion Houses — pay +50% for this good.</span>"},
-  {id:"distillery",name:"Alchemical Distillery",cat:"production",catLabel:"⚗️ Production",sub:"Potion and tincture production",cost:"5,000 gp",minTier:1,workers:3,buyer:"Alchemists' Guilds",tip:"<b>Alchemical Distillery</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 5,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Potion and tincture production</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Brineblood Tonic — 4 vials per 8 days · 159 gp/vial · 636 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Restores 2d4+2 HP per vial. Alternatively restores one expended 1st-level spell slot.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Alchemists' Guilds — pay +50% for this good.</span>"},
+  {id:"distillery",name:"Alchemical Distillery",cat:"production",catLabel:"⚗️ Production",sub:"Potion and tincture production",cost:"5,000 gp",minTier:1,workers:3,buyer:"Alchemists' Guilds",tip:"<b>Alchemical Distillery</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 5,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Distills raw Brine Salt down into a stable, drinkable tincture — same crystal, refined into something a body can actually process.</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'>Output: 4 vials per 8 days.<br>Supply Chain (passive): consumes 2 Raw Brine Salt from the fleet's cargo per cycle.<br><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Brineblood Tonic — 350 gp/vial · 1,400 gp/batch. Full mechanics (Brine Surge, Salt Crash, Addiction, Salt Marks, passive regeneration) — see Menu &gt; Brine.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Alchemists' Guilds — pay +50% for this good.</span>"},
   {id:"apiary",name:"Maritime Apiary & Herb Deck",cat:"production",catLabel:"⚗️ Production",sub:"Sea-blossom honey and medicinal herbs",cost:"2,500 gp",minTier:0,workers:1,buyer:"Healers & Apothecaries",tip:"<b>Maritime Apiary & Herb Deck</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 1 worker · 2,500 gp · T0+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Sea-blossom honey and medicinal herbs</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Sea-Blossom Mead — 6 bottles per 4 days · 22 gp/bottle · 132 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Advantage on saves vs poison for 1 hour. Each bottle counts as 1 ration.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Healers & Apothecaries — pay +50% for this good.</span>"},
   {id:"brine_lab",name:"Brine Salt Extraction Lab",cat:"production",catLabel:"⚗️ Production",sub:"Passive mana-salt harvesting",cost:"5,000 gp",minTier:1,workers:3,buyer:"Brinengineers",tip:"<b>Brine Salt Extraction Lab</b><br><span style='color:#8a3a8a;font-size:10px;'>🐚 Aquatic Bio · 3 workers · 5,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Passive mana-salt harvesting.<br>Produces 1 barrel per 30 days · 40 units per barrel. 200 gp/unit · 8,000 gp/barrel.<br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Brinengineers — pay +50% for this good.</span>"},
   {id:"salt_works",name:"Sea Salt & Preserved Goods Works",cat:"production",catLabel:"⚗️ Production",sub:"Bulk salt and food preservation",cost:"2,000 gp",minTier:0,workers:2,buyer:"Naval Quartermasters",tip:"<b>Sea Salt & Preserved Goods Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 2,000 gp · T0+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Bulk salt and food preservation</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Salt-Cured Provisions — 1 crate (50 rations) per 2 days · 1 gp/ration · 50 gp/crate</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Each ration counts as a full day's food. Crew eating these gain +1 to Con saves for the day.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Naval Quartermasters — pay +50% for this good.</span>"},
   {id:"perfumery",name:"Sea Perfumery & Cosmetics Lab",cat:"production",catLabel:"⚗️ Production",sub:"Rare oceanic fragrance production",cost:"3,500 gp",minTier:1,workers:2,buyer:"Nobility & Fashion Houses",tip:"<b>Sea Perfumery & Cosmetics Lab</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 3,500 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Rare oceanic fragrance production</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Sea Mist Perfume — 4 vials per 14 days · 125 gp/vial · 500 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Advantage on Persuasion checks vs nobility and wealthy merchants for 8 hours.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Nobility & Fashion Houses — pay +50% for this good.</span>"},
   {id:"dye_works",name:"Marine Dye Works & Ink House",cat:"production",catLabel:"⚗️ Production",sub:"Rare pigment and magical ink",cost:"3,000 gp",minTier:1,workers:2,buyer:"Fashion Houses",tip:"<b>Marine Dye Works & Ink House</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 3,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Rare pigment and magical ink</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Bioluminescent Ink — 3 vials per 9 days · 143 gp/vial · 429 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Applied to a surface: dim light in a 5 ft radius for 30 days without flame. Applied to a weapon: it glows faintly in darkness.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Fashion Houses — pay +50% for this good.</span>"},
   {id:"chart_press",name:"Cartographic Press & Chart Room",cat:"production",catLabel:"⚗️ Production",sub:"Exploration chart production and sale",cost:"3,500 gp",minTier:1,workers:2,buyer:"Navigators' Guilds",tip:"<b>Cartographic Press & Chart Room</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 3,500 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Exploration chart production and sale</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Nautical Charts — 5 charts per 6 days · 67 gp/chart · 335 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Crew using their own charts have advantage on Navigation checks. Never pay for charts again at port.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Navigators' Guilds — pay +50% for this good.</span>"},
-  {id:"elem_still",name:"Elemental Distillation Chamber",cat:"production",catLabel:"⚗️ Production",sub:"Pure elemental essence extraction",cost:"6,500 gp",minTier:2,workers:3,buyer:"Wizards' Circles",tip:"<b>Elemental Distillation Chamber</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 6,500 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Pure elemental essence extraction</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Elemental Essence Vial — 2 vials per 14 days · 465 gp/vial · 930 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Thrown as a grenade — 3d10 elemental damage, 15 ft radius, DC 14 Dex save for half. Or drink for 1 hour of resistance to that element.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
-  {id:"monster_render",name:"Monster Rendering & Trophy Works",cat:"production",catLabel:"⚗️ Production",sub:"Complete creature harvesting",cost:"3,000 gp",minTier:1,workers:2,buyer:"Alchemists & Taxidermists",tip:"<b>Monster Rendering & Trophy Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 3,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Complete creature harvesting</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Rendered Creature Goods — 2 batches per 7 days · 120 gp/batch, a steady baseline of routine hunting and salvage. A specific notable kill (GM's discretion) can still be processed as a one-off bonus batch worth CR × 60 gp instead, outside the normal cycle.</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>A displayed trophy grants +1 morale at the start of combat. The party may claim requested components (hide, bone, organs) at no cost.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Alchemists & Taxidermists — pay +50% for this good.</span>"},
+  {id:"elem_still",name:"Elemental Distillation Chamber",cat:"production",catLabel:"⚗️ Production",sub:"Pure elemental essence extraction",cost:"6,500 gp",minTier:2,workers:3,buyer:"Wizards' Circles",tip:"<b>Elemental Distillation Chamber</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 6,500 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Pure elemental essence extraction</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Elemental Essence Vial — 2 vials per 14 days · 465 gp/vial · 930 gp/batch. Thrown as a grenade — 3d10 elemental damage, 15 ft radius, DC 14 Dex save for half. Or drink for 1 hour of resistance to that element.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
+  {id:"monster_render",name:"Monster Rendering & Trophy Works",cat:"production",catLabel:"⚗️ Production",sub:"Complete creature harvesting",cost:"3,000 gp",minTier:1,workers:2,buyer:"Alchemists & Taxidermists",tip:"<b>Monster Rendering & Trophy Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 3,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Complete creature harvesting</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Rendered Creature Goods — 10 batches per 7 days · 100 gp/batch, a steady baseline of routine hunting and salvage. A specific notable kill (GM's discretion) can still be processed as a one-off bonus batch worth CR × 60 gp instead, outside the normal cycle.</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>A displayed trophy grants +1 morale at the start of combat. The party may claim requested components (hide, bone, organs) at no cost.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Alchemists & Taxidermists — pay +50% for this good.</span>"},
   {id:"provisions",name:"Luxury Provisions Pantry",cat:"production",catLabel:"⚗️ Production",sub:"Premium preserved food production",cost:"2,000 gp",minTier:0,workers:2,buyer:"Nobility",tip:"<b>Luxury Provisions Pantry</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 2,000 gp · T0+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Premium preserved food production</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Luxury Provisions — 12 portions per 4 days · 9 gp/portion · 108 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>+1d4 temporary HP from a quality meal. Used for diplomatic hosting: social DCs at port are reduced by 2.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Nobility — pay +50% for this good.</span>"},
   {id:"candle_works",name:"Scrimshaw & Candle Works",cat:"production",catLabel:"⚗️ Production",sub:"Artisan light sources and artwork",cost:"1,500 gp",minTier:0,workers:1,buyer:"Temples & Shrines",tip:"<b>Scrimshaw & Candle Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 1 worker · 1,500 gp · T0+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Artisan light sources and artwork</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Navigational Candles — 8 candles per 3 days · 7 gp/candle · 56 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Each candle burns at a precisely calibrated rate — advantage on Survival checks to track time and position at sea. Doubles as a dim light source lasting 8 hours.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Temples & Shrines — pay +50% for this good.</span>"},
   {id:"fermentation",name:"Vinegar & Fermentation Works",cat:"production",catLabel:"⚗️ Production",sub:"Preservation acids and cultured foods",cost:"2,000 gp",minTier:0,workers:2,buyer:"Taverns & Dockside Inns",tip:"<b>Vinegar & Fermentation Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 2,000 gp · T0+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Preservation acids and cultured foods</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Aged Sea Spirit — 1 cask (20 units) per 5 days · 7 gp/unit · 140 gp/cask</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Drinking a unit grants advantage on Con saves vs ingested poison and disease for 24 hours. Used as a wound disinfectant it prevents infection.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Taverns & Dockside Inns — pay +50% for this good.</span>"},
@@ -7065,11 +7072,11 @@ const SHIP_ROOMS = [
    tip:"<b>The Shipwright's Corner</b><br><span style='color:#1A3A6B;font-size:10px;'>🔧 Utility · 2 workers · 2,800 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><b>After every combat:</b> automatically repair 1d10×10 HP without consuming rigger charges. <b>At port:</b> repair costs halved. <b>Once per long rest at sea:</b> restore any disabled system to 50% HP over 1 hour — no port visit needed."},
   {id:"crows_nest_relay",name:"Crow's Nest Relay",cat:"crew",catLabel:"👥 Crew",sub:"Below-deck signal relay station",cost:"1,500 gp",minTier:1,workers:1,
    tip:"<b>Crow's Nest Relay</b><br><span style='color:#3A3A3A;font-size:10px;'>👥 Crew · 1 worker · 1,500 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Connected by speaking-tubes to the crow's nest. <b>The spotter's bonus applies to all attacks this round</b> rather than one, at no action cost. At the start of each combat, announces exact distances to all ships within detection range before initiative."},
-  {id:"alchemists_nook",name:"Alchemist's Nook",cat:"production",catLabel:"⚗️ Production",sub:"Healing tonic production",cost:"4,000 gp",minTier:2,workers:2,buyer:"Healers & Apothecaries",tip:"<b>Alchemist's Nook</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 4,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Healing Tonics — 4 vials per 7 days · 111 gp/vial · 444 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Each vial restores 2d4+2 HP as a bonus action.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Healers & Apothecaries — pay +50% for this good.</span>"},
-  {id:"bomb_deck",name:"The Bomb Deck",cat:"production",catLabel:"⚗️ Production",sub:"Black powder bomb production",cost:"3,000 gp",minTier:1,workers:2,buyer:"Mercenary Companies",tip:"<b>The Bomb Deck</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 3,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Black Powder Bombs — 6 bombs per 8 days · 63 gp/bomb · 378 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Thrown grenade — 3d6×10 fire, 10 ft radius, DC 13 Dex save for half. 30 ft throw range.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
-  {id:"smoke_works",name:"The Smoke Works",cat:"production",catLabel:"⚗️ Production",sub:"Smoke canister production",cost:"2,200 gp",minTier:1,workers:1,buyer:"Mercenary Companies",tip:"<b>The Smoke Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 1 worker · 2,200 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Smoke Canisters — 8 canisters per 6 days · 26 gp/canister · 208 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Deploy as bonus action — 20 ft radius dense smoke for 3 rounds. All attacks through cloud have disadvantage. Throw up to 30 ft.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
+  {id:"alchemists_nook",name:"Alchemist's Nook",cat:"production",catLabel:"⚗️ Production",sub:"Healing tonic production",cost:"4,000 gp",minTier:2,workers:2,buyer:"Healers & Apothecaries",tip:"<b>Alchemist's Nook</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 4,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Healing Tonics — 4 vials per 7 days · 111 gp/vial · 444 gp/batch. Each vial restores 2d4+2 HP as a bonus action.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Healers & Apothecaries — pay +50% for this good.</span>"},
+  {id:"bomb_deck",name:"The Bomb Deck",cat:"production",catLabel:"⚗️ Production",sub:"Black powder bomb production",cost:"3,000 gp",minTier:1,workers:2,buyer:"Mercenary Companies",tip:"<b>The Bomb Deck</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 3,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Black Powder Bombs — 6 bombs per 8 days · 63 gp/bomb · 378 gp/batch. Thrown grenade — 3d6×10 fire, 10 ft radius, DC 13 Dex save for half. 30 ft throw range.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
+  {id:"smoke_works",name:"The Smoke Works",cat:"production",catLabel:"⚗️ Production",sub:"Smoke canister production",cost:"2,200 gp",minTier:1,workers:1,buyer:"Mercenary Companies",tip:"<b>The Smoke Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 1 worker · 2,200 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Smoke Canisters — 8 canisters per 6 days · 26 gp/canister · 208 gp/batch. Deploy as bonus action — 20 ft radius dense smoke for 3 rounds. All attacks through cloud have disadvantage. Throw up to 30 ft.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
   {id:"poison_lab",name:"The Poison Lab",cat:"production",catLabel:"⚗️ Production",sub:"Blackwater toxin production",cost:"3,500 gp",minTier:2,workers:2,buyer:"Assassins' Guilds",tip:"<b>The Poison Lab</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 3,500 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Blackwater Toxin — 5 doses per 6 days · 67 gp/dose · 335 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Apply to any weapon — next hit forces DC 14 Con save or target is Poisoned 1 hour and takes 2d6 poison at start of each turn.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Assassins' Guilds — pay +50% for this good.</span>"},
-  {id:"flash_forge",name:"The Flash Forge",cat:"production",catLabel:"⚗️ Production",sub:"Flash grenade production",cost:"2,800 gp",minTier:1,workers:2,buyer:"Mercenary Companies",tip:"<b>The Flash Forge</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 2,800 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Flash Grenades — 5 grenades per 7 days · 62 gp/grenade · 310 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Thrown — 15 ft radius, DC 14 Con save or Blinded 2 rounds. Fail by 5+ also Stunned 1 round. No damage.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
+  {id:"flash_forge",name:"The Flash Forge",cat:"production",catLabel:"⚗️ Production",sub:"Flash grenade production",cost:"2,800 gp",minTier:1,workers:2,buyer:"Mercenary Companies",tip:"<b>The Flash Forge</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 2,800 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Flash Grenades — 5 grenades per 7 days · 62 gp/grenade · 310 gp/batch. Thrown — 15 ft radius, DC 14 Con save or Blinded 2 rounds. Fail by 5+ also Stunned 1 round. No damage.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
   {id:"whispering_vault",name:"The Whispering Vault",cat:"utility",catLabel:"🔧 Utility",sub:"Zadelian pre-Storm memory disc",cost:"5,500 gp",minTier:2,workers:1,tip:"<b>The Whispering Vault</b><br><span style='color:#3C3489;font-size:10px;'>✨ Arcane · 1 worker · 5,500 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Houses a recovered Zadelian memory disc. <b>Once per session:</b> ask it one question about the world before the Storm — lost routes, sunken vaults, leviathan migration paths, dead civilisations. The DM answers truthfully from pre-Storm Nyceria. The disc does not know what changed after. <b>If asked why the Storm happened, it goes silent for a week.</b>"},
   {id:"tide_altar",name:"The Tide Altar",cat:"creature",catLabel:"🐉 Creature",sub:"Deep offering basin",cost:"6,000 gp",minTier:2,workers:0,tip:"<b>The Tide Altar</b><br><span style='color:#7A5500;font-size:10px;'>🐉 Creature · no crew required · 6,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>A carved stone basin always filled with seawater that never sloshes. <b>Once per long rest:</b> make an offering of 10+ gp and a DC 14 Charisma check. On success, something in the deep acknowledges it — a creature stands down, a route clears, weather shifts, or a leviathan submerges. On failure nothing happens. <b>Natural 1: something notices. It is not friendly.</b>"},
   {id:"pressure_archive",name:"The Pressure Archive",cat:"exploration",catLabel:"🔭 Exploration",sub:"Deep-sea research archive",cost:"4,500 gp",minTier:1,workers:1,tip:"<b>The Pressure Archive</b><br><span style='color:#1A4A6B;font-size:10px;'>🔭 Exploration · 1 worker · 4,500 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><b>After any dive, leviathan encounter, or ruin exploration:</b> the archivist produces a field report in 1 hour. On the next encounter with the same ruin type, creature, or depth zone, the party gains advantage on all checks and cannot be surprised. Reports accumulate — the archive grows more useful the longer the ship sails."},
@@ -7127,15 +7134,14 @@ const SHIP_ROOMS = [
   {id:"lev_ink_press",name:"Veilworm Ink Press",cat:"production",catLabel:"⛏️ Production",sub:"Veilworm ribbon gland ink extraction",cost:"6,000 gp",minTier:2,workers:2,buyer:"Spy Networks & Smugglers",tip:"<b>Veilworm Ink Press</b><br><span style='color:#1A6B1A;font-size:10px;'>⛏️ Production · 2 workers · 6,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>⚠ Requires: Veilworm (any age) — ribbon gland harvest<hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Veilworm Ink — 3 vials per 4 days · 369 gp/vial · 1,107 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Applied to rope — near-invisible in water; advantage on all harpoon attack rolls, and tethered lines are undetectable until physically touched. Coat the waterline instead: this ship gains advantage on avoiding the first ranged attack made against it each combat, the hull swallowed by the ink's shadow.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Spy Networks & Smugglers — pay +50% for this good.</span>"},
   {id:"lev_gland_still",name:"Glasswarden Luminance Still",cat:"production",catLabel:"⛏️ Production",sub:"Bioluminescent organ distillation",cost:"8,000 gp",minTier:2,workers:2,buyer:"Wizards' Circles",tip:"<b>Glasswarden Luminance Still</b><br><span style='color:#1A6B1A;font-size:10px;'>⛏️ Production · 2 workers · 8,000 gp · T2+</span><br><span style='color:#9060c0;font-size:10px;'>⚠ Requires: Glasswarden (Adult or Ancient) — bioluminescence focusing organ</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Luminance Vials — 4 vials per 4 days · 476 gp/vial · 1,904 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Throw — 40 ft range, 30 ft radius burst of concentrated light (up from a lesser flare). DC 17 Con or Blinded 1 minute; light-sensitive creatures automatically fail. The flash also disables Darkvision-reliant tracking for 1 minute.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
   {id:"lev_psyk_lab",name:"Psykanthum Distillation Chamber",cat:"production",catLabel:"⛏️ Production",sub:"Kul Krakon neural extract processing",cost:"14,000 gp",minTier:3,workers:3,buyer:"Wizards' Circles",tip:"<b>Psykanthum Distillation Chamber</b><br><span style='color:#1A6B1A;font-size:10px;'>⛏️ Production · 3 workers · 14,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>⚠ Requires: Kul Krakon Ancient — psykanthum organ (full extraction)<hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Psyk Serum — 1 vial per 7 days · 4,800 gp/vial</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Read surface thoughts 60 ft for 1 hr (DC 16 Wis), advantage on Insight and all Charisma checks against the read target, immune to Charmed and Frightened for the duration. Side effect: DC 10 Wis save after or Stunned 1 round.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
-  {id:"lev_void_lab",name:"Voidblush Inversion Lab",cat:"production",catLabel:"⛏️ Production",sub:"Void bell fluid processing chamber",cost:"10,000 gp",minTier:3,workers:2,buyer:"Wizards' Circles",tip:"<b>Voidblush Inversion Lab</b><br><span style='color:#1A6B1A;font-size:10px;'>⛏️ Production · 2 workers · 10,000 gp · T3+</span><br><span style='color:#9060c0;font-size:10px;'>⚠ Requires: Voidblush Medusoid — void reservoir bell (drain before harvest)</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Inversion Phials — 2 phials per 5 days · 1,317 gp/phial · 2,634 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Throw at target — the next spell it receives is inverted (Fireball heals, Slow grants Haste). DC 18 Con to resist. On a failed save, the inversion also affects the next spell that target casts this combat.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
-  {id:"lev_spine_forge",name:"Hulkane Node Forge",cat:"production",catLabel:"⛏️ Production",sub:"Calcified node processing and hardening",cost:"12,000 gp",minTier:3,workers:3,buyer:"Naval Armories",tip:"<b>Hulkane Node Forge</b><br><span style='color:#1A6B1A;font-size:10px;'>⛏️ Production · 3 workers · 12,000 gp · T3+</span><br><span style='color:#9060c0;font-size:10px;'>⚠ Requires: Hulkane Ancient (The Patriarch) — calcified node plates</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Node-Plated Rounds — 10 rounds per 4 days · 285 gp/round · 2,850 gp/set</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Ignore all damage resistance and reduction entirely — DR from armor, magic, or creature traits applies at zero. Rounds also deal +1d8 force damage on a critical hit as the calcified node fractures on impact.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Naval Armories — pay +50% for this good.</span>"},
+  {id:"lev_void_lab",name:"Voidblush Inversion Lab",cat:"production",catLabel:"⛏️ Production",sub:"Void bell fluid processing chamber",cost:"10,000 gp",minTier:3,workers:2,buyer:"Wizards' Circles",tip:"<b>Voidblush Inversion Lab</b><br><span style='color:#1A6B1A;font-size:10px;'>⛏️ Production · 2 workers · 10,000 gp · T3+</span><br><span style='color:#9060c0;font-size:10px;'>⚠ Requires: Voidblush Medusoid — void reservoir bell (drain before harvest)</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Inversion Phials — 2 phials per 5 days · 1,317 gp/phial · 2,634 gp/batch. Throw at target — the next spell it receives is inverted (Fireball heals, Slow grants Haste). DC 18 Con to resist. On a failed save, the inversion also affects the next spell that target casts this combat.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
+  {id:"lev_spine_forge",name:"Hulkane Node Forge",cat:"production",catLabel:"⛏️ Production",sub:"Calcified node processing and hardening",cost:"12,000 gp",minTier:3,workers:3,buyer:"Naval Armories",tip:"<b>Hulkane Node Forge</b><br><span style='color:#1A6B1A;font-size:10px;'>⛏️ Production · 3 workers · 12,000 gp · T3+</span><br><span style='color:#9060c0;font-size:10px;'>⚠ Requires: Hulkane Ancient (The Patriarch) — calcified node plates</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Node-Plated Rounds — 10 rounds per 4 days · 500 gp/round · 5,000 gp/set</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>A consumable, cannon mounts only. Loaded rounds ignore all damage resistance and reduction entirely — DR from armor, magic, or creature traits applies at zero. Rounds also deal +1d8 force damage on a critical hit as the calcified node fractures on impact.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Naval Armories — pay +50% for this good.</span>"},
   {id:"lev_tide_brewery",name:"Waveborn Tide Brewery",cat:"production",catLabel:"⛏️ Production",sub:"Living saltwater core infusion brewing",cost:"9,000 gp",minTier:2,workers:2,buyer:"Sailors' Unions",tip:"<b>Waveborn Tide Brewery</b><br><span style='color:#1A6B1A;font-size:10px;'>⛏️ Production · 2 workers · 9,000 gp · T2+</span><br><span style='color:#9060c0;font-size:10px;'>⚠ Requires: Waveborn — living core (live capture, containment vessel required)</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Tidewater Draught — 5 vials per 4 days · 380 gp/vial · 1,900 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Water Breathing 24 hr, Swim speed = walking speed +10 ft, telepathy with aquatic creatures 120 ft. Counts as a full day's water ration and grants resistance to cold damage while submerged.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Sailors' Unions — pay +50% for this good.</span>"},
-  {id:"lev_thermal_press",name:"Skorcine Thermal Press",cat:"production",catLabel:"⛏️ Production",sub:"Magma-fluid gland extraction",cost:"7,000 gp",minTier:2,workers:2,buyer:"Mercenary Companies",tip:"<b>Skorcine Thermal Press</b><br><span style='color:#1A6B1A;font-size:10px;'>⛏️ Production · 2 workers · 7,000 gp · T2+</span><br><span style='color:#9060c0;font-size:10px;'>⚠ Requires: Skorcine Raider — thermal gland (minimum 2 specimens)</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Thermal Grenades — 4 grenades per 4 days · 324 gp/grenade · 1,296 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Thrown — 30 ft range, 20 ft radius, 6d10 fire (DC 16 Dex for half). Bypasses fire resistance entirely and treats fire immunity as resistance instead. Ignites surfaces for 3 rounds at 3d6 fire/round.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
-  {id:"lev_venom_lab",name:"Arachnomar Venom Lab",cat:"production",catLabel:"⛏️ Production",sub:"Mana-web gland venom extraction",cost:"8,500 gp",minTier:2,workers:2,buyer:"Assassins' Guilds",tip:"<b>Arachnomar Venom Lab</b><br><span style='color:#1A6B1A;font-size:10px;'>⛏️ Production · 2 workers · 8,500 gp · T2+</span><br><span style='color:#9060c0;font-size:10px;'>⚠ Requires: Arachnomar Stellate — web glands (minimum 2 specimens)</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Webvenom Doses — 4 doses per 6 days · 728 gp/dose · 2,912 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>On weapon hit — DC 16 Con or Restrained 2 minutes. Repeat save at the end of each turn, with disadvantage on the first attempt. Magical fire ends it early.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Assassins' Guilds — pay +50% for this good.</span>"},
+  {id:"lev_thermal_press",name:"Skorcine Thermal Press",cat:"production",catLabel:"⛏️ Production",sub:"Magma-fluid gland extraction",cost:"7,000 gp",minTier:2,workers:2,buyer:"Mercenary Companies",tip:"<b>Skorcine Thermal Press</b><br><span style='color:#1A6B1A;font-size:10px;'>⛏️ Production · 2 workers · 7,000 gp · T2+</span><br><span style='color:#9060c0;font-size:10px;'>⚠ Requires: Skorcine Raider — thermal gland (minimum 2 specimens)</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Thermal Grenades — 4 grenades per 4 days · 324 gp/grenade · 1,296 gp/batch. Thrown — 30 ft range, 20 ft radius, 6d10 fire (DC 16 Dex for half). Bypasses fire resistance entirely and treats fire immunity as resistance instead. Ignites surfaces for 3 rounds at 3d6 fire/round.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
+  {id:"lev_venom_lab",name:"Arachnomar Venom Lab",cat:"production",catLabel:"⛏️ Production",sub:"Mana-web gland venom extraction",cost:"8,500 gp",minTier:2,workers:2,buyer:"Assassins' Guilds",tip:"<b>Arachnomar Venom Lab</b><br><span style='color:#1A6B1A;font-size:10px;'>⛏️ Production · 2 workers · 8,500 gp · T2+</span><br><span style='color:#9060c0;font-size:10px;'>⚠ Requires: Arachnomar Stellate — web glands (minimum 2 specimens)</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Webvenom Doses — 4 doses per 6 days · 728 gp/dose · 2,912 gp/batch. On weapon hit — DC 16 Con or Restrained 2 minutes. Repeat save at the end of each turn, with disadvantage on the first attempt. Magical fire ends it early.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Assassins' Guilds — pay +50% for this good.</span>"},
   {id:"lev_marrow_press",name:"Makinagi Blade Marrow Press",cat:"production",catLabel:"⛏️ Production",sub:"Blade-fin marrow oil extraction",cost:"7,500 gp",minTier:2,workers:2,buyer:"Mercenary Companies",tip:"<b>Makinagi Blade Marrow Press</b><br><span style='color:#1A6B1A;font-size:10px;'>⛏️ Production · 2 workers · 7,500 gp · T2+</span><br><span style='color:#9060c0;font-size:10px;'>⚠ Requires: Makinagi (Adult or Ancient) — blade-fin marrow</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Blade Marrow Oil — 3 vials per 6 days · 857 gp/vial · 2,571 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Applied to a bladed weapon — +3d6 slashing and ignores natural armor AC for 1 hr. On a harpoon or cannonball, the next hit inflicts two Flooding severity levels instead of one, no save.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
-  {id:"lev_deepwalker_oil",name:"Deepwalker Pressure Oil Refinery",cat:"production",catLabel:"⛏️ Production",sub:"Depth-pressure fluid processing",cost:"11,000 gp",minTier:3,workers:3,buyer:"Smugglers' Networks",tip:"<b>Deepwalker Pressure Oil Refinery</b><br><span style='color:#1A6B1A;font-size:10px;'>⛏️ Production · 3 workers · 11,000 gp · T3+</span><br><span style='color:#9060c0;font-size:10px;'>⚠ Requires: Deepwalker Ancient — lobed fin pressure fluid (all fins harvested intact)</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Pressure Oil — 2 vials per 8 days · 1,887 gp/vial · 3,774 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Applied to a surface — DC 22 Athletics to move across it for 1 hr. On a ship lock — DC 24 Str, cannot be picked or dispelled. On boots — Spider Climb 1 hr, plus advantage on checks to resist being knocked prone.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Smugglers' Networks — pay +50% for this good.</span>"}, 
+  {id:"lev_deepwalker_oil",name:"Deepwalker Pressure Oil Refinery",cat:"production",catLabel:"⛏️ Production",sub:"Depth-pressure fluid processing",cost:"11,000 gp",minTier:3,workers:3,buyer:"Smugglers' Networks",tip:"<b>Deepwalker Pressure Oil Refinery</b><br><span style='color:#1A6B1A;font-size:10px;'>⛏️ Production · 3 workers · 11,000 gp · T3+</span><br><span style='color:#9060c0;font-size:10px;'>⚠ Requires: Deepwalker Ancient — lobed fin pressure fluid (all fins harvested intact)</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Pressure Oil — 2 vials per 8 days · 1,887 gp/vial · 3,774 gp/batch. Applied to a surface — DC 22 Athletics to move across it for 1 hr. On a ship lock — DC 24 Str, cannot be picked or dispelled. On boots — Spider Climb 1 hr, plus advantage on checks to resist being knocked prone.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Smugglers' Networks — pay +50% for this good.</span>"}, 
   {id:"clam_chamber",name:"Clam Chamber",cat:"production",catLabel:"⚗️ Production",sub:"Pearl-producing giant clam bed",cost:"3,500 gp",minTier:1,workers:1,buyer:"Jewelers' Guilds",tip:"<b>Clam Chamber</b><br><span style='color:#8a3a8a;font-size:10px;'>🐚 Aquatic Bio · 1 worker · 3,500 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Pearl-producing giant clam bed.<br>Produces 1d4 pearls per 10 days. 200 gp/pearl (natural 4 on the roll: one pearl is a rare black pearl worth 2,000 gp).<br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Jewelers' Guilds — pay +50% for this good.</span>"},
-  {id:"brine_distillery",name:"Brine Distillery",cat:"production",catLabel:"⚗️ Production",sub:"Coral filtration organ producing alchemical brine",cost:"5,000 gp",minTier:1,workers:1,buyer:"Brinengineers",tip:"<b>Brine Distillery</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 1 worker · 5,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'><i style='color:#5a8aaa;font-size:10px;'>Coral filtration organ producing alchemical brine</i><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'><div style='margin-bottom:4px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Concentrated Brine Vials — 2 vials per 10 days · 357 gp/vial · 714 gp/batch</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Load into the Brine Cannon to double its on-hit save DC for one shot.</div></div><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Brinengineers — pay +50% for this good.</span>"},
   {id:"spawn_sac",name:"Spawn Sac",cat:"combat",catLabel:"🐚 Aquatic Bio",sub:"Biological swarm release chamber",cost:"4,500 gp",minTier:1,workers:1,tip:"<b>Spawn Sac</b><br><span style='color:#3a8a9a;font-size:10px;'>🐚 Aquatic Bio · 1 worker · 4,500 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>A pulsing chamber that cultivates juvenile sea creatures.<br>Once per combat: release a swarm across the enemy deck — free area hazard, DC 12 Dex or creature restrained for one personal turn.<br>Produces 1 swarm charge per long rest.<br><span style='color:#5a9abc;font-size:10px;'>Activation is a station action from any crew on deck.</span>"},
   {id:"coral_forge",name:"Coral Forge",cat:"combat",catLabel:"🐚 Aquatic Bio",sub:"Living coral hull reinforcement",cost:"7,000 gp",minTier:2,workers:2,tip:"<b>Coral Forge</b><br><span style='color:#3a8a9a;font-size:10px;'>🐚 Aquatic Bio · 2 workers · 7,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Living coral growth chambers that slowly reinforce hull plates between combats.<br>Grants +100 temporary hull HP at the start of each combat.<br>DRAWBACK: Coral plating is brittle against fire — fire severity escalates one level faster on this ship.<br><span style='color:#5a9abc;font-size:10px;'>Incompatible with iron hull upgrades.</span>"},
   {id:"tide_organ",name:"Tide Organ",cat:"utility",catLabel:"🐚 Aquatic Bio",sub:"Biological ocean current sensor",cost:"6,000 gp",minTier:2,workers:1,tip:"<b>Tide Organ</b><br><span style='color:#3a8a9a;font-size:10px;'>🐚 Aquatic Bio · 1 worker · 6,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>A biological pressure organ tuned to ocean currents.<br>Passive: always know exact wind direction and current speed.<br>Active (once per combat, station action): helmsman moves the ship 3 sq in any direction as a free action, ignoring wind direction for that move.<br><span style='color:#5a9abc;font-size:10px;'>Active use does not spend Speed.</span>"},
@@ -7227,19 +7233,19 @@ const SHIP_ROOMS = [
   {id:"herbal_distillate_still",name:"Herbal Distillate Still",cat:"production",catLabel:"⚗️ Production",sub:"Distills sea-blossom mead into a concentrated tonic",cost:"7,000 gp",minTier:1,workers:1,buyer:"Wizards' Circles",
    tip:"<b>Herbal Distillate Still</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 1 worker · 7,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Distills the Apiary's own mead down to its medicinal essence, discarding everything but the concentrated herbal core.<br>Output: 2 units per 5 days.<br>Supply Chain (passive): consumes 3 Sea-Blossom Mead from the fleet's cargo per cycle.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Herbal Distillate — 195 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Removes one level of exhaustion when consumed.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
   {id:"alchemical_reagent_concentrate",name:"Alchemical Reagent Concentrate",cat:"production",catLabel:"⚗️ Production",sub:"Stabilizes healing tonics with pure elemental essence",cost:"40,000 gp",minTier:3,workers:3,buyer:"Wizards' Circles",
-   tip:"<b>Alchemical Reagent Concentrate</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 40,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Combines the Alchemist's Nook's healing tonics with pure elemental essence, stabilizing something well beyond a normal potion.<br>Output: 1 unit per 8 days.<br>Supply Chain (passive): consumes 3 Healing Tonics and 2 Elemental Essence Vial from the fleet's cargo per cycle — both required, scarcer one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Reagent Concentrate — 4,940 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>A spellcaster consuming one may cast a prepared spell of 2nd level or lower without expending a spell slot (single use).</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
+   tip:"<b>Alchemical Reagent Concentrate</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 40,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Combines the Alchemist's Nook's healing tonics with pure elemental essence, stabilizing something well beyond a normal potion.<br>Output: 1 unit per 8 days.<br>Supply Chain (passive): consumes 3 Healing Tonics and 2 Elemental Essence Vial from the fleet's cargo per cycle — both required, scarcer one sets the pace.<br><div style='font-size:10px;color:#c8d8e8;margin-top:6px;'>Reagent Concentrate — 4,940 gp/unit. Taken as an action, for the next hour the drinker has advantage on Concentration checks. When the hour ends, they take 1d12 acid damage as the caustic brew forces its way back up (single use).</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
   {id:"runic_warding_atelier",name:"Runic Warding Atelier",cat:"production",catLabel:"⚗️ Production",sub:"Inscribes elemental essence into scribing ink to bind wards",cost:"45,000 gp",minTier:3,workers:3,buyer:"Wizards' Circles",
    tip:"<b>Runic Warding Atelier</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 45,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Takes concentrated scribing ink already refined once and binds raw elemental essence into it — the resulting ink can hold a ward.<br>Output: 1 unit per 7 days.<br>Supply Chain (passive): consumes 2 Concentrated Scribing Ink and 2 Elemental Essence Vial from the fleet's cargo per cycle — both required, scarcer one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Runic Warding Ink — 6,760 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Inscribing a ward on a hull section grants that section resistance to one chosen damage type until the ward is broken by a critical hit.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
   {id:"incendiary_munitions_works",name:"Incendiary Munitions Works",cat:"production",catLabel:"⚗️ Production",sub:"Rebuilds black powder bombs around refined engine fuel",cost:"42,000 gp",minTier:3,workers:3,buyer:"Mercenary Companies",
-   tip:"<b>Incendiary Munitions Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 42,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Rebuilds the Bomb Deck's black powder charges around a core of already-refined engine fuel, burning far hotter than powder alone.<br>Output: 4 units per 6 days.<br>Supply Chain (passive): consumes 3 Black Powder Bombs and 1 Refined Fuel from the fleet's cargo per cycle — both required, scarcer one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Incendiary Rounds — 3,640 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>A cannon loaded with Incendiary Rounds deals +1d10×10 fire damage on its next shot (single use, consumed on firing).</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
+   tip:"<b>Incendiary Munitions Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 42,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Rebuilds the Bomb Deck's black powder charges around a core of already-refined engine fuel, burning far hotter than powder alone.<br>Output: 4 units per 6 days.<br>Supply Chain (passive): consumes 3 Black Powder Bombs and 1 Refined Fuel from the fleet's cargo per cycle — both required, scarcer one sets the pace.<br><div style='font-size:10px;color:#c8d8e8;margin-top:6px;'>Incendiary Rounds — 3,640 gp/unit. A consumable, cannon mounts only. Loaded into a cannon, deals +1d10×10 fire damage on its next shot and inflicts one Fire severity level on the target (single use, consumed on firing).</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
   {id:"captains_table",name:"The Captain's Table",cat:"production",catLabel:"⚗️ Production",sub:"Elevates the Gilded Table's own feast into a grand banquet",cost:"60,000 gp",minTier:3,workers:4,buyer:"Nobility",
    tip:"<b>The Captain's Table</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 4 workers · 60,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Takes an already-plated Gourmet Feast and elevates it further — fine leather-bound service ware, a formal seating, the full ceremony. The one true second-stage refinement in the fleet's kitchens.<br>Output: 1 unit per 8 days.<br>Supply Chain (passive): consumes 2 Gourmet Feast and 3 Tanned Leather from the fleet's cargo per cycle — both required, scarcer one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Grand Banquet Service — 5,200 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Grants temporary HP equal to 5× the consuming character's level, plus advantage on their next Charisma check at a formal function.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Nobility — pay +50% for this good.</span>"},
   {id:"voidglass_lens_grinder",name:"Voidglass Lens Grinder",cat:"production",catLabel:"⚗️ Production",sub:"Grinds inverted void fluid into a scrying lens",cost:"38,000 gp",minTier:3,workers:2,buyer:"Wizards' Circles",
    tip:"<b>Voidglass Lens Grinder</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 38,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Grinds inverted void-bell fluid and stabilizes it with bioluminescent ink into an actual scrying lens.<br>Output: 1 unit per 6 days.<br>Supply Chain (passive): consumes 1 Inversion Phials and 2 Bioluminescent Ink from the fleet's cargo per cycle — both required, scarcer one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Voidglass Lens — 6,240 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Advantage on Perception checks to detect invisible, ethereal, or otherwise concealed creatures for 24 hours (single use).</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
   {id:"pearl_gold_jewelry_atelier",name:"Pearl & Gold Jewelry Atelier",cat:"production",catLabel:"⚗️ Production",sub:"Sets pearls in cast gold amalgam, paid labor and all",cost:"50,000 gp",minTier:3,workers:3,buyer:"Merchant Consortiums",
    tip:"<b>Pearl & Gold Jewelry Atelier</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 50,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Sets Clam Chamber pearls into the Golden Cacao Press's own gold amalgam byproduct — genuine jewelry, not just raw materials.<br>Output: 2 units per 7 days.<br>Supply Chain (passive): consumes 4 Pearls, 3 Spiced Cacao Bricks, and 800 gp from the fleet's Treasury per cycle — every input required, scarcest one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Pearl Jewelry — 3,250 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>A worn piece grants advantage on the next Persuasion or Deception check at a formal social occasion (single use).</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Merchant Consortiums — pay +50% for this good.</span>"},
-  {id:"bespoke_armory",name:"Bespoke Armory",cat:"production",catLabel:"⚗️ Production",sub:"Commissions masterwork sidearms from powder, hide, and coin",cost:"55,000 gp",minTier:3,workers:3,buyer:"Mercenary Companies",
-   tip:"<b>Bespoke Armory</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 55,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Commissions a master gunsmith to build a single named weapon at a time — black powder, rare creature parts as decorative inlay, and real coin to pay for the craftsmanship.<br>Output: 1 unit per 14 days.<br>Supply Chain (passive): consumes 4 Black Powder Bombs, 2 Rendered Creature Goods, and 1,500 gp from the fleet's Treasury per cycle.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Masterwork Sidearm — 7,800 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Equips one crew member (captain's choice) with a permanent masterwork weapon: +1 to attack and damage rolls.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
+  {id:"bespoke_armory",name:"Bespoke Firearms",cat:"production",catLabel:"⚗️ Production",sub:"Commissions a single named hunting rifle from military-grade components",cost:"70,000 gp",minTier:3,workers:3,buyer:"Mercenary Companies",
+   tip:"<b>Bespoke Firearms</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 70,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Commissions a master gunsmith to build a single named rifle at a time — standardized industrial components as the frame and action, rare creature parts worked into the stock, and real coin to pay for the craftsmanship.<br>Output: 1 unit per 21 days.<br>Supply Chain (passive): consumes 6 Industrial Components, 2 Rendered Creature Goods, and 2,000 gp from the fleet's Treasury per cycle — scarcest one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>+3 Hunting Rifle — 50,000 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Equips one crew member (captain's choice) with a genuine +3 Hunting Rifle. Made to Order trait: +4 to attack rolls and +4 to damage rolls total (the +3 base, plus +1/+1 from Made to Order), permanent.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
   {id:"chartered_trade_license_office",name:"Chartered Trade License Office",cat:"production",catLabel:"⚗️ Production",sub:"Charts, hospitality, and a licensing fee become a legal writ",cost:"35,000 gp",minTier:2,workers:2,buyer:"Merchant Consortiums",
    tip:"<b>Chartered Trade License Office</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 35,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Nautical charts, hosted negotiations, and the actual licensing fee combine into a real, transferable trade writ — an intangible good, not a physical one.<br>Output: 1 unit per 10 days.<br>Supply Chain (passive): consumes 3 Nautical Charts, 2 Luxury Provisions, and 1,000 gp from the fleet's Treasury per cycle.<br><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods only</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Trade License — 5,850 gp/unit. GM's discretion: the fleet may instead hold onto a license for a passive port-access benefit rather than selling it.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Merchant Consortiums — pay +50% for this good.</span>"},
   {id:"ceremonial_regalia_workshop",name:"Ceremonial Regalia Workshop",cat:"production",catLabel:"⚗️ Production",sub:"Combines pigment, ink, and gold amalgam into court regalia",cost:"48,000 gp",minTier:3,workers:3,buyer:"Nobility",
@@ -7251,22 +7257,47 @@ const SHIP_ROOMS = [
   {id:"haute_couture_atelier",name:"Haute Couture Atelier",cat:"production",catLabel:"⚗️ Production",sub:"The deepest refinement chain in the fleet — silk, pearls, and luxury leather",cost:"85,000 gp",minTier:4,workers:4,buyer:"Nobility",
    tip:"<b>Haute Couture Atelier</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 4 workers · 85,000 gp · T4+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>The pinnacle of the fleet's craft economy — seaweed silk, set pearls, and leather already dyed with chromatic paint, cut and tailored into a single finished piece. Nothing else in the fleet requires this many refinement stages to produce.<br>Output: 1 unit per 10 days.<br>Supply Chain (passive): consumes 2 Seaweed Silk, 2 Pearl Jewelry (already refined), 1 Luxury Leather (refined twice over), and 3,000 gp from the fleet's Treasury per cycle — every input required, scarcest one sets the pace.<br><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods only</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Haute Couture Fashion — 100,000 gp/unit, the single most expensive good in the fleet's entire trade catalogue.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Nobility — pay +50% for this good.</span>"},
   {id:"superior_healing_potion_distillery",name:"Superior Healing Potion Distillery",cat:"production",catLabel:"⚗️ Production",sub:"Stabilizes reagent concentrate into a top-tier healing draught",cost:"50,000 gp",minTier:3,workers:3,buyer:"Wizards' Circles",
-   tip:"<b>Superior Healing Potion Distillery</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 50,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>A precision distillery built for one purpose — takes an already-stabilized reagent concentrate and cuts it with brineblood tonic and herbal distillate into the strongest healing draught the fleet can make.<br>Output: 1 unit per 8 days.<br>Supply Chain (passive): consumes 1 Reagent Concentrate (already refined), 3 Brineblood Tonic, and 3 Herbal Distillate (already refined) from the fleet's cargo per cycle — scarcest one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Superior Healing Potion — 2,000 gp/unit.</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Restores this ship's crew to full HP and removes one negative condition from one crew member (single use) — the strongest healing item available anywhere in the fleet.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
+   tip:"<b>Superior Healing Potion Distillery</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 50,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>A precision distillery built for one purpose — takes an already-stabilized reagent concentrate and cuts it with brineblood tonic and herbal distillate into the strongest healing draught the fleet can make.<br>Output: 1 unit per 8 days.<br>Supply Chain (passive): consumes 1 Reagent Concentrate (already refined), 3 Brineblood Tonic, and 3 Herbal Distillate (already refined) from the fleet's cargo per cycle — scarcest one sets the pace.<br><div style='font-size:10px;color:#c8d8e8;margin-top:6px;'>Superior Healing Potion — 2,000 gp/unit. A true Potion of Superior Healing — restores 8d4+8 HP when drunk as a bonus action (single use) — the strongest healing item available anywhere in the fleet.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
   {id:"pharmaceutical_works",name:"Pharmaceutical Works",cat:"production",catLabel:"⚗️ Production",sub:"Combines four separate goods into medicinal-grade pharmaceuticals",cost:"45,000 gp",minTier:3,workers:3,buyer:"Wizards' Circles",
    tip:"<b>Pharmaceutical Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 45,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>The most ingredient-heavy process in the fleet — perfume, rendered creature extract, herbal distillate, and healing tonic, refined together into genuine medicinal-grade pharmaceuticals.<br>Output: 2 units per 7 days.<br>Supply Chain (passive): consumes 2 Sea Mist Perfume, 2 Rendered Creature Goods, 2 Herbal Distillate (already refined), and 2 Healing Tonics from the fleet's cargo per cycle — four ingredients required, scarcest one sets the pace.<br><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods only</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Pharmaceuticals — 1,800 gp/unit.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
   {id:"depth_charge_foundry",name:"Depth Charge Foundry",cat:"production",catLabel:"⚗️ Production",sub:"Packs black powder into a pressure-sealed, oil-fed underwater charge",cost:"40,000 gp",minTier:3,workers:3,buyer:"Mercenary Companies",
    tip:"<b>Depth Charge Foundry</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 40,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Packs a black powder charge into a waterproof-sealed casing and feeds it with crude oil for a bigger detonation — built to be dropped, not fired, and to go off well below the waterline.<br>Output: 10 units per 6 days.<br>Supply Chain (passive): consumes 5 Black Powder Bombs, 3 Waterproof Sealant Casks (already refined), and 2 Crude Oil Barrels from the fleet's cargo per cycle — all three required, scarcest one sets the pace.<br>Use: dropped over the side and left to sink onto a target below the waterline — 10d10×10 damage, no attack roll needed, consumed on use.<br><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods only</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Depth Charges — 2,000 gp/unit.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
+  {id:"sublime_distillery",name:"Sublime Distillery",cat:"production",catLabel:"⚗️ Production",sub:"A closely guarded process combining Brineblood Tonic with refined Pharmaceuticals",cost:"90,000 gp",minTier:4,workers:3,buyer:"Smugglers' Networks",
+   tip:"<b>Sublime Distillery</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 90,000 gp · T4+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>A closely guarded process — few alchemists' guilds admit to knowing it — that combines an already-stabilized Brineblood Tonic with refined Pharmaceuticals into something far more potent, and far more dangerous, than either ingredient alone.<br>Output: 1 unit per 14 days.<br>Supply Chain (passive): consumes 3 Brineblood Tonic and 2 Pharmaceuticals from the fleet's cargo per cycle — both required, scarcer one sets the pace.<br><div style='font-size:10px;color:#c8d8e8;margin-top:6px;'>Blue Sublime — 75,000 gp/unit. Full mechanics (DC 21 Con save, incapacitation on failure, +5 to all rolls and rapid healing on success, Sublime Craving addiction) — see Menu &gt; Brine.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Smugglers' Networks — pay +50% for this good.</span>"},
+  {id:"ballast_smeltery",name:"Ballast Smeltery",cat:"production",catLabel:"⚗️ Production",sub:"Carefully renders excess iron ballast down into workable scrap",cost:"8,000 gp",minTier:1,workers:2,buyer:"Industrialists",
+   tip:"<b>Ballast Smeltery</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 8,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Every ship carries iron ballast deep in its hull for stability. This smeltery carefully renders down a controlled portion of the excess into workable scrap, without touching what the ship actually needs to stay upright.<br>Output: 6 units per 5 days.<br><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Scrap Metal — 45 gp/unit · 270 gp/batch.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Industrialists — pay +50% for this good.</span>"},
+  {id:"military_components_works",name:"Industrial Components Works",cat:"production",catLabel:"⚗️ Production",sub:"Forges scrap metal and black powder into standardized industrial-grade parts",cost:"25,000 gp",minTier:2,workers:3,buyer:"Industrialists",
+   tip:"<b>Industrial Components Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 25,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Forges raw scrap metal and black powder into standardized components used across a wide range of refineries — weapons and armor, certainly, but also machinery, instruments, and anything else that needs precision-machined parts rather than raw scrap. Not a finished item on its own, just the parts everything else is built from.<br>Output: 3 units per 7 days.<br>Supply Chain (passive): consumes 4 Scrap Metal, 2 Black Powder Bombs, and 800 gp from the fleet's Treasury per cycle — scarcest one sets the pace.<br><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Industrial Components — 1,200 gp/unit · 3,600 gp/batch.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Industrialists — pay +50% for this good.</span>"},
+  {id:"bespoke_armorworks",name:"Bespoke Armorworks",cat:"production",catLabel:"⚗️ Production",sub:"Commissions a single suit of +3 armor, any type, from military-grade components",cost:"70,000 gp",minTier:3,workers:3,buyer:"Mercenary Companies",
+   tip:"<b>Bespoke Armorworks</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 70,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Commissions a single suit of armor at a time — industrial components for the plating and frame, tanned leather for the fitted lining, and real coin to pay for the craftsmanship. Any armor type, chosen at commission.<br>Output: 1 unit per 21 days.<br>Supply Chain (passive): consumes 6 Industrial Components, 2 Tanned Leather, and 2,000 gp from the fleet's Treasury per cycle — scarcest one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>+3 Armor (any type) — 50,000 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Equips one crew member, chosen by the captain, with a genuine +3 armor of any type: +3 AC, permanent. Made to Order trait: the wearer chooses one damage type (any except psychic) to gain resistance to while worn.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
+  {id:"urchin_venom_extractor",name:"Urchin Venom Extractor",cat:"production",catLabel:"⚗️ Production",sub:"Harvests and stabilizes venom from tidal spine urchins",cost:"6,000 gp",minTier:1,workers:1,buyer:"Assassins' Guilds",
+   tip:"<b>Urchin Venom Extractor</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 1 worker · 6,000 gp · T1+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Harvests venom directly from the spines of tidal urchins gathered along the hull and nearby reefs, milked and stabilized before it degrades. Cheap, plentiful, and a common base ingredient for stronger poisons.<br>Output: 8 doses per 6 days.<br><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Urchin Poison — 95 gp/dose · 760 gp/batch. Applied to a weapon or dart. On hit, DC 14 Con save or take 1d4 poison damage and become Poisoned for 1 minute (repeat save each turn to end early).</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Assassins' Guilds — pay +50% for this good.</span>"},
+  {id:"fulmination_forge",name:"Fulmination Forge",cat:"production",catLabel:"⚗️ Production",sub:"Builds a military-grade elemental warhead around a components core",cost:"45,000 gp",minTier:3,workers:3,buyer:"Mercenary Companies",
+   tip:"<b>Fulmination Forge</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 45,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Builds a genuine warhead around an Industrial Components core, charged with elemental essence — a real step up from the improvised grenades made elsewhere in the fleet.<br>Output: 2 units per 10 days.<br>Supply Chain (passive): consumes 2 Industrial Components, 2 Elemental Essence Vial, and 1,500 gp from the fleet's Treasury per cycle — scarcest one sets the pace.<br><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Fulmination Charge — 5,500 gp/unit · 11,000 gp/batch. Thrown, element chosen on use — 6d10 damage, 20 ft radius, DC 16 Dex save for half. Also leaves a lingering elemental hazard on the ground for 2 rounds (burning terrain, frozen ground, electrified water, etc. depending on element chosen).</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Mercenary Companies — pay +50% for this good.</span>"},
+  {id:"brinesalt_works",name:"Brinesalt Works",cat:"production",catLabel:"⚗️ Production",sub:"Cuts raw Brine Salt with urchin venom into a weaponized powder",cost:"30,000 gp",minTier:2,workers:2,buyer:"Assassins' Guilds",
+   tip:"<b>Brinesalt Works</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 30,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Grinds real Brine Salt down and cuts it with urchin venom and aged spirit, stretching a small amount of the real crystal into a much larger batch of weaponized powder — a genuine derivative, not a pure synthetic mimic.<br>Output: 15 units per 10 days.<br>Supply Chain (passive): consumes 3 Urchin Poison, 3 Aged Sea Spirit, and 2 Raw Brine Salt from the fleet's cargo per cycle — scarcest one sets the pace.<br><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Brinesalt Powder — 200 gp/unit · 3,000 gp/batch. Applied directly (food, drink, or contact), no attack roll needed. DC 17 Con save or Brine Sickness: disadvantage on all d20 rolls for 1 hour. Failed save also carries a small chance of a mild, involuntary Salt Crash echo once it wears off.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Assassins' Guilds — pay +50% for this good.</span>"},
+  {id:"tidewrack_distillery",name:"Tidewrack Distillery",cat:"production",catLabel:"⚗️ Production",sub:"Distills elemental essence into a drinkable defensive ward",cost:"25,000 gp",minTier:2,workers:2,buyer:"Wizards' Circles",
+   tip:"<b>Tidewrack Distillery</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 25,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Distills already-refined elemental essence with herbal distillate into a drinkable pre-combat ward, rather than the grenade form the raw essence is normally thrown as.<br>Output: 3 units per 8 days.<br>Supply Chain (passive): consumes 2 Elemental Essence Vial, 2 Herbal Distillate, and 500 gp from the fleet's Treasury per cycle — scarcest one sets the pace.<br><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Tidewrack Draught — 1,800 gp/unit · 5,400 gp/batch. Drunk, element chosen on consumption — resistance to that damage type for 1 hour. The drinker also does not need to make Constitution saves to maintain concentration from damage of that type specifically.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
+  {id:"widows_kiss_lab",name:"Widow's Kiss Lab",cat:"production",catLabel:"⚗️ Production",sub:"Refines a precision contact poison for coating a single blade",cost:"28,000 gp",minTier:2,workers:2,buyer:"Assassins' Guilds",
+   tip:"<b>Widow's Kiss Lab</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 28,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Refines Blackwater Toxin and Webvenom Doses together into a precision contact poison, meant for coating a single blade ahead of a specific, planned encounter rather than general combat use.<br>Output: 2 units per 7 days.<br>Supply Chain (passive): consumes 2 Blackwater Toxin, 2 Webvenom Doses, and 300 gp from the fleet's Treasury per cycle — scarcest one sets the pace.<br><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Widow's Kiss — 2,800 gp/unit · 5,600 gp/batch. Coated on a weapon ahead of time, not thrown. On the weapon's next hit, DC 18 Con save or the target is Poisoned and their speed is halved for 10 minutes. Deals no damage of its own.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Assassins' Guilds — pay +50% for this good.</span>"},
+  {id:"levitation_distillery",name:"Levitation Distillery",cat:"production",catLabel:"⚗️ Production",sub:"Distills pressure oil and luminance vials into a drinkable levitation draught",cost:"40,000 gp",minTier:3,workers:3,buyer:"Wizards' Circles",
+   tip:"<b>Levitation Distillery</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 40,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Distills pressure oil and luminance vials into a drinkable version of true levitation — a real utility potion for boarding actions, ship-to-ship gaps, or getting off a sinking vessel.<br>Output: 2 units per 10 days.<br>Supply Chain (passive): consumes 1 Pressure Oil, 2 Luminance Vials, and 800 gp from the fleet's Treasury per cycle — scarcest one sets the pace.<br><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Levitation Draught — 5,000 gp/unit · 10,000 gp/batch. Drunk as an action, grants the effect of the Levitation spell for 10 minutes. No concentration required, since it's a potion effect rather than a cast spell.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
 ];
 
 // Production rooms that produce a single raw/passive resource rather than a
 // choosable Trade Goods vs Crew Goods good — these skip the toggle UI and
 // use buildProdInfo's 'raw' rendering branch instead (see D[id].raw:true).
-const RAW_PROD_ROOMS=['brine_lab','clam_chamber','nutrient_processor','oil_derrick_platform','refined_fuel_cracking_still','chartered_trade_license_office','ceremonial_regalia_workshop','chromatic_paints_workshop','luxury_leather_works','haute_couture_atelier','pharmaceutical_works','depth_charge_foundry'];
+const RAW_PROD_ROOMS=['brine_lab','clam_chamber','nutrient_processor','oil_derrick_platform','refined_fuel_cracking_still','chartered_trade_license_office','ceremonial_regalia_workshop','chromatic_paints_workshop','luxury_leather_works','haute_couture_atelier','pharmaceutical_works','depth_charge_foundry','bomb_deck','flash_forge','smoke_works','lev_thermal_press','elem_still','lev_void_lab','lev_venom_lab','alchemists_nook','distillery','superior_healing_potion_distillery','incendiary_munitions_works','lev_deepwalker_oil','alchemical_reagent_concentrate','sublime_distillery','ballast_smeltery','military_components_works','urchin_venom_extractor','fulmination_forge','brinesalt_works','tidewrack_distillery','widows_kiss_lab','levitation_distillery'];
 // Rooms that consume other trade goods (or Treasury gp) as input — kept in
 // sync with CARGO_CONSUMING_ROOMS in simulateWeek(). Used purely to color
 // these rooms differently (purple) wherever they're displayed, so they
 // read as visually distinct from plain raw-material producers.
-const REFINERY_ROOM_IDS=['refined_fuel_cracking_still','gilded_table','salt_cure_house','wax_sealant_works','tanning_yard','ink_refinery','herbal_distillate_still','alchemical_reagent_concentrate','runic_warding_atelier','incendiary_munitions_works','captains_table','voidglass_lens_grinder','pearl_gold_jewelry_atelier','bespoke_armory','chartered_trade_license_office','ceremonial_regalia_workshop','chromatic_paints_workshop','luxury_leather_works','haute_couture_atelier','superior_healing_potion_distillery','pharmaceutical_works','depth_charge_foundry'];
+const REFINERY_ROOM_IDS=['refined_fuel_cracking_still','gilded_table','salt_cure_house','wax_sealant_works','tanning_yard','ink_refinery','herbal_distillate_still','alchemical_reagent_concentrate','runic_warding_atelier','incendiary_munitions_works','captains_table','voidglass_lens_grinder','pearl_gold_jewelry_atelier','bespoke_armory','chartered_trade_license_office','ceremonial_regalia_workshop','chromatic_paints_workshop','luxury_leather_works','haute_couture_atelier','superior_healing_potion_distillery','pharmaceutical_works','depth_charge_foundry','distillery','sublime_distillery','military_components_works','bespoke_armorworks','fulmination_forge','brinesalt_works','tidewrack_distillery','widows_kiss_lab','levitation_distillery'];
+// Rooms whose good is a genuine combat consumable (thrown, loaded, or drunk
+// for an immediate effect) rather than a plain sale good — flagged with a
+// glittering asterisk in the Trade Goods tab so they read as distinct from
+// ordinary cargo at a glance.
+const COMBAT_CONSUMABLE_ROOM_IDS=['bomb_deck','flash_forge','smoke_works','lev_thermal_press','elem_still','lev_void_lab','lev_venom_lab','alchemists_nook','distillery','superior_healing_potion_distillery','incendiary_munitions_works','lev_deepwalker_oil','alchemical_reagent_concentrate','depth_charge_foundry','sublime_distillery','lev_spine_forge','urchin_venom_extractor','fulmination_forge','brinesalt_works','tidewrack_distillery','widows_kiss_lab','levitation_distillery','poison_lab'];
 // Rooms where a specific natural die result on 1d(sides) produces one
 // special item instead of a regular one (e.g. Clam Chamber's natural 4
 // yielding a rare black pearl). Tracked separately from the regular
@@ -7297,7 +7328,14 @@ const CARGO_CONSUMING_ROOMS={
   captains_table:{inputs:[{item:'Gourmet Feast',qty:2},{item:'Tanned Leather',qty:3}]},
   voidglass_lens_grinder:{inputs:[{item:'Inversion Phials',qty:1},{item:'Bioluminescent Ink',qty:2}]},
   pearl_gold_jewelry_atelier:{inputs:[{item:'Pearls',qty:4},{item:'Spiced Cacao Bricks',qty:3},{item:'__gold__',qty:800}]},
-  bespoke_armory:{inputs:[{item:'Black Powder Bombs',qty:4},{item:'Rendered Creature Goods',qty:2},{item:'__gold__',qty:1500}]},
+  bespoke_armory:{inputs:[{item:'Industrial Components',qty:6},{item:'Rendered Creature Goods',qty:2},{item:'__gold__',qty:2000}]},
+  military_components_works:{inputs:[{item:'Scrap Metal',qty:4},{item:'Black Powder Bombs',qty:2},{item:'__gold__',qty:800}]},
+  bespoke_armorworks:{inputs:[{item:'Industrial Components',qty:6},{item:'Tanned Leather',qty:2},{item:'__gold__',qty:2000}]},
+  fulmination_forge:{inputs:[{item:'Industrial Components',qty:2},{item:'Elemental Essence Vial',qty:2},{item:'__gold__',qty:1500}]},
+  brinesalt_works:{inputs:[{item:'Urchin Poison',qty:3},{item:'Aged Sea Spirit',qty:3},{item:'Raw Brine Salt',qty:2}]},
+  tidewrack_distillery:{inputs:[{item:'Elemental Essence Vial',qty:2},{item:'Herbal Distillate',qty:2},{item:'__gold__',qty:500}]},
+  widows_kiss_lab:{inputs:[{item:'Blackwater Toxin',qty:2},{item:'Webvenom Doses',qty:2},{item:'__gold__',qty:300}]},
+  levitation_distillery:{inputs:[{item:'Pressure Oil',qty:1},{item:'Luminance Vials',qty:2},{item:'__gold__',qty:800}]},
   chartered_trade_license_office:{inputs:[{item:'Nautical Charts',qty:3},{item:'Luxury Provisions',qty:2},{item:'__gold__',qty:1000}]},
   ceremonial_regalia_workshop:{inputs:[{item:'Coral Pigment Vials',qty:2},{item:'Bioluminescent Ink',qty:2},{item:'Spiced Cacao Bricks',qty:2}]},
   chromatic_paints_workshop:{inputs:[{item:'Luminance Vials',qty:2},{item:'Coral Pigment Vials',qty:2},{item:'Refined Fuel',qty:1}]},
@@ -7305,7 +7343,9 @@ const CARGO_CONSUMING_ROOMS={
   haute_couture_atelier:{inputs:[{item:'Seaweed Silk',qty:2},{item:'Pearl Jewelry',qty:2},{item:'Luxury Leather',qty:1},{item:'__gold__',qty:3000}]},
   superior_healing_potion_distillery:{inputs:[{item:'Reagent Concentrate',qty:1},{item:'Brineblood Tonic',qty:3},{item:'Herbal Distillate',qty:3}]},
   pharmaceutical_works:{inputs:[{item:'Sea Mist Perfume',qty:2},{item:'Rendered Creature Goods',qty:2},{item:'Herbal Distillate',qty:2},{item:'Healing Tonics',qty:2}]},
-  depth_charge_foundry:{inputs:[{item:'Black Powder Bombs',qty:5},{item:'Waterproof Sealant Casks',qty:3},{item:'Crude Oil Barrels',qty:2}]}
+  depth_charge_foundry:{inputs:[{item:'Black Powder Bombs',qty:5},{item:'Waterproof Sealant Casks',qty:3},{item:'Crude Oil Barrels',qty:2}]},
+  distillery:{inputs:[{item:'Raw Brine Salt',qty:2}]},
+  sublime_distillery:{inputs:[{item:'Brineblood Tonic',qty:3},{item:'Pharmaceuticals',qty:2}]}
 };
 const REFINERY_COLOR='#8a3ac8';
 
@@ -8171,6 +8211,12 @@ function showGoodTip(e,itemName){
     h+='<br><span style="color:'+(isRefined?REFINERY_COLOR:'#5a9abc')+';font-size:10px;">'+(isRefined?'Refined good':'Raw good')+' · produced by '+info.room.name+'</span>';
     h+="<hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 5px;'>";
     h+='<span style="color:#c8961e;font-size:10px;">'+price+'</span>';
+    // If this good has its own mechanic separate from the price (the
+    // trade/crew format most older consumables use), show it too — the
+    // price line alone was silently hiding what the item actually does.
+    if(info.d.crew && info.d.crew!==price){
+      h+="<div style='font-size:10px;color:#c8d8e8;margin-top:5px;line-height:1.5;'>"+info.d.crew+"</div>";
+    }
   } else {
     h+='<br><span style="color:#4a7a9a;font-size:10px;">Consumed from Treasury balance.</span>';
   }
@@ -8193,12 +8239,17 @@ function buildProdInfo(roomId, mode, inst){
       trade:'1,050 gp/bolt',
       crew:'Garments grant advantage on saves vs water-based hazards.'
     },
-    distillery:{
-      item:'Brineblood Tonic',
-      output:'4 vials per 8 days',
-      trade:'159 gp/vial · 636 gp/batch',
-      crew:'Restores 2d4+2 HP per vial. Alternatively restores one expended 1st-level spell slot.'
-    },
+    distillery:{raw:true,item:'Brineblood Tonic',output:'4 vials per 8 days',value:'350 gp/vial · 1,400 gp/batch. Full mechanics (Brine Surge, Salt Crash, Addiction, Salt Marks, passive regeneration) — see Menu &gt; Brine.'},
+    sublime_distillery:{raw:true,item:'Blue Sublime',output:'1 unit per 14 days',value:'75,000 gp/unit. Full mechanics (DC 21 Con save, incapacitation on failure, +5 to all rolls and rapid healing on success, Sublime Craving addiction) — see Menu &gt; Brine.'},
+    ballast_smeltery:{raw:true,item:'Scrap Metal',output:'6 units per 5 days',value:'45 gp/unit · 270 gp/batch'},
+    military_components_works:{raw:true,item:'Industrial Components',output:'3 units per 7 days',value:'1,200 gp/unit · 3,600 gp/batch'},
+    urchin_venom_extractor:{raw:true,item:'Urchin Poison',output:'8 doses per 6 days',value:'95 gp/dose · 760 gp/batch. Applied to a weapon or dart. On hit, DC 14 Con save or take 1d4 poison damage and become Poisoned for 1 minute (repeat save each turn to end early).'},
+    fulmination_forge:{raw:true,item:'Fulmination Charge',output:'2 units per 10 days',value:'5,500 gp/unit · 11,000 gp/batch. Thrown, element chosen on use — 6d10 damage, 20 ft radius, DC 16 Dex save for half. Also leaves a lingering elemental hazard on the ground for 2 rounds depending on element chosen.'},
+    brinesalt_works:{raw:true,item:'Brinesalt Powder',output:'15 units per 10 days',value:'200 gp/unit · 3,000 gp/batch. Applied directly (food, drink, or contact), no attack roll needed. DC 17 Con save or Brine Sickness: disadvantage on all d20 rolls for 1 hour. Failed save also carries a small chance of a mild, involuntary Salt Crash echo once it wears off.'},
+    tidewrack_distillery:{raw:true,item:'Tidewrack Draught',output:'3 units per 8 days',value:'1,800 gp/unit · 5,400 gp/batch. Drunk, element chosen on consumption — resistance to that damage type for 1 hour. The drinker also does not need to make Constitution saves to maintain concentration from damage of that type specifically.'},
+    widows_kiss_lab:{raw:true,item:"Widow's Kiss",output:'2 units per 7 days',value:'2,800 gp/unit · 5,600 gp/batch. Coated on a weapon ahead of time, not thrown. On the weapon\'s next hit, DC 18 Con save or the target is Poisoned and their speed is halved for 10 minutes. Deals no damage of its own.'},
+    levitation_distillery:{raw:true,item:'Levitation Draught',output:'2 units per 10 days',value:'5,000 gp/unit · 10,000 gp/batch. Drunk as an action, grants the effect of the Levitation spell for 10 minutes. No concentration required, since it\'s a potion effect rather than a cast spell.'},
+    bespoke_armorworks:{item:'+3 Armor (any type)',output:'1 unit per 21 days',trade:'50,000 gp/unit',crew:'Equips one crew member, chosen by the captain, with a genuine +3 armor of any type: +3 AC, permanent. Made to Order trait: choose one damage type (any except psychic) to gain resistance to while worn.'},
     apiary:{
       item:'Sea-Blossom Mead',
       output:'6 bottles per 4 days',
@@ -8216,12 +8267,6 @@ function buildProdInfo(roomId, mode, inst){
       item:'Pearls',
       output:'1d4 pearls per 10 days',
       value:'200 gp/pearl (natural 4 on the roll: one pearl is a rare black pearl worth 2,000 gp)'
-    },
-    brine_distillery:{
-      item:'Concentrated Brine Vials',
-      output:'2 vials per 10 days',
-      trade:'357 gp/vial · 714 gp/batch',
-      crew:'Load into the Brine Cannon to double its on-hit save DC for one shot.'
     },
     inkwell:{
       item:'Squid Ink Charges',
@@ -8271,16 +8316,11 @@ function buildProdInfo(roomId, mode, inst){
       trade:'67 gp/chart · 335 gp/batch',
       crew:'Crew using their own charts have advantage on Navigation checks. Never pay for charts again at port.'
     },
-    elem_still:{
-      item:'Elemental Essence Vial',
-      output:'2 vials per 14 days',
-      trade:'465 gp/vial · 930 gp/batch',
-      crew:'Thrown as a grenade — 3d10 elemental damage, 15 ft radius, DC 14 Dex save for half. Or drink for 1 hour of resistance to that element.'
-    },
+    elem_still:{raw:true,item:'Elemental Essence Vial',output:'2 vials per 14 days',value:'465 gp/vial · 930 gp/batch. Thrown as a grenade — 3d10 elemental damage, 15 ft radius, DC 14 Dex save for half. Or drink for 1 hour of resistance to that element.'},
     monster_render:{
       item:'Rendered Creature Goods',
-      output:'2 batches per 7 days',
-      trade:'120 gp/batch, a steady baseline of routine hunting and salvage',
+      output:'10 batches per 7 days',
+      trade:'100 gp/batch, a steady baseline of routine hunting and salvage',
       crew:'A displayed trophy grants +1 morale at combat start. Party members may claim specific components (bone, venom, hide) from any creature they provide at no cost.'
     },
     provisions:{
@@ -8302,21 +8342,21 @@ function buildProdInfo(roomId, mode, inst){
       crew:'Drinking a unit grants advantage on Con saves vs ingested poison and disease for 24 hours. Used as a wound disinfectant it prevents infection.'
     }
 ,
-    alchemists_nook:{item:'Healing Tonics',output:'4 vials per 7 days',trade:'111 gp/vial · 444 gp/batch',crew:'Each vial restores 2d4+2 HP as a bonus action.'},
-    bomb_deck:{item:'Black Powder Bombs',output:'6 bombs per 8 days',trade:'63 gp/bomb · 378 gp/batch',crew:'Thrown grenade — 3d6×10 fire, 10 ft radius, DC 13 Dex save for half. 30 ft range.'},
-    smoke_works:{item:'Smoke Canisters',output:'8 canisters per 6 days',trade:'26 gp/canister · 208 gp/batch',crew:'Deploy as bonus action — 20 ft radius dense smoke for 3 rounds. Attacks through cloud have disadvantage.'},
+    alchemists_nook:{raw:true,item:'Healing Tonics',output:'4 vials per 7 days',value:'111 gp/vial · 444 gp/batch. Each vial restores 2d4+2 HP as a bonus action.'},
+    bomb_deck:{raw:true,item:'Black Powder Bombs',output:'6 bombs per 8 days',value:'63 gp/bomb · 378 gp/batch. Thrown grenade — 3d6×10 fire, 10 ft radius, DC 13 Dex save for half. 30 ft range.'},
+    smoke_works:{raw:true,item:'Smoke Canisters',output:'8 canisters per 6 days',value:'26 gp/canister · 208 gp/batch. Deploy as bonus action — 20 ft radius dense smoke 3 rounds. All attacks through cloud have disadvantage.'},
     poison_lab:{item:'Blackwater Toxin',output:'5 doses per 6 days',trade:'67 gp/dose · 335 gp/batch',crew:'Apply to any weapon — next hit forces DC 14 Con save or target is Poisoned 1 hour and takes 2d6 poison at start of each turn.'},
-    flash_forge:{item:'Flash Grenades',output:'5 grenades per 7 days',trade:'62 gp/grenade · 310 gp/batch',crew:'Thrown — 15 ft radius, DC 14 Con save or Blinded 2 rounds. Fail by 5+ also Stunned 1 round.'},
+    flash_forge:{raw:true,item:'Flash Grenades',output:'5 grenades per 7 days',value:'62 gp/grenade · 310 gp/batch. Thrown — 15 ft radius, DC 14 Con save or Blinded 2 rounds. Fail by 5+ also Stunned 1 round.'},
     lev_ink_press:{item:'Veilworm Ink',output:'3 vials per 4 days',trade:'369 gp/vial · 1,107 gp/batch',crew:'Applied to rope — near-invisible in water; advantage on all harpoon attack rolls, and tethered lines are undetectable until physically touched. Coat the waterline instead: this ship gains advantage on avoiding the first ranged attack made against it each combat, the hull swallowed by the ink\'s shadow.'},
     lev_gland_still:{item:'Luminance Vials',output:'4 vials per 4 days',trade:'476 gp/vial · 1,904 gp/batch',crew:'Throw — 40 ft range, 30 ft radius burst of concentrated light (up from a lesser flare). DC 17 Con or Blinded 1 minute; light-sensitive creatures automatically fail. The flash also disables Darkvision-reliant tracking for 1 minute.'},
     lev_psyk_lab:{item:'Psyk Serum',output:'1 vial per 7 days',trade:'4,800 gp/vial',crew:'Read surface thoughts 60 ft for 1 hr (DC 16 Wis), advantage on Insight and all Charisma checks against the read target, immune to Charmed and Frightened for the duration. Side effect: DC 10 Wis save after or Stunned 1 round.'},
-    lev_void_lab:{item:'Inversion Phials',output:'2 phials per 5 days',trade:'1,317 gp/phial · 2,634 gp/batch',crew:'Throw at target — the next spell it receives is inverted (Fireball heals, Slow grants Haste). DC 18 Con to resist. On a failed save, the inversion also affects the next spell that target casts this combat.'},
-    lev_spine_forge:{item:'Node-Plated Rounds',output:'10 rounds per 4 days',trade:'285 gp/round · 2,850 gp/set',crew:'Ignore all damage resistance and reduction entirely — DR from armor, magic, or creature traits applies at zero. Rounds also deal +1d8 force damage on a critical hit as the calcified node fractures on impact.'},
+    lev_void_lab:{raw:true,item:'Inversion Phials',output:'2 phials per 5 days',value:'1,317 gp/phial · 2,634 gp/batch. Throw at target — the next spell it receives is inverted (Fireball heals, Slow grants Haste). DC 18 Con to resist. On a failed save, the inversion also affects the next spell that target casts this combat.'},
+    lev_spine_forge:{item:'Node-Plated Rounds',output:'10 rounds per 4 days',trade:'500 gp/round · 5,000 gp/set',crew:'A consumable, cannon mounts only. Loaded rounds ignore all damage resistance and reduction entirely — DR from armor, magic, or creature traits applies at zero. Rounds also deal +1d8 force damage on a critical hit as the calcified node fractures on impact.'},
     lev_tide_brewery:{item:'Tidewater Draught',output:'5 vials per 4 days',trade:'380 gp/vial · 1,900 gp/batch',crew:'Water Breathing 24 hr, Swim speed = walking speed +10 ft, telepathy with aquatic creatures 120 ft. Counts as a full day\'s water ration and grants resistance to cold damage while submerged.'},
-    lev_thermal_press:{item:'Thermal Grenades',output:'4 grenades per 4 days',trade:'324 gp/grenade · 1,296 gp/batch',crew:'Thrown — 30 ft range, 20 ft radius, 6d10 fire (DC 16 Dex for half). Bypasses fire resistance entirely and treats fire immunity as resistance instead. Ignites surfaces for 3 rounds at 3d6 fire/round.'},
-    lev_venom_lab:{item:'Webvenom Doses',output:'4 doses per 6 days',trade:'728 gp/dose · 2,912 gp/batch',crew:'On weapon hit — DC 16 Con or Restrained 2 minutes. Repeat save at the end of each turn, with disadvantage on the first attempt. Magical fire ends it early.'},
+    lev_thermal_press:{raw:true,item:'Thermal Grenades',output:'4 grenades per 4 days',value:'324 gp/grenade · 1,296 gp/batch. Thrown — 30 ft range, 20 ft radius, 6d10 fire (DC 16 Dex for half). Bypasses fire resistance entirely and treats fire immunity as resistance instead. Ignites surfaces for 3 rounds at 3d6 fire/round.'},
+    lev_venom_lab:{raw:true,item:'Webvenom Doses',output:'4 doses per 6 days',value:'728 gp/dose · 2,912 gp/batch. On weapon hit — DC 16 Con or Restrained 2 minutes. Repeat save at the end of each turn, with disadvantage on the first attempt. Magical fire ends it early.'},
     lev_marrow_press:{item:'Blade Marrow Oil',output:'3 vials per 6 days',trade:'857 gp/vial · 2,571 gp/batch',crew:'Applied to a bladed weapon — +3d6 slashing and ignores natural armor AC for 1 hr. On a harpoon or cannonball, the next hit inflicts two Flooding severity levels instead of one, no save.'},
-    lev_deepwalker_oil:{item:'Pressure Oil',output:'2 vials per 8 days',trade:'1,887 gp/vial · 3,774 gp/batch',crew:'Applied to a surface — DC 22 Athletics to move across it for 1 hr. On a ship lock — DC 24 Str, cannot be picked or dispelled. On boots — Spider Climb 1 hr, plus advantage on checks to resist being knocked prone.'},
+    lev_deepwalker_oil:{raw:true,item:'Pressure Oil',output:'2 vials per 8 days',value:'1,887 gp/vial · 3,774 gp/batch. Applied to a surface — DC 22 Athletics to move across it for 1 hr. On a ship lock — DC 24 Str, cannot be picked or dispelled. On boots — Spider Climb 1 hr, plus advantage on checks to resist being knocked prone.'},
     golden_cacao_press:{item:'Spiced Cacao Bricks',output:'30 units per 6 days',trade:'14 gp/unit · 420 gp/batch',crew:'Shared as a gesture of goodwill: +1 to the giver\'s next Cha check (once per recipient).'},
     coral_pigment_works:{item:'Coral Pigment Vials',output:'10 vials per 8 days',trade:'70 gp/vial · 700 gp/batch',crew:'Worn as war-paint: +1 to Intimidation or Performance checks for 1 hour.'},
     ashen_charm_workshop:{item:'Storm Charms',output:'8 charms per 7 days',trade:'56 gp/charm · 448 gp/batch',crew:'Worn charm grants advantage on the next save vs a fear or intimidation effect (single use, consumed).'},
@@ -8328,21 +8368,21 @@ function buildProdInfo(roomId, mode, inst){
     tanning_yard:{item:'Tanned Leather',output:'3 units per 5 days',trade:'156 gp/unit',crew:'Crafted into gear for one crew member: +1 AC until the next time they take damage in combat (single use).'},
     ink_refinery:{item:'Concentrated Scribing Ink',output:'1 unit per 6 days',trade:'520 gp/unit',crew:'A spellcaster scribing a scroll with this ink does so in half the normal time.'},
     herbal_distillate_still:{item:'Herbal Distillate',output:'2 units per 5 days',trade:'195 gp/unit',crew:'Removes one level of exhaustion when consumed.'},
-    alchemical_reagent_concentrate:{item:'Reagent Concentrate',output:'1 unit per 8 days',trade:'4,940 gp/unit',crew:'A spellcaster consuming one may cast a prepared spell of 2nd level or lower without expending a spell slot (single use).'},
+    alchemical_reagent_concentrate:{raw:true,item:'Reagent Concentrate',output:'1 unit per 8 days',value:'4,940 gp/unit. Taken as an action, for the next hour the drinker has advantage on Concentration checks. When the hour ends, they take 1d12 acid damage as the caustic brew forces its way back up (single use).'},
     runic_warding_atelier:{item:'Runic Warding Ink',output:'1 unit per 7 days',trade:'6,760 gp/unit',crew:'Inscribing a ward on a hull section grants that section resistance to one chosen damage type until the ward is broken by a critical hit.'},
-    incendiary_munitions_works:{item:'Incendiary Rounds',output:'4 units per 6 days',trade:'3,640 gp/unit',crew:'A cannon loaded with Incendiary Rounds deals +1d10x10 fire damage on its next shot (single use, consumed on firing).'},
+    incendiary_munitions_works:{raw:true,item:'Incendiary Rounds',output:'4 units per 6 days',value:'3,640 gp/unit. A consumable, cannon mounts only. Loaded into a cannon, deals +1d10x10 fire damage on its next shot and inflicts one Fire severity level on the target (single use, consumed on firing).'},
     captains_table:{item:'Grand Banquet Service',output:'1 unit per 8 days',trade:'5,200 gp/unit',crew:'Grants temporary HP equal to 5x the level of the character who eats it, plus advantage on their next Charisma check at a formal function.'},
     voidglass_lens_grinder:{item:'Voidglass Lens',output:'1 unit per 6 days',trade:'6,240 gp/unit',crew:'Advantage on Perception checks to detect invisible, ethereal, or otherwise concealed creatures for 24 hours (single use).'},
     pearl_gold_jewelry_atelier:{item:'Pearl Jewelry',output:'2 units per 7 days',trade:'3,250 gp/unit',crew:'A worn piece grants advantage on the next Persuasion or Deception check at a formal social occasion (single use).'},
-    bespoke_armory:{item:'Masterwork Sidearm',output:'1 unit per 14 days',trade:'7,800 gp/unit',crew:'Equips one crew member, chosen by the captain, with a permanent masterwork weapon: +1 to attack and damage rolls.'},
+    bespoke_armory:{item:'+3 Hunting Rifle',output:'1 unit per 21 days',trade:'50,000 gp/unit',crew:'Equips one crew member, chosen by the captain, with a genuine +3 Hunting Rifle. Made to Order trait: +4 to attack rolls and +4 to damage rolls total (the +3 base, plus +1/+1 from Made to Order), permanent.'},
     chartered_trade_license_office:{raw:true,item:'Trade License',output:'1 unit per 10 days',value:'5,850 gp/unit'},
     ceremonial_regalia_workshop:{raw:true,item:'Ceremonial Regalia',output:'1 unit per 9 days',value:'4,550 gp/unit'},
     chromatic_paints_workshop:{raw:true,item:'Chromatic Paints',output:'2 units per 7 days',value:'10,500 gp/unit'},
     luxury_leather_works:{raw:true,item:'Luxury Leather',output:'1 unit per 8 days',value:'43,000 gp/unit'},
     haute_couture_atelier:{raw:true,item:'Haute Couture Fashion',output:'1 unit per 10 days',value:'100,000 gp/unit'},
-    superior_healing_potion_distillery:{item:'Superior Healing Potion',output:'1 unit per 8 days',trade:'2,000 gp/unit',crew:'Restores this ship\'s crew to full HP and removes one negative condition from one crew member (single use).'},
+    superior_healing_potion_distillery:{raw:true,item:'Superior Healing Potion',output:'1 unit per 8 days',value:'2,000 gp/unit. A true Potion of Superior Healing — restores 8d4+8 HP when drunk as a bonus action (single use).'},
     pharmaceutical_works:{raw:true,item:'Pharmaceuticals',output:'2 units per 7 days',value:'1,800 gp/unit'},
-    depth_charge_foundry:{raw:true,item:'Depth Charges',output:'10 units per 6 days',value:'2,000 gp/unit'}
+    depth_charge_foundry:{raw:true,item:'Depth Charges',output:'10 units per 6 days',value:'2,000 gp/unit. Dropped over the side, sinks onto a target below the waterline: 10d10x10 damage, no attack roll needed, consumed on use.'}
   };
   const d=D[roomId];
   if(!d) return '<span style="color:#3a6a8a;font-size:10px;">No production data.</span>';
@@ -10321,11 +10361,20 @@ function getProdData(roomId){
   const D={
     brewery:{item:'Saltwater Stout',output:'1 cask (30 units) per 6 days',trade:'10 gp/unit · 300 gp/cask',crew:'+1 morale for 1 round when consumed before combat. Each unit counts as 1 ration.'},
     silk_loom:{item:'Seaweed Silk',output:'1 bolt (10 yards) per 21 days',trade:'1,050 gp/bolt',crew:'Garments grant advantage on saves vs water-based hazards.'},
-    distillery:{item:'Brineblood Tonic',output:'4 vials per 8 days',trade:'159 gp/vial · 636 gp/batch',crew:'Restores 2d4+2 HP per vial. Alternatively restores one expended 1st-level spell slot.'},
+    distillery:{raw:true,item:'Brineblood Tonic',output:'4 vials per 8 days',value:'350 gp/vial · 1,400 gp/batch. Full mechanics (Brine Surge, Salt Crash, Addiction, Salt Marks, passive regeneration) — see Menu &gt; Brine.'},
+    sublime_distillery:{raw:true,item:'Blue Sublime',output:'1 unit per 14 days',value:'75,000 gp/unit. Full mechanics (DC 21 Con save, incapacitation on failure, +5 to all rolls and rapid healing on success, Sublime Craving addiction) — see Menu &gt; Brine.'},
+    ballast_smeltery:{raw:true,item:'Scrap Metal',output:'6 units per 5 days',value:'45 gp/unit · 270 gp/batch'},
+    military_components_works:{raw:true,item:'Industrial Components',output:'3 units per 7 days',value:'1,200 gp/unit · 3,600 gp/batch'},
+    urchin_venom_extractor:{raw:true,item:'Urchin Poison',output:'8 doses per 6 days',value:'95 gp/dose · 760 gp/batch. Applied to a weapon or dart. On hit, DC 14 Con save or take 1d4 poison damage and become Poisoned for 1 minute (repeat save each turn to end early).'},
+    fulmination_forge:{raw:true,item:'Fulmination Charge',output:'2 units per 10 days',value:'5,500 gp/unit · 11,000 gp/batch. Thrown, element chosen on use — 6d10 damage, 20 ft radius, DC 16 Dex save for half. Also leaves a lingering elemental hazard on the ground for 2 rounds depending on element chosen.'},
+    brinesalt_works:{raw:true,item:'Brinesalt Powder',output:'15 units per 10 days',value:'200 gp/unit · 3,000 gp/batch. Applied directly (food, drink, or contact), no attack roll needed. DC 17 Con save or Brine Sickness: disadvantage on all d20 rolls for 1 hour. Failed save also carries a small chance of a mild, involuntary Salt Crash echo once it wears off.'},
+    tidewrack_distillery:{raw:true,item:'Tidewrack Draught',output:'3 units per 8 days',value:'1,800 gp/unit · 5,400 gp/batch. Drunk, element chosen on consumption — resistance to that damage type for 1 hour. The drinker also does not need to make Constitution saves to maintain concentration from damage of that type specifically.'},
+    widows_kiss_lab:{raw:true,item:"Widow's Kiss",output:'2 units per 7 days',value:'2,800 gp/unit · 5,600 gp/batch. Coated on a weapon ahead of time, not thrown. On the weapon\'s next hit, DC 18 Con save or the target is Poisoned and their speed is halved for 10 minutes. Deals no damage of its own.'},
+    levitation_distillery:{raw:true,item:'Levitation Draught',output:'2 units per 10 days',value:'5,000 gp/unit · 10,000 gp/batch. Drunk as an action, grants the effect of the Levitation spell for 10 minutes. No concentration required, since it\'s a potion effect rather than a cast spell.'},
+    bespoke_armorworks:{item:'+3 Armor (any type)',output:'1 unit per 21 days',trade:'50,000 gp/unit',crew:'Equips one crew member, chosen by the captain, with a genuine +3 armor of any type: +3 AC, permanent. Made to Order trait: choose one damage type (any except psychic) to gain resistance to while worn.'},
     apiary:{item:'Sea-Blossom Mead',output:'6 bottles per 4 days',trade:'22 gp/bottle · 132 gp/batch',crew:'Advantage on saves vs poison for 1 hour. Each bottle counts as 1 ration.'},
     brine_lab:{item:'Raw Brine Salt',output:'1 barrel per 30 days · 40 units per barrel',value:'200 gp/unit · 8,000 gp/barrel',raw:true},
     clam_chamber:{item:'Pearls',output:'1d4 pearls per 10 days',value:'200 gp/pearl (natural 4 on the roll: one pearl is a rare black pearl worth 2,000 gp)',raw:true},
-    brine_distillery:{item:'Concentrated Brine Vials',output:'2 vials per 10 days',trade:'357 gp/vial · 714 gp/batch',crew:'Load into the Brine Cannon to double its on-hit save DC for one shot.'},
     inkwell:{item:'Squid Ink Charges',output:'3 charges per 8 days',trade:'127 gp/charge · 381 gp/batch',crew:'Use for a free Ink Cannon reload, or dump overboard to create a 4 sq inky hazard.'},
     nutrient_processor:{item:'Ration Paste',output:'25 rations per Medium creature processed (60 per Large, 8 per Small)',value:'no market value — for ship consumption only',raw:true},
     marrow_tap:{item:'Necrotic Marrow Vials',output:'2 vials per 7 days',trade:'306 gp/vial · 612 gp/batch',crew:'Load into Marrow Harpoon (rot cannot be cleared for 2 rounds instead of 1) or apply to a personal weapon for 1d4 necrotic per hit for 1 hour.'},
@@ -10334,27 +10383,27 @@ function getProdData(roomId){
     perfumery:{item:'Sea Mist Perfume',output:'4 vials per 14 days',trade:'125 gp/vial · 500 gp/batch',crew:'Advantage on Persuasion checks vs nobility and wealthy merchants for 8 hours.'},
     dye_works:{item:'Bioluminescent Ink',output:'3 vials per 9 days',trade:'143 gp/vial · 429 gp/batch',crew:'Applied to a surface: dim light in a 5 ft radius for 30 days without flame. Applied to a weapon: it glows faintly in darkness.'},
     chart_press:{item:'Nautical Charts',output:'5 charts per 6 days',trade:'67 gp/chart · 335 gp/batch',crew:'Crew using their own charts have advantage on Navigation checks. Never pay for charts again at port.'},
-    elem_still:{item:'Elemental Essence Vial',output:'2 vials per 14 days',trade:'465 gp/vial · 930 gp/batch',crew:'Thrown as a grenade — 3d10 elemental damage, 15 ft radius, DC 14 Dex save for half. Or drink for 1 hour of resistance to that element.'},
-    monster_render:{item:'Rendered Creature Goods',output:'2 batches per 7 days',trade:'120 gp/batch',crew:'Displayed trophy: +1 morale at combat start. Party claims components at no cost.'},
+    elem_still:{raw:true,item:'Elemental Essence Vial',output:'2 vials per 14 days',value:'465 gp/vial · 930 gp/batch. Thrown as a grenade — 3d10 elemental damage, 15 ft radius, DC 14 Dex save for half. Or drink for 1 hour of resistance to that element.'},
+    monster_render:{item:'Rendered Creature Goods',output:'10 batches per 7 days',trade:'100 gp/batch',crew:'Displayed trophy: +1 morale at combat start. Party claims components at no cost.'},
     provisions:{item:'Luxury Provisions',output:'12 portions per 4 days',trade:'9 gp/portion · 108 gp/batch',crew:'+1d4 temporary HP from quality meals. Social DC –2 at diplomatic dinners.'},
     candle_works:{item:'Navigational Candles',output:'8 candles per 3 days',trade:'7 gp/candle · 56 gp/batch',crew:'Advantage on Survival checks to track position at sea.'},
     fermentation:{item:'Aged Sea Spirit',output:'1 cask (20 units) per 5 days',trade:'7 gp/unit · 140 gp/cask',crew:'Drinking a unit grants advantage on Con saves vs ingested poison and disease for 24 hours. Used as a wound disinfectant it prevents infection.'},
 
-    alchemists_nook:{item:'Healing Tonics',output:'4 vials per 7 days',trade:'111 gp/vial · 444 gp/batch',crew:'Each vial restores 2d4+2 HP as a bonus action.'},
-    bomb_deck:{item:'Black Powder Bombs',output:'6 bombs per 8 days',trade:'63 gp/bomb · 378 gp/batch',crew:'Thrown grenade — 3d6×10 fire, 10 ft radius, DC 13 Dex save for half. 30 ft range.'},
-    smoke_works:{item:'Smoke Canisters',output:'8 canisters per 6 days',trade:'26 gp/canister · 208 gp/batch',crew:'Deploy as bonus action — 20 ft radius dense smoke 3 rounds. All attacks through cloud have disadvantage.'},
-    poison_lab:{item:'Blackwater Toxin',output:'5 doses per 6 days',trade:'67 gp/dose · 335 gp/batch',crew:'Apply to any weapon — next hit DC 14 Con save or Poisoned 1 hour + 2d6 poison at start of each turn.'},
-    flash_forge:{item:'Flash Grenades',output:'5 grenades per 7 days',trade:'62 gp/grenade · 310 gp/batch',crew:'Thrown — 15 ft radius, DC 14 Con save or Blinded 2 rounds. Fail by 5+ also Stunned 1 round.'},
+    alchemists_nook:{raw:true,item:'Healing Tonics',output:'4 vials per 7 days',value:'111 gp/vial · 444 gp/batch. Each vial restores 2d4+2 HP as a bonus action.'},
+    bomb_deck:{raw:true,item:'Black Powder Bombs',output:'6 bombs per 8 days',value:'63 gp/bomb · 378 gp/batch. Thrown grenade — 3d6×10 fire, 10 ft radius, DC 13 Dex save for half. 30 ft range.'},
+    smoke_works:{raw:true,item:'Smoke Canisters',output:'8 canisters per 6 days',value:'26 gp/canister · 208 gp/batch. Deploy as bonus action — 20 ft radius dense smoke 3 rounds. All attacks through cloud have disadvantage.'},
+    poison_lab:{item:'Blackwater Toxin',output:'5 doses per 6 days',trade:'67 gp/dose · 335 gp/batch',crew:'Apply to any weapon — next hit forces DC 14 Con save or target is Poisoned 1 hour and takes 2d6 poison at start of each turn.'},
+    flash_forge:{raw:true,item:'Flash Grenades',output:'5 grenades per 7 days',value:'62 gp/grenade · 310 gp/batch. Thrown — 15 ft radius, DC 14 Con save or Blinded 2 rounds. Fail by 5+ also Stunned 1 round.'},
     lev_ink_press:{item:'Veilworm Ink',output:'3 vials per 4 days',trade:'369 gp/vial · 1,107 gp/batch',crew:'Applied to rope — near-invisible in water; advantage on all harpoon attack rolls, and tethered lines are undetectable until physically touched. Coat the waterline instead: this ship gains advantage on avoiding the first ranged attack made against it each combat, the hull swallowed by the ink\'s shadow.'},
     lev_gland_still:{item:'Luminance Vials',output:'4 vials per 4 days',trade:'476 gp/vial · 1,904 gp/batch',crew:'Throw — 40 ft range, 30 ft radius burst of concentrated light (up from a lesser flare). DC 17 Con or Blinded 1 minute; light-sensitive creatures automatically fail. The flash also disables Darkvision-reliant tracking for 1 minute.'},
     lev_psyk_lab:{item:'Psyk Serum',output:'1 vial per 7 days',trade:'4,800 gp/vial',crew:'Read surface thoughts 60 ft for 1 hr (DC 16 Wis), advantage on Insight and all Charisma checks against the read target, immune to Charmed and Frightened for the duration. Side effect: DC 10 Wis save after or Stunned 1 round.'},
-    lev_void_lab:{item:'Inversion Phials',output:'2 phials per 5 days',trade:'1,317 gp/phial · 2,634 gp/batch',crew:'Throw at target — the next spell it receives is inverted (Fireball heals, Slow grants Haste). DC 18 Con to resist. On a failed save, the inversion also affects the next spell that target casts this combat.'},
-    lev_spine_forge:{item:'Node-Plated Rounds',output:'10 rounds per 4 days',trade:'285 gp/round · 2,850 gp/set',crew:'Ignore all damage resistance and reduction entirely — DR from armor, magic, or creature traits applies at zero. Rounds also deal +1d8 force damage on a critical hit as the calcified node fractures on impact.'},
+    lev_void_lab:{raw:true,item:'Inversion Phials',output:'2 phials per 5 days',value:'1,317 gp/phial · 2,634 gp/batch. Throw at target — the next spell it receives is inverted (Fireball heals, Slow grants Haste). DC 18 Con to resist. On a failed save, the inversion also affects the next spell that target casts this combat.'},
+    lev_spine_forge:{item:'Node-Plated Rounds',output:'10 rounds per 4 days',trade:'500 gp/round · 5,000 gp/set',crew:'A consumable, cannon mounts only. Loaded rounds ignore all damage resistance and reduction entirely — DR from armor, magic, or creature traits applies at zero. Rounds also deal +1d8 force damage on a critical hit as the calcified node fractures on impact.'},
     lev_tide_brewery:{item:'Tidewater Draught',output:'5 vials per 4 days',trade:'380 gp/vial · 1,900 gp/batch',crew:'Water Breathing 24 hr, Swim speed = walking speed +10 ft, telepathy with aquatic creatures 120 ft. Counts as a full day\'s water ration and grants resistance to cold damage while submerged.'},
-    lev_thermal_press:{item:'Thermal Grenades',output:'4 grenades per 4 days',trade:'324 gp/grenade · 1,296 gp/batch',crew:'Thrown — 30 ft range, 20 ft radius, 6d10 fire (DC 16 Dex for half). Bypasses fire resistance entirely and treats fire immunity as resistance instead. Ignites surfaces for 3 rounds at 3d6 fire/round.'},
-    lev_venom_lab:{item:'Webvenom Doses',output:'4 doses per 6 days',trade:'728 gp/dose · 2,912 gp/batch',crew:'On weapon hit — DC 16 Con or Restrained 2 minutes. Repeat save at the end of each turn, with disadvantage on the first attempt. Magical fire ends it early.'},
+    lev_thermal_press:{raw:true,item:'Thermal Grenades',output:'4 grenades per 4 days',value:'324 gp/grenade · 1,296 gp/batch. Thrown — 30 ft range, 20 ft radius, 6d10 fire (DC 16 Dex for half). Bypasses fire resistance entirely and treats fire immunity as resistance instead. Ignites surfaces for 3 rounds at 3d6 fire/round.'},
+    lev_venom_lab:{raw:true,item:'Webvenom Doses',output:'4 doses per 6 days',value:'728 gp/dose · 2,912 gp/batch. On weapon hit — DC 16 Con or Restrained 2 minutes. Repeat save at the end of each turn, with disadvantage on the first attempt. Magical fire ends it early.'},
     lev_marrow_press:{item:'Blade Marrow Oil',output:'3 vials per 6 days',trade:'857 gp/vial · 2,571 gp/batch',crew:'Applied to a bladed weapon — +3d6 slashing and ignores natural armor AC for 1 hr. On a harpoon or cannonball, the next hit inflicts two Flooding severity levels instead of one, no save.'},
-    lev_deepwalker_oil:{item:'Pressure Oil',output:'2 vials per 8 days',trade:'1,887 gp/vial · 3,774 gp/batch',crew:'Applied to a surface — DC 22 Athletics to move across it for 1 hr. On a ship lock — DC 24 Str, cannot be picked or dispelled. On boots — Spider Climb 1 hr, plus advantage on checks to resist being knocked prone.'},
+    lev_deepwalker_oil:{raw:true,item:'Pressure Oil',output:'2 vials per 8 days',value:'1,887 gp/vial · 3,774 gp/batch. Applied to a surface — DC 22 Athletics to move across it for 1 hr. On a ship lock — DC 24 Str, cannot be picked or dispelled. On boots — Spider Climb 1 hr, plus advantage on checks to resist being knocked prone.'},
     golden_cacao_press:{item:'Spiced Cacao Bricks',output:'30 units per 6 days',trade:'14 gp/unit · 420 gp/batch',crew:'Shared as a gesture of goodwill: +1 to the giver\'s next Cha check (once per recipient).'},
     coral_pigment_works:{item:'Coral Pigment Vials',output:'10 vials per 8 days',trade:'70 gp/vial · 700 gp/batch',crew:'Worn as war-paint: +1 to Intimidation or Performance checks for 1 hour.'},
     ashen_charm_workshop:{item:'Storm Charms',output:'8 charms per 7 days',trade:'56 gp/charm · 448 gp/batch',crew:'Worn charm grants advantage on the next save vs a fear or intimidation effect (single use, consumed).'},
@@ -10366,21 +10415,21 @@ function getProdData(roomId){
     tanning_yard:{item:'Tanned Leather',output:'3 units per 5 days',trade:'156 gp/unit',crew:'Crafted into gear for one crew member: +1 AC until the next time they take damage in combat (single use).'},
     ink_refinery:{item:'Concentrated Scribing Ink',output:'1 unit per 6 days',trade:'520 gp/unit',crew:'A spellcaster scribing a scroll with this ink does so in half the normal time.'},
     herbal_distillate_still:{item:'Herbal Distillate',output:'2 units per 5 days',trade:'195 gp/unit',crew:'Removes one level of exhaustion when consumed.'},
-    alchemical_reagent_concentrate:{item:'Reagent Concentrate',output:'1 unit per 8 days',trade:'4,940 gp/unit',crew:'A spellcaster consuming one may cast a prepared spell of 2nd level or lower without expending a spell slot (single use).'},
+    alchemical_reagent_concentrate:{raw:true,item:'Reagent Concentrate',output:'1 unit per 8 days',value:'4,940 gp/unit. Taken as an action, for the next hour the drinker has advantage on Concentration checks. When the hour ends, they take 1d12 acid damage as the caustic brew forces its way back up (single use).'},
     runic_warding_atelier:{item:'Runic Warding Ink',output:'1 unit per 7 days',trade:'6,760 gp/unit',crew:'Inscribing a ward on a hull section grants that section resistance to one chosen damage type until the ward is broken by a critical hit.'},
-    incendiary_munitions_works:{item:'Incendiary Rounds',output:'4 units per 6 days',trade:'3,640 gp/unit',crew:'A cannon loaded with Incendiary Rounds deals +1d10x10 fire damage on its next shot (single use, consumed on firing).'},
+    incendiary_munitions_works:{raw:true,item:'Incendiary Rounds',output:'4 units per 6 days',value:'3,640 gp/unit. A consumable, cannon mounts only. Loaded into a cannon, deals +1d10x10 fire damage on its next shot and inflicts one Fire severity level on the target (single use, consumed on firing).'},
     captains_table:{item:'Grand Banquet Service',output:'1 unit per 8 days',trade:'5,200 gp/unit',crew:'Grants temporary HP equal to 5x the level of the character who eats it, plus advantage on their next Charisma check at a formal function.'},
     voidglass_lens_grinder:{item:'Voidglass Lens',output:'1 unit per 6 days',trade:'6,240 gp/unit',crew:'Advantage on Perception checks to detect invisible, ethereal, or otherwise concealed creatures for 24 hours (single use).'},
     pearl_gold_jewelry_atelier:{item:'Pearl Jewelry',output:'2 units per 7 days',trade:'3,250 gp/unit',crew:'A worn piece grants advantage on the next Persuasion or Deception check at a formal social occasion (single use).'},
-    bespoke_armory:{item:'Masterwork Sidearm',output:'1 unit per 14 days',trade:'7,800 gp/unit',crew:'Equips one crew member, chosen by the captain, with a permanent masterwork weapon: +1 to attack and damage rolls.'},
+    bespoke_armory:{item:'+3 Hunting Rifle',output:'1 unit per 21 days',trade:'50,000 gp/unit',crew:'Equips one crew member, chosen by the captain, with a genuine +3 Hunting Rifle. Made to Order trait: +4 to attack rolls and +4 to damage rolls total (the +3 base, plus +1/+1 from Made to Order), permanent.'},
     chartered_trade_license_office:{raw:true,item:'Trade License',output:'1 unit per 10 days',value:'5,850 gp/unit'},
     ceremonial_regalia_workshop:{raw:true,item:'Ceremonial Regalia',output:'1 unit per 9 days',value:'4,550 gp/unit'},
     chromatic_paints_workshop:{raw:true,item:'Chromatic Paints',output:'2 units per 7 days',value:'10,500 gp/unit'},
     luxury_leather_works:{raw:true,item:'Luxury Leather',output:'1 unit per 8 days',value:'43,000 gp/unit'},
     haute_couture_atelier:{raw:true,item:'Haute Couture Fashion',output:'1 unit per 10 days',value:'100,000 gp/unit'},
-    superior_healing_potion_distillery:{item:'Superior Healing Potion',output:'1 unit per 8 days',trade:'2,000 gp/unit',crew:'Restores this ship\'s crew to full HP and removes one negative condition from one crew member (single use).'},
+    superior_healing_potion_distillery:{raw:true,item:'Superior Healing Potion',output:'1 unit per 8 days',value:'2,000 gp/unit. A true Potion of Superior Healing — restores 8d4+8 HP when drunk as a bonus action (single use).'},
     pharmaceutical_works:{raw:true,item:'Pharmaceuticals',output:'2 units per 7 days',value:'1,800 gp/unit'},
-    depth_charge_foundry:{raw:true,item:'Depth Charges',output:'10 units per 6 days',value:'2,000 gp/unit'}
+    depth_charge_foundry:{raw:true,item:'Depth Charges',output:'10 units per 6 days',value:'2,000 gp/unit. Dropped over the side, sinks onto a target below the waterline: 10d10x10 damage, no attack roll needed, consumed on use.'}
   };
   return D[roomId]||null;
 }
@@ -10497,9 +10546,6 @@ function simulateWeek(){
     if(!info) return; // event-based good, can't auto-simulate
     const maxAssembly=Math.max(0,...subgroups.map(g=>g.assemblyCount||0));
     if(maxAssembly>0) info.days=Math.max(1,info.days-maxAssembly);
-    _ledger.progress[rid]=(_ledger.progress[rid]||0)+7;
-    let completions=Math.floor(_ledger.progress[rid]/info.days);
-    if(completions<=0) return;
     const consuming=CARGO_CONSUMING_ROOMS[rid];
     // Production bonuses (Assembly Line, Merchant hulls) boost output, so
     // they need to boost input consumption too, or a refinery would produce
@@ -10509,6 +10555,22 @@ function simulateWeek(){
     // single ship running the room. Rounded up so the boost never lets a
     // fractional saving slip through.
     const maxMult=Math.max(1,...subgroups.map(function(g){return g.mult;}));
+    // A room that consumes inputs only advances its own cycle timer during
+    // a week it actually has enough materials on hand to work — a genuine
+    // freeze during a shortage, not just a cap on the eventual overflow.
+    // A room with no inputs (a base producer) always advances normally.
+    let canAdvance=true;
+    if(consuming){
+      canAdvance=consuming.inputs.every(function(inp){
+        const boostedQty=Math.ceil(inp.qty*maxMult);
+        const available=inp.item==='__gold__'?(_ledger.gold||0):((_ledger.cargo[inp.item]&&_ledger.cargo[inp.item].qty)||0);
+        return available>=boostedQty;
+      });
+    }
+    if(!canAdvance) return; // frozen this week — no progress banked at all
+    _ledger.progress[rid]=(_ledger.progress[rid]||0)+7;
+    let completions=Math.floor(_ledger.progress[rid]/info.days);
+    if(completions<=0) return;
     if(consuming){
       // Every required input limits how many completions are affordable —
       // the scarcest ingredient (or the Treasury balance) sets the pace.
@@ -10522,11 +10584,9 @@ function simulateWeek(){
         completions=Math.min(completions,affordable);
       });
       if(completions<=0){
-        // Not enough input stock. A refinery with nothing to work with is
-        // idle, not silently building up a backlog — cap the banked
-        // progress at one cycle's worth so a long shortage can't dump
-        // dozens of completions the moment materials finally show up.
-        _ledger.progress[rid]=Math.min(_ledger.progress[rid],info.days);
+        // Materials existed at the top of this week (canAdvance passed) but
+        // dried up before reaching a full completion this same tick — hold
+        // the banked progress as-is rather than losing it.
         return;
       }
       consuming.inputs.forEach(function(inp){
@@ -10579,12 +10639,14 @@ function simulateWeek(){
     }
   });
   // Merchant Galleons run a passive trade empire — 500 gp/week each, banked
-  // directly rather than added as sellable cargo.
+  // directly rather than added as sellable cargo. Folded into this week's
+  // production entry below rather than its own log box, since it's still
+  // part of the same week's summary, not a separate event.
   const galleonCount=getAllFleetShipsEverywhere().filter(inst=>inst.shipId==='galleon').length;
+  let passiveIncome=0;
   if(galleonCount>0){
-    const passiveIncome=galleonCount*500;
+    passiveIncome=galleonCount*500;
     _ledger.gold=(_ledger.gold||0)+passiveIncome;
-    _ledger.log.unshift({type:'passive',day:_ledger.day,value:passiveIncome,count:galleonCount});
   }
   // Weekly crew wages — star crew salaries plus regular crew at a flat
   // 2 gp/week each (party members are unpaid). Same formula the Crew Pool
@@ -10597,7 +10659,7 @@ function simulateWeek(){
     _ledger.gold=(_ledger.gold||0)-totalCrewWages;
     _ledger.log.unshift({type:'wages',day:_ledger.day,starWages:starWages,regularWages:regularWages,regularCrewCount:regularCrewCount,total:totalCrewWages});
   }
-  _ledger.log.unshift({type:'production',week:_ledger.week,startDay,endDay:_ledger.day,entries});
+  _ledger.log.unshift({type:'production',week:_ledger.week,startDay,endDay:_ledger.day,entries,passiveIncome,galleonCount});
   renderTradeModal();
 }
 function resetLedger(){
@@ -10612,6 +10674,81 @@ let _sellItem=null;
 let _sellMarket='normal';
 let _sellQty=null; // null = "use current item's max"
 
+// ── Buy Goods panel ─────────────────────────────────────────────────────
+// Lets the player add any known trade good to cargo directly — not tied to
+// a specific room's production, since this represents buying it from a
+// market, looting it, or any other source outside the normal supply chain.
+// A note is required on every purchase, same as Treasury and cargo
+// adjustments, and the gp spent can be 0 (found/looted rather than bought).
+function _pfAllKnownGoodNames(){
+  const names=new Set();
+  SHIP_ROOMS.filter(function(r){return r.cat==='production';}).forEach(function(r){
+    const d=getProdData(r.id);
+    if(d&&d.item) names.add(d.item);
+  });
+  return Array.from(names).sort();
+}
+function openBuyGoodsModal(){
+  showModal('<div class="modal" style="max-width:420px;">'
+    +'<h2>Buy Goods</h2>'
+    +'<p style="font-size:11px;color:#4a7a9a;margin-bottom:10px;">Add any known good directly to cargo — from a market, salvage, or any other source outside normal production.</p>'
+    +'<input type="text" id="buy-goods-search" placeholder="Search goods…" style="width:100%;padding:8px 10px;margin-bottom:8px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:12px;" oninput="_filterBuyGoodsList(this.value)">'
+    +'<div id="buy-goods-list" style="max-height:180px;overflow-y:auto;border:.5px solid #1a3a55;border-radius:6px;margin-bottom:12px;"></div>'
+    +'<div id="buy-goods-form" style="display:none;">'
+      +'<div style="font-size:11px;color:#c8d8e8;margin-bottom:8px;">Buying: <b id="buy-goods-selected-name" style="color:#c8961e;"></b></div>'
+      +'<label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">Quantity</label>'
+      +'<input type="number" id="buy-goods-qty-input" min="1" value="1" style="width:100%;padding:8px;margin-bottom:10px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:13px;">'
+      +'<label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">Total gp spent (can be 0 — e.g. looted or found)</label>'
+      +'<input type="number" id="buy-goods-cost-input" min="0" value="0" style="width:100%;padding:8px;margin-bottom:10px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:13px;">'
+      +'<label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">Note (required)</label>'
+      +'<input type="text" id="buy-goods-note-input" placeholder="e.g. Purchased at the Ashwrack market" maxlength="120" style="width:100%;padding:8px;margin-bottom:10px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:12px;">'
+    +'</div>'
+    +'<div id="buy-goods-error" style="font-size:10px;color:#c85040;margin-bottom:8px;display:none;"></div>'
+    +'<div class="modal-btns"><button class="btn" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-gold" onclick="confirmBuyGoods()">Confirm</button></div>'
+  +'</div>');
+  _filterBuyGoodsList('');
+}
+let _buyGoodsSelected=null;
+function _filterBuyGoodsList(query){
+  const listEl=document.getElementById('buy-goods-list');
+  if(!listEl) return;
+  const q=(query||'').trim().toLowerCase();
+  const all=_pfAllKnownGoodNames();
+  const matches=q?all.filter(function(n){return n.toLowerCase().indexOf(q)!==-1;}):all;
+  listEl.innerHTML=matches.length
+    ? matches.map(function(n){
+        return '<div onclick="_selectBuyGood(\''+n.replace(/'/g,"\\'")+'\')" style="padding:7px 10px;font-size:11px;color:#c8d8e8;cursor:pointer;border-bottom:.5px solid #14283a;" onmouseenter="this.style.background=\'#0d1e2e\'" onmouseleave="this.style.background=\'\'">'+n+'</div>';
+      }).join('')
+    : '<div style="padding:10px;font-size:10px;color:#3a6a8a;">No matches.</div>';
+}
+function _selectBuyGood(name){
+  _buyGoodsSelected=name;
+  document.getElementById('buy-goods-selected-name').textContent=name;
+  document.getElementById('buy-goods-form').style.display='block';
+}
+function confirmBuyGoods(){
+  const errEl=document.getElementById('buy-goods-error');
+  const showErr=function(msg){ if(errEl){ errEl.textContent=msg; errEl.style.display='block'; } };
+  if(!_buyGoodsSelected){ showErr('Select a good from the list first.'); return; }
+  const qty=parseInt(document.getElementById('buy-goods-qty-input').value)||0;
+  const cost=parseInt(document.getElementById('buy-goods-cost-input').value);
+  const note=(document.getElementById('buy-goods-note-input').value||'').trim();
+  if(qty<=0){ showErr('Enter a quantity greater than 0.'); return; }
+  if(isNaN(cost)||cost<0){ showErr('Enter a cost of 0 or greater.'); return; }
+  if(!note){ showErr('A short note is required for every purchase.'); return; }
+  if(cost>(_ledger.gold||0)){ showErr('Cannot spend more than the current Treasury balance.'); return; }
+  if(!_ledger.cargo[_buyGoodsSelected]){
+    const producer=getGoodProducerInfo(_buyGoodsSelected);
+    const unitPrice=producer?parseUnitPrice(producer.d.trade||producer.d.value||''):0;
+    _ledger.cargo[_buyGoodsSelected]={qty:0,unitPrice:unitPrice,roomId:producer?producer.room.id:null};
+  }
+  _ledger.cargo[_buyGoodsSelected].qty+=qty;
+  _ledger.gold=(_ledger.gold||0)-cost;
+  _ledger.log.unshift({type:'buy_goods',day:_ledger.day,item:_buyGoodsSelected,qty:qty,cost:cost,note:note});
+  closeModal();
+  renderTradeModal();
+}
 function openSellGoodsModal(){
   const items=Object.keys(_ledger.cargo).filter(k=>_ledger.cargo[k].qty>0);
   if(!items.length) return;
@@ -10731,6 +10868,62 @@ function confirmTreasuryAction(mode){
   renderTradeModal();
 }
 
+// ── Cargo quantity adjustment (for combat consumables) ─────────────────
+// A free add/remove of a specific good's quantity — no gp changes hands,
+// this represents using an item in combat (decrement) or recovering/looting
+// one (add), not a sale. A note is required on every adjustment, same as
+// Treasury deposits/withdrawals, so the ledger log reads as a real record.
+function openAdjustCargoModal(itemName){
+  const entry=_ledger.cargo[itemName];
+  const qty=entry?entry.qty:0;
+  showModal('<div class="modal" style="max-width:380px;">'
+    +'<h2>Adjust '+itemName+'</h2>'
+    +'<p style="font-size:11px;color:#4a7a9a;margin-bottom:10px;">Currently in cargo: '+qty.toLocaleString()+' units. This does not cost or earn gp — use it to record using or recovering an item.</p>'
+    +'<div style="display:flex;gap:6px;margin-bottom:10px;">'
+      +'<button class="btn" id="cargo-adjust-mode-remove" onclick="_setCargoAdjustMode(\'remove\')" style="flex:1;border-color:#c85040;color:#e08070;">− Use / Remove</button>'
+      +'<button class="btn" id="cargo-adjust-mode-add" onclick="_setCargoAdjustMode(\'add\')" style="flex:1;border-color:#3a9a5a;color:#70c890;">+ Add / Recover</button>'
+    +'</div>'
+    +'<label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">Amount</label>'
+    +'<input type="number" id="cargo-adjust-amount-input" min="1" value="1" style="width:100%;padding:8px;margin-bottom:10px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:13px;">'
+    +'<label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">Note (required)</label>'
+    +'<input type="text" id="cargo-adjust-note-input" placeholder="e.g. Dropped on the flagship in round 3" maxlength="120" style="width:100%;padding:8px;margin-bottom:12px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:12px;">'
+    +'<div id="cargo-adjust-error" style="font-size:10px;color:#c85040;margin-bottom:8px;display:none;"></div>'
+    +'<div class="modal-btns"><button class="btn" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-gold" onclick="confirmCargoAdjust(\''+itemName.replace(/'/g,"\\'")+'\')">Confirm</button></div>'
+  +'</div>');
+  _setCargoAdjustMode('remove');
+}
+let _cargoAdjustMode='remove';
+function _setCargoAdjustMode(mode){
+  _cargoAdjustMode=mode;
+  const removeBtn=document.getElementById('cargo-adjust-mode-remove');
+  const addBtn=document.getElementById('cargo-adjust-mode-add');
+  if(removeBtn) removeBtn.style.background=mode==='remove'?'#2a1010':'';
+  if(addBtn) addBtn.style.background=mode==='add'?'#0f2a18':'';
+}
+function confirmCargoAdjust(itemName){
+  const amtInput=document.getElementById('cargo-adjust-amount-input');
+  const noteInput=document.getElementById('cargo-adjust-note-input');
+  const errEl=document.getElementById('cargo-adjust-error');
+  const amount=parseInt(amtInput&&amtInput.value)||0;
+  const note=(noteInput&&noteInput.value||'').trim();
+  const showErr=function(msg){ if(errEl){ errEl.textContent=msg; errEl.style.display='block'; } };
+  if(amount<=0){ showErr('Enter an amount greater than 0.'); return; }
+  if(!note){ showErr('A short note is required for every adjustment.'); return; }
+  const entry=_ledger.cargo[itemName];
+  const currentQty=entry?entry.qty:0;
+  if(_cargoAdjustMode==='remove'){
+    if(amount>currentQty){ showErr('Cannot remove more than the '+currentQty+' currently in cargo.'); return; }
+    entry.qty-=amount;
+  } else {
+    if(!_ledger.cargo[itemName]) _ledger.cargo[itemName]={qty:0,unitPrice:0,roomId:null};
+    _ledger.cargo[itemName].qty+=amount;
+  }
+  _ledger.log.unshift({type:'cargo_adjust',day:_ledger.day,item:itemName,mode:_cargoAdjustMode,amount,note});
+  closeModal();
+  renderTradeModal();
+}
+
 let _tradeModalTab='cargo';
 function switchTradeTab(tab){
   _tradeModalTab=tab;
@@ -10757,6 +10950,40 @@ function closeTradeModal(){
 }
 const CONSUMABLE_ROOMS = new Set(['distillery','alchemists_nook','bomb_deck','smoke_works','poison_lab','flash_forge','elem_still','fermentation','apiary','perfumery','dye_works','provisions','candle_works','lev_ink_press','lev_gland_still','lev_psyk_lab','lev_void_lab','lev_spine_forge','lev_tide_brewery','lev_thermal_press','lev_venom_lab','lev_marrow_press','lev_deepwalker_oil']);
 
+// Converts a raw simulation day count into an actual campaign date instead
+// of "Week N" — Day 1 is January 1, Year 1 AMS (After the Mana Storm).
+// Internal simulation logic still runs on day/week counters; this is a
+// display-only formatting layer over the top.
+const _LEDGER_MONTH_LENGTHS=[31,28,31,30,31,30,31,31,30,31,30,31];
+const _LEDGER_MONTH_NAMES=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function _ledgerDateParts(day){
+  // Day 1 = Dec 27, Year 1050 AMS — a Sunday. That puts Jan 1 (Day 6) on a
+  // Friday, Year 1051 AMS, and every week from here on is a clean,
+  // naturally-aligned 7-day Sunday-through-Saturday block with no
+  // special-casing needed.
+  const _LEDGER_BASE_YEAR=1050;
+  const offset=day-1;
+  if(offset<5) return {year:_LEDGER_BASE_YEAR,month:11,dayOfMonth:27+offset};
+  const daysPerYear=_LEDGER_MONTH_LENGTHS.reduce((a,b)=>a+b,0);
+  let year=_LEDGER_BASE_YEAR+1, remaining=offset-5;
+  while(remaining>=daysPerYear){ remaining-=daysPerYear; year++; }
+  let month=0;
+  while(remaining>=_LEDGER_MONTH_LENGTHS[month]){ remaining-=_LEDGER_MONTH_LENGTHS[month]; month++; }
+  return {year,month,dayOfMonth:remaining+1};
+}
+function _ledgerDateStr(day){
+  const p=_ledgerDateParts(day);
+  return _LEDGER_MONTH_NAMES[p.month]+' '+p.dayOfMonth+', Year '+p.year+' AMS';
+}
+function _ledgerDateRangeStr(startDay,endDay){
+  const a=_ledgerDateParts(startDay), b=_ledgerDateParts(endDay);
+  const startStr=_LEDGER_MONTH_NAMES[a.month]+' '+a.dayOfMonth;
+  const endStr=(a.year===b.year&&a.month===b.month)
+    ? b.dayOfMonth.toString()
+    : _LEDGER_MONTH_NAMES[b.month]+' '+b.dayOfMonth;
+  const yearLabel=a.year===b.year?(''+b.year):(a.year+'\u2013'+b.year);
+  return startStr+'\u2013'+endStr+', Year '+yearLabel+' AMS';
+}
 function renderTradeModal(){
   const body=document.getElementById('trade-modal-body'); if(!body)return;
   if(_tradeModalTab==='ledger') return renderLedgerTab(body);
@@ -10846,9 +11073,11 @@ function renderTradeGoodsTab(body){
     if(!d)return;
     const multi=count>1;
     const scaledOutput=computeEffectiveOutput(d,perShip);
+    const isConsumable=COMBAT_CONSUMABLE_ROOM_IDS.indexOf(rid)!==-1;
+    const star=isConsumable?'<span class="consumable-star" onmouseenter="showGoodTip(event,\''+d.item.replace(/'/g,"\\'")+'\')" onmouseleave="hideRoomTip()">&#10022;</span>':'';
     html+='<div style="border:.5px solid #2a4a1a;border-radius:8px;padding:9px 12px;margin-bottom:8px;background:#0a1606;">'
       +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">'
-        +'<span style="font-size:12px;font-weight:500;color:#c0d890;">'+d.item+'</span>'
+        +'<span style="font-size:12px;font-weight:500;color:#c0d890;">'+d.item+star+'</span>'
         +(multi?'<span style="font-size:9px;background:#1a3a0a;border:.5px solid #2a6a1a;border-radius:99px;padding:1px 8px;color:#80c050;">×'+count+' rooms</span>':'')
       +'</div>'
       +'<div style="font-size:10px;color:#6a9a50;line-height:1.8;">'+scaledOutput+'</div>'
@@ -10890,6 +11119,7 @@ function renderCargoTab(body){
     +'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#c8961e;">📦 Cargo Hold</div>'
     +'<div style="display:flex;align-items:center;gap:10px;">'
       +'<span style="font-size:10px;color:#4a7a9a;">Day '+_ledger.day+' · Week '+_ledger.week+'</span>'
+      +'<button class="btn btn-gold" onclick="openBuyGoodsModal()" style="font-size:10px;padding:5px 10px;"><i class="ti ti-shopping-cart" aria-hidden="true"></i> Buy Goods</button>'
       +(items.length?'<button class="btn btn-gold" onclick="openSellGoodsModal()" style="font-size:10px;padding:5px 10px;"><i class="ti ti-coin" aria-hidden="true"></i> Sell Goods</button>':'')
     +'</div>'
   +'</div>';
@@ -10916,9 +11146,11 @@ function renderCargoTab(body){
     const c=_ledger.cargo[item];
     const total=c.qty*c.unitPrice;
     grandTotal+=total;
+    const isConsumable=COMBAT_CONSUMABLE_ROOM_IDS.indexOf(c.roomId)!==-1;
+    const star=isConsumable?'<span class="consumable-star" style="cursor:pointer;" onclick="openAdjustCargoModal(\''+item.replace(/'/g,"\\'")+'\')" onmouseenter="showGoodTip(event,\''+item.replace(/'/g,"\\'")+'\')" onmouseleave="hideRoomTip()">&#10022;</span>':'';
     html+='<div style="border:.5px solid #2a4a1a;border-radius:8px;padding:9px 12px;margin-bottom:8px;background:#0a1606;display:flex;align-items:center;justify-content:space-between;">'
       +'<div>'
-        +'<div style="font-size:12px;font-weight:500;color:#c0d890;">'+item+'</div>'
+        +'<div style="font-size:12px;font-weight:500;color:#c0d890;">'+item+star+'</div>'
         +'<div style="font-size:10px;color:#6a9a50;margin-top:2px;">'+c.qty.toLocaleString()+' units'+(c.unitPrice?' · '+c.unitPrice.toLocaleString()+' gp/unit':'')+'</div>'
       +'</div>'
       +'<div style="font-size:12px;font-weight:600;color:#c8961e;text-align:right;">'+(total?total.toLocaleString()+' gp':'—')+'</div>'
@@ -10983,7 +11215,7 @@ function renderLedgerTab(body){
   let html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">'
     +'<div>'
       +'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#c8961e;">📜 Production Ledger</div>'
-      +'<div style="font-size:10px;color:#4a7a9a;margin-top:2px;">Day '+_ledger.day+' · Week '+_ledger.week+' completed</div>'
+      +'<div style="font-size:10px;color:#4a7a9a;margin-top:2px;">'+_ledgerDateStr(_ledger.day)+' · latest cycle completed</div>'
     +'</div>'
     +'<div style="display:flex;gap:6px;">'
       +'<button class="btn" onclick="resetLedger()" style="font-size:10px;padding:6px 10px;"><i class="ti ti-refresh" aria-hidden="true"></i> Reset</button>'
@@ -11003,7 +11235,7 @@ function renderLedgerTab(body){
           +'<span style="font-size:11px;font-weight:600;color:'+(isShipSale?'#a0e0b8':'#e0c890')+';"><span style="background:'+(isShipSale?'#0d3a20':'#3a2a08')+';border:.5px solid '+(isShipSale?'#50c888':'#c8961e')+';border-radius:4px;padding:1px 6px;font-size:9px;margin-right:6px;vertical-align:1px;">'+(isShipSale?'⚓ SOLD':'⚜ TRADE EMPIRE')+'</span>'+(week.label||('Merchant Galleon'+(week.count>1?' ×'+week.count:'')+' passive income'))+'</span>'
           +'<span style="font-size:11px;font-weight:700;color:'+(isShipSale?'#50c888':'#c8961e')+';">+'+week.value.toLocaleString()+' gp</span>'
         +'</div>'
-        +'<div style="font-size:9px;color:'+(isShipSale?'#4a9a6a':'#8a7040')+';margin-top:3px;padding-left:1px;">Day '+week.day+(isShipSale?'':' · earned even while docked')+'</div>'
+        +'<div style="font-size:9px;color:'+(isShipSale?'#4a9a6a':'#8a7040')+';margin-top:3px;padding-left:1px;">'+_ledgerDateStr(week.day)+(isShipSale?'':' · earned even while docked')+'</div>'
       +'</div>';
       return;
     }
@@ -11013,7 +11245,7 @@ function renderLedgerTab(body){
           +'<span style="font-size:11px;font-weight:600;color:#f0a0a0;"><span style="background:#3a1010;border:.5px solid #e05050;border-radius:4px;padding:1px 6px;font-size:9px;margin-right:6px;vertical-align:1px;">⚙ WAGES</span>Weekly crew pay</span>'
           +'<span style="font-size:11px;font-weight:700;color:#e05050;">−'+week.total.toLocaleString()+' gp</span>'
         +'</div>'
-        +'<div style="font-size:9px;color:#9a5a5a;margin-top:3px;padding-left:1px;">Day '+week.day
+        +'<div style="font-size:9px;color:#9a5a5a;margin-top:3px;padding-left:1px;">'+_ledgerDateStr(week.day)
           +(week.starWages>0?' · '+week.starWages.toLocaleString()+' gp star crew salaries':'')
           +(week.regularCrewCount>0?' · '+week.regularCrewCount+' regular crew × 2 gp':'')
         +'</div>'
@@ -11029,7 +11261,7 @@ function renderLedgerTab(body){
           +'</span>'
           +'<span style="font-size:11px;font-weight:700;color:#50f0a0;">+'+week.value.toLocaleString()+' gp</span>'
         +'</div>'
-        +'<div style="font-size:9px;color:#4a9a7a;margin-top:3px;padding-left:1px;">Day '+week.day+' · '+(isPrime?'Prime Market (+50%)':'Normal Market')+'</div>'
+        +'<div style="font-size:9px;color:#4a9a7a;margin-top:3px;padding-left:1px;">'+_ledgerDateStr(week.day)+' · '+(isPrime?'Prime Market (+50%)':'Normal Market')+'</div>'
       +'</div>';
       return;
     }
@@ -11041,16 +11273,41 @@ function renderLedgerTab(body){
           +'<span style="font-size:11px;font-weight:700;color:'+(isWithdraw?'#e05050':'#c8961e')+';">'+(isWithdraw?'−':'+')+week.amount.toLocaleString()+' gp</span>'
         +'</div>'
         +'<div style="font-size:10px;color:#8ab8d8;margin-top:4px;padding-left:1px;font-style:italic;">"'+week.note.replace(/</g,'&lt;')+'"</div>'
-        +'<div style="font-size:9px;color:#4a7a9a;margin-top:2px;padding-left:1px;">Day '+week.day+'</div>'
+        +'<div style="font-size:9px;color:#4a7a9a;margin-top:2px;padding-left:1px;">'+_ledgerDateStr(week.day)+'</div>'
+      +'</div>';
+      return;
+    }
+    if(week.type==='cargo_adjust'){
+      const isRemove=week.mode==='remove';
+      html+='<div style="border:.5px solid '+(isRemove?'#6a2a2a':'#2a5a3a')+';border-radius:8px;padding:9px 12px;margin-bottom:8px;background:'+(isRemove?'#1a0a0a':'#0a1a10')+';border-left:3px solid '+(isRemove?'#e05050':'#50c888')+';">'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;">'
+          +'<span style="font-size:11px;font-weight:600;color:'+(isRemove?'#f0a0a0':'#a0e0b8')+';"><span style="background:'+(isRemove?'#3a1010':'#0d3a20')+';border:.5px solid '+(isRemove?'#e05050':'#50c888')+';border-radius:4px;padding:1px 6px;font-size:9px;margin-right:6px;vertical-align:1px;">'+(isRemove?'⚔ USED':'+ RECOVERED')+'</span>'+week.item+'</span>'
+          +'<span style="font-size:11px;font-weight:700;color:'+(isRemove?'#e05050':'#50c888')+';">'+(isRemove?'−':'+')+week.amount.toLocaleString()+'</span>'
+        +'</div>'
+        +'<div style="font-size:10px;color:#8ab8d8;margin-top:4px;padding-left:1px;font-style:italic;">"'+week.note.replace(/</g,'&lt;')+'"</div>'
+        +'<div style="font-size:9px;color:#4a7a9a;margin-top:2px;padding-left:1px;">'+_ledgerDateStr(week.day)+'</div>'
+      +'</div>';
+      return;
+    }
+    if(week.type==='buy_goods'){
+      html+='<div style="border:.5px solid #2a5a3a;border-radius:8px;padding:9px 12px;margin-bottom:8px;background:#0a1a10;border-left:3px solid #50c888;">'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;">'
+          +'<span style="font-size:11px;font-weight:600;color:#a0e0b8;"><span style="background:#0d3a20;border:.5px solid #50c888;border-radius:4px;padding:1px 6px;font-size:9px;margin-right:6px;vertical-align:1px;">+ BOUGHT</span>'+week.item+' ×'+week.qty.toLocaleString()+'</span>'
+          +'<span style="font-size:11px;font-weight:700;color:'+(week.cost>0?'#e05050':'#50c888')+';">'+(week.cost>0?'−'+week.cost.toLocaleString()+' gp':'no cost')+'</span>'
+        +'</div>'
+        +'<div style="font-size:10px;color:#8ab8d8;margin-top:4px;padding-left:1px;font-style:italic;">"'+week.note.replace(/</g,'&lt;')+'"</div>'
+        +'<div style="font-size:9px;color:#4a7a9a;margin-top:2px;padding-left:1px;">'+_ledgerDateStr(week.day)+'</div>'
       +'</div>';
       return;
     }
     const total=week.entries.reduce((s,e)=>s+e.value,0);
     html+='<div style="border:.5px solid #1a3a55;border-radius:8px;padding:9px 12px;margin-bottom:8px;background:#06101a;">'
-      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:'+(week.entries.length?'6':'0')+'px;">'
-        +'<span style="font-size:11px;font-weight:600;color:#e0d8c8;">Week '+week.week+' <span style="font-weight:400;color:#4a7a9a;">(Day '+week.startDay+'–'+week.endDay+')</span></span>'
-        +(total?'<span style="font-size:11px;font-weight:600;color:#c8961e;">+'+total.toLocaleString()+' gp</span>':'')
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:'+(week.entries.length||week.passiveIncome?'6':'0')+'px;">'
+        +'<span style="font-size:11px;font-weight:600;color:#e0d8c8;">'+_ledgerDateRangeStr(week.startDay,week.endDay)+'</span>'
       +'</div>'
+      +(week.passiveIncome
+        ? '<div style="font-size:10px;color:#c8961e;padding-left:8px;margin:2px 0;">⚜ Trade Empire — Merchant Galleon'+(week.galleonCount>1?' ×'+week.galleonCount:'')+' <span style="color:#c8961e;">— +'+week.passiveIncome.toLocaleString()+' gp</span></div>'
+        : '')
       +(week.entries.length
         ? week.entries.map(e=>'<div style="font-size:10px;color:#8ab8d8;padding-left:8px;margin:2px 0;">'
             +'• '+e.item+' ×'+e.qty.toLocaleString()
@@ -11060,7 +11317,7 @@ function renderLedgerTab(body){
             +(e.consumedSummary?' <span style="color:#c85a5a;">— consumed '+e.consumedSummary+'</span>':'')
             +(e.value?' <span style="color:#5a9abc;">— '+e.value.toLocaleString()+' gp</span>':'')
           +'</div>').join('')
-        : '<div style="font-size:10px;color:#3a6a8a;padding-left:8px;">No batches completed this week.</div>')
+        : (week.passiveIncome?'':'<div style="font-size:10px;color:#3a6a8a;padding-left:8px;">No batches completed this week.</div>'))
     +'</div>';
   });
   body.innerHTML=html;
@@ -11405,7 +11662,7 @@ function openProductionFlowchart(){
     +'<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#060e14;border-bottom:.5px solid #1a3a55;flex-shrink:0;">'
     +'<div style="display:flex;align-items:center;gap:12px;">'
     +'<span style="font-size:13px;font-weight:600;color:#e0d8c8;">Production &amp; Trade Goods Flowchart</span>'
-    +'<span style="font-size:10px;color:#4a7a9a;"><span style="color:#4a9a5a;">&#9632;</span> Base room &nbsp; <span style="color:'+REFINERY_COLOR+';">&#9632;</span> Refinery &nbsp; <span style="color:#888;">&#9632;</span> Trade good &nbsp; <span style="color:#e0b030;">&#9632;</span> Treasury &nbsp; <span style="color:#4a7a9a;">— hover for details, click to trace its full supply chain, click again (or the background) to clear</span></span>'
+    +'<span style="font-size:10px;color:#4a7a9a;"><span style="color:#4a9a5a;">&#9632;</span> Base room &nbsp; <span style="color:'+REFINERY_COLOR+';">&#9632;</span> Refinery &nbsp; <span style="color:#888;">&#9632;</span> Trade good &nbsp; <span style="color:#e0b030;">&#9632;</span> Treasury &nbsp; <span style="color:#ffd966;">&#10022;</span> You have this room built &nbsp; <span style="color:#4a7a9a;">— hover for details, click to trace its full supply chain, click again (or the background) to clear</span></span>'
     +'</div>'
     +'<button onclick="closeModal()" style="background:none;border:none;color:#4a7a9a;font-size:18px;cursor:pointer;line-height:1;">&times;</button>'
     +'</div>'
@@ -11440,9 +11697,45 @@ function _pfDraw(){
     const svg=canvas.querySelector('svg');
     if(svg){ svg.style.maxWidth='100%'; svg.style.height='auto'; }
     _pfWireHover(canvas);
+    _pfMarkOwnedRooms(canvas);
     canvas.addEventListener('click',function(e){ if(e.target===canvas||e.target.tagName==='svg') _pfClearHighlight(canvas); });
   }).catch(function(err){
     canvas.innerHTML='<div style="color:#c85040;font-size:11px;padding:20px;">Diagram failed to render: '+String(err.message||err).replace(/</g,'&lt;')+'</div>';
+  });
+}
+// Marks every room/refinery node the player actually owns somewhere in the
+// fleet with a small glowing asterisk, so a complex web of chains is easy
+// to scan for "what do I actually have built" at a glance. Injected as a
+// real child element inside that node's own SVG group (rather than baked
+// into the label text, which Mermaid can't style per-character) — being a
+// child means it automatically inherits whatever opacity the ancestry
+// highlight sets on the parent node, so it fades and lights up right
+// alongside the room with no extra wiring needed.
+function _pfMarkOwnedRooms(canvas){
+  const ownedRoomIds=new Set();
+  getAllFleetShipsEverywhere().forEach(function(inst){
+    (inst.rooms||[]).forEach(function(rid){ ownedRoomIds.add(rid); });
+  });
+  if(!ownedRoomIds.size) return;
+  canvas.querySelectorAll('g.node, .node').forEach(function(el){
+    const matched=_pfMatchNodeId(el.id);
+    if(!matched) return;
+    const info=_pfNodeMap[matched];
+    if(!info||(info.kind!=='room'&&info.kind!=='refinery')) return;
+    if(!ownedRoomIds.has(info.refId)) return;
+    let bbox; try{ bbox=el.getBBox(); }catch(e){ return; }
+    const marker=document.createElementNS('http://www.w3.org/2000/svg','text');
+    marker.setAttribute('x',bbox.x+bbox.width+3);
+    marker.setAttribute('y',bbox.y+2);
+    marker.setAttribute('text-anchor','start');
+    marker.setAttribute('font-size','18');
+    marker.setAttribute('font-weight','700');
+    marker.setAttribute('fill','#ffd966');
+    marker.style.setProperty('fill','#ffd966','important');
+    marker.style.pointerEvents='none';
+    marker.style.animation='glitter-sparkle-svg 1.8s ease-in-out infinite';
+    marker.textContent='\u2726';
+    el.appendChild(marker);
   });
 }
 // Finds every rendered node element and matches it back to our node map by
@@ -11498,6 +11791,9 @@ function _pfApplyHighlight(canvas,nodeId){
   // name-agnostic and can't miss an edge because of a naming mismatch.
   const svg=canvas.querySelector('svg');
   if(!svg) return;
+  const resolved=[]; // {el, on, cx, cy} for elements matched by id — used
+                      // as reference points for the spatial fallback below
+  const unresolved=[];
   svg.querySelectorAll('*').forEach(function(el){
     if(el.closest('.node')||el.tagName==='marker'||el.closest('marker')||el.tagName==='defs'||el.closest('defs')||el.tagName==='style') return;
     let on=false, probe=el, hops=0;
@@ -11514,8 +11810,43 @@ function _pfApplyHighlight(canvas,nodeId){
       probe=probe.parentElement;
       hops++;
     }
+    if(probe===null && !on && el.id){
+      // Had an id, walked the whole chain, genuinely didn't match any
+      // kept edge — this is a resolved "definitely off" element, not an
+      // unresolved one, so it still counts as a spatial reference point.
+    }
+    const hadId=(function(){ let p=el,h=0; while(p&&h<5){ if(p.id) return true; p=p.parentElement; h++; } return false; })();
+    if(hadId){
+      resolved.push({el:el,on:on});
+    } else {
+      unresolved.push(el);
+    }
+  });
+  // Spatial fallback: for label elements with no identifying id anywhere
+  // in their ancestor chain (quantity text like "x3" commonly renders
+  // this way), find the nearest resolved element by on-screen distance
+  // and inherit its on/off state — text content alone isn't reliable
+  // here since the same label text repeats constantly across a busy
+  // diagram, but position relative to the edge it labels is stable.
+  unresolved.forEach(function(el){
+    let box; try{ box=el.getBoundingClientRect(); }catch(e){ box=null; }
+    if(!box||(!box.width&&!box.height)){ if(el.children.length===0) el.style.opacity='0.08'; return; }
+    const cx=box.left+box.width/2, cy=box.top+box.height/2;
+    let nearest=null, nearestDist=Infinity;
+    resolved.forEach(function(r){
+      let rbox; try{ rbox=r.el.getBoundingClientRect(); }catch(e){ return; }
+      if(!rbox||(!rbox.width&&!rbox.height)) return;
+      const rcx=rbox.left+rbox.width/2, rcy=rbox.top+rbox.height/2;
+      const dist=Math.hypot(cx-rcx,cy-rcy);
+      if(dist<nearestDist){ nearestDist=dist; nearest=r; }
+    });
+    const on=nearest?nearest.on:false;
     if(on) el.style.opacity='1';
-    else if(el.children.length===0) el.style.opacity='0.08'; // only set on leaf elements — setting it on every ancestor group too is redundant and can fight with per-child overrides
+    else if(el.children.length===0) el.style.opacity='0.08';
+  });
+  resolved.forEach(function(r){
+    if(r.on) r.el.style.opacity='1';
+    else if(r.el.children.length===0) r.el.style.opacity='0.08';
   });
 }
 function _pfWireHover(canvas){
@@ -11588,7 +11919,11 @@ function buildProductionMermaidCode(){
     if(!_pfNodeMap[nodeId]){ _pfNodeMap[nodeId]=kind==='good'?{kind:'good',refId:refId}:{kind:kind,refId:refId}; }
   }
   function addEdge(from,to,lineSuffix){
-    _pfEdges.push({from:from,to:to});
+    // Extract the plain label text (e.g. "x3", "2,000 gp") from the
+    // |"..."| suffix, if any, so highlighting has a text-content fallback
+    // for label elements that may not carry any identifying id at all.
+    const labelMatch=lineSuffix&&lineSuffix.match(/\|"([^"]+)"\|/);
+    _pfEdges.push({from:from,to:to,label:labelMatch?labelMatch[1]:null});
     lines.push('  '+from+' -->'+(lineSuffix||'')+' '+to);
   }
   lines.push('  TREASURY(("Treasury (gp)")):::treasury');
@@ -11613,7 +11948,14 @@ function buildProductionMermaidCode(){
         if(!lines.some(function(l){return l.indexOf(gNode+'[')!==-1;})){
           lines.push('  '+gNode+'["'+inp.item.replace(/"/g,"'")+'"]:::good');
           const info=getGoodProducerInfo(inp.item);
-          if(info){
+          // If the producer of this input is itself a refinery (e.g. Blue
+          // Sublime needing Brineblood Tonic, which the Alchemical
+          // Distillery refines), don't create a second "base room" node
+          // for it here — that refinery's own pass through this same loop
+          // already creates its RF_ node and its own output edge into this
+          // exact good node. Creating a duplicate RM_ node for the same
+          // room was producing two separate boxes for one real room.
+          if(info && REFINERY_ROOM_IDS.indexOf(info.room.id)===-1){
             const rmNode='RM_'+_pfSafeId(info.room.id);
             regNode(rmNode,'room',info.room.id);
             if(!lines.some(function(l){return l.indexOf(rmNode+'[')!==-1;})){
@@ -11655,7 +11997,98 @@ function buildProductionMermaidCode(){
   return lines.join('\n');
 }
 function _pfNoop(){} // click directives require a callback to exist; actual handling is done via the DOM listeners in _pfDraw
+// ── Brine rules reference (Menu > Brine) ────────────────────────────────
+// Two entries — Brine Salt (the raw crystal) and Brineblood Tonic (the
+// distilled, stabilized version) — each collapsed to a title by default,
+// click to expand the full mechanics inline.
+function openBrineRules(){
+  showModal('<div class="modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;max-width:100vw;display:flex;flex-direction:column;padding:0;overflow:hidden;border-radius:0;border:none;">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#060e14;border-bottom:.5px solid #1a3a55;flex-shrink:0;">'
+    +'<span style="font-size:13px;font-weight:600;color:#e0d8c8;"><i class="ti ti-droplet" aria-hidden="true" style="color:#4a9eff;"></i> Brine — Full Mechanics</span>'
+    +'<button onclick="closeModal()" style="background:none;border:none;color:#4a7a9a;font-size:18px;cursor:pointer;line-height:1;">&times;</button>'
+    +'</div>'
+    +'<div style="flex:1;overflow:auto;background:#050f1a;padding:16px;max-width:760px;margin:0 auto;width:100%;">'
+      +_brineEntryHtml('brine-salt','Brine Salt','Raw crystal — used directly, or refined into Brineblood Tonic',_BRINE_SALT_RULES)
+      +_brineEntryHtml('brineblood-tonic','Brineblood Tonic','Distilled and stabilized — same enhancement, plus passive healing, still capped at 4',_BRINEBLOOD_TONIC_RULES)
+      +_brineEntryHtml('blue-sublime','Blue Sublime','Highly addictive, extraordinarily powerful — refined from Brineblood Tonic and Pharmaceuticals',_BLUE_SUBLIME_RULES)
+    +'</div>'
+  +'</div>');
+  var bd=document.getElementById('modal-backdrop');
+  if(bd){bd.style.alignItems='flex-start';bd.style.justifyContent='flex-start';bd.style.background='none';}
+}
+function _brineEntryHtml(id,title,sub,bodyHtml){
+  return '<div style="border:.5px solid #1a3a55;border-radius:10px;margin-bottom:12px;overflow:hidden;">'
+    +'<button onclick="_toggleBrineEntry(\''+id+'\')" style="width:100%;text-align:left;background:#0a1622;border:none;padding:14px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;">'
+      +'<div><div style="font-size:14px;font-weight:600;color:#e0d8c8;">'+title+'</div><div style="font-size:11px;color:#4a7a9a;margin-top:2px;">'+sub+'</div></div>'
+      +'<i class="ti ti-chevron-down" id="brine-chevron-'+id+'" aria-hidden="true" style="color:#4a7a9a;transition:transform .15s;"></i>'
+    +'</button>'
+    +'<div id="brine-body-'+id+'" style="display:none;padding:16px;font-size:12px;color:#c8d8e8;line-height:1.7;">'+bodyHtml+'</div>'
+  +'</div>';
+}
+function _toggleBrineEntry(id){
+  const body=document.getElementById('brine-body-'+id);
+  const chevron=document.getElementById('brine-chevron-'+id);
+  if(!body) return;
+  const open=body.style.display!=='none';
+  body.style.display=open?'none':'block';
+  if(chevron) chevron.style.transform=open?'':'rotate(180deg)';
+}
+const _BRINE_SALT_RULES="<p>A mana-saturated crystal formed from storm-exposed seawater. When consumed, it forces excess mana through the body, temporarily enhancing speed, accuracy, and spellcasting output. The effect causes post-use depletion and can create physiological dependency with repeated exposure.</p>"
+  +"<p>A creature may consume up to 4 portions as a bonus action.</p>"
+  +"<b style='color:#c8961e;'>Brine Surge (Enhancement Phase)</b><p>Duration: 1 hour × number of portions consumed. For each portion consumed: +1 to attack rolls, +1 to initiative, +5 ft movement speed, +2 to weapon damage rolls, +1 to spell save DC (if the creature has Spellcasting or Pact Magic).</p>"
+  +"<p><b>Maximum (4 portions):</b> +4 attack, +4 initiative, +20 ft movement, +8 weapon damage, +4 spell save DC. Duration: 4 hours.</p>"
+  +"<b style='color:#c85040;'>Salt Crash (Automatic Reversal)</b><p>When the enhancement duration ends, for 12 hours the creature suffers the exact negative equivalent of all bonuses gained. Example (4 portions): −4 attack, −4 initiative, −20 ft movement, −8 weapon damage, −4 spell save DC. Automatic, cannot be reduced except by Greater Restoration or Wish.</p>"
+  +"<b style='color:#c8961e;'>Addiction Check</b><p>When the enhancement duration ends, make a Constitution saving throw, DC = 10 + (3 × portions consumed).</p>"
+  +"<table style='width:100%;border-collapse:collapse;margin:6px 0;font-size:11px;'><tr style='color:#4a7a9a;'><td>Portions</td><td>DC</td></tr><tr><td>1</td><td>13</td></tr><tr><td>2</td><td>16</td></tr><tr><td>3</td><td>19</td></tr><tr><td>4</td><td>22</td></tr></table>"
+  +"<p>Failure = gain Brine Addiction and roll on the Salt Mark table. Each additional failed check adds another Salt Mark.</p>"
+  +"<b style='color:#c8961e;'>Mana Saturation — Salt Mark Table (d12)</b><p>Salt Marks represent visible mana overcharge, noticeable within 10 ft, cannot be concealed without magic.</p>"
+  +"<table style='width:100%;border-collapse:collapse;margin:6px 0;font-size:11px;'>"
+  +"<tr><td>1</td><td>Veins glow with faint blue-white light under the skin</td></tr>"
+  +"<tr><td>2</td><td>Eyes refract light like cut crystal</td></tr>"
+  +"<tr><td>3</td><td>Salt crystals form at temples and along cheekbones</td></tr>"
+  +"<tr><td>4</td><td>Static arcs faintly across fingertips when agitated</td></tr>"
+  +"<tr><td>5</td><td>Skin carries a shimmering crystalline sheen</td></tr>"
+  +"<tr><td>6</td><td>Breath releases faint mist even in warm air</td></tr>"
+  +"<tr><td>7</td><td>Hair stiffens as if charged with dry lightning</td></tr>"
+  +"<tr><td>8</td><td>Subtle humming resonance audible in silence</td></tr>"
+  +"<tr><td>9</td><td>Pale sigil-like fractures appear across the sclera</td></tr>"
+  +"<tr><td>10</td><td>Salt flakes shed from shoulders during movement</td></tr>"
+  +"<tr><td>11</td><td>Pulse emits a faint visible flicker at the throat</td></tr>"
+  +"<tr><td>12</td><td>Pupils develop permanent silver rings</td></tr>"
+  +"</table>"
+  +"<p><b>Threshold effects:</b> 3 Marks — identifiable by anyone proficient in Medicine or Arcana. 4 Marks — disadvantage on Deception checks to conceal the condition. 6 Marks — disadvantage on Con saves against lightning, thunder, or force damage. Marks fade over 30 days of natural detox, or instantly with a magical cure.</p>"
+  +"<b style='color:#c85040;'>Brine Addiction</b><p>Must consume 1 portion every 24 hours. If 24 hours pass without consumption: −4 penalty to all d20 rolls (attack rolls, saving throws, ability checks, initiative) until 1 portion is consumed or detox completes. Stacks with Salt Crash penalties.</p>"
+  +"<b style='color:#c8961e;'>Detox</b><p><b>Natural:</b> 7 consecutive days without Brine Salt. The −4 withdrawal penalty remains active throughout. After each long rest: DC 15 Con save or gain 1 level of exhaustion (max 3 from this effect). After 7 days, addiction ends.</p>"
+  +"<p><b>Magical removal:</b> Greater Restoration, Heal, or Wish (Wish also removes all Salt Marks).</p>"
+  +"<b style='color:#40b0a0;'>Depth Equalization (Brine Salt only)</b><p>When consumed at a depth of 60 feet or greater, Brine Salt has a strange additional effect. The crushing pressure of the depths is equalized by the crystal, likely due to its oceanic origin, and the creature is unaffected by crushing depth damage or pressure effects for the duration.</p>"
+  +"<p>As long as the creature continues consuming Brine Salt while remaining at crushing depths, and rides out the full 1 hour enhancement duration while still at crushing depths, it does not gain addiction from that use. Skip the Addiction Check entirely for that dose.</p>"
+  +"<p>If the creature leaves crushing depths before the hour is up, or the enhancement ends for any other reason while still underwater, this protection ends immediately and the normal Addiction Check applies as usual.</p>"
+  +"<p>This effect is unique to raw Brine Salt. Neither Brineblood Tonic nor Blue Sublime carry any version of it, whatever happens to the crystal in refining strips this property out entirely.</p>";
+const _BRINEBLOOD_TONIC_RULES="<p>Distilled from raw Brine Salt at an Alchemical Distillery — the crystal refined into a stable, drinkable tincture. Carries the same enhancement and crash cycle as raw Brine Salt, still capped at 4 portions, but the refining process adds one thing the raw crystal doesn't have: as the body processes the tonic, it passively knits itself back together.</p>"
+  +"<b style='color:#c85040;'>Double Addiction Check (new)</b><p>When the enhancement duration ends, make <b>two</b> separate Addiction Checks instead of one, both at the same DC (10 + 3 × portions consumed). Roll each independently. Each one that fails adds its own Salt Mark — failing both rolls in the same check adds two Salt Marks at once, not one. The refining process is gentler on the body moment to moment, but it hits the mind with the addictive pull twice as hard.</p>"
+  +"<b style='color:#40b0a0;'>Passive Regeneration (new)</b><p>While under the effects of Brine Surge from Brineblood Tonic, the creature regenerates 1d4 HP at the start of each of its turns, as excess mana accelerates the body's own repair. This regeneration ends immediately when the enhancement duration ends and Salt Crash begins.</p>"
+  +"<p>All other mechanics are identical to raw Brine Salt — the same Brine Surge bonuses, the same automatic Salt Crash reversal, the same Addiction Check DCs and Salt Mark table, the same Brine Addiction and Detox rules. See the Brine Salt entry above for full detail.</p>";
+const _BLUE_SUBLIME_RULES="<p>A pale blue, viscous elixir distilled by combining Brineblood Tonic with refined Pharmaceuticals. Extraordinary as medicine. Devastating as a habit. Few alchemists' guilds admit to knowing the process.</p>"
+  +"<p><b>Immediate effect on consumption:</b> the creature makes a DC 21 Constitution saving throw.</p>"
+  +"<b style='color:#c85040;'>On a Failure</b><p>The creature is completely incapacitated for 24 hours, lost in an overwhelming wave of euphoria. It is unaware of its surroundings, cannot take actions, reactions, or move, and cannot be woken by any means short of magic. This state cannot be shortened or ended by any spell or effect except Wish.</p>"
+  +"<b style='color:#40b0a0;'>On a Success</b><p>For the next 1 hour:</p>"
+  +"<ul style='margin:4px 0 8px 18px;padding:0;'>"
+  +"<li>+5 to all d20 rolls, including attack rolls, saving throws, ability checks, and initiative</li>"
+  +"<li>Heals 8d8+20 HP instantly the moment the tonic takes hold</li>"
+  +"<li>Regenerates an additional 4d8 HP at the start of every turn, for the full hour, regardless of whether the creature is downed</li>"
+  +"<li>Resistance to all damage</li>"
+  +"<li>Immunity to the Poisoned condition</li>"
+  +"</ul>"
+  +"<p>When the hour ends, the effects fade with no crash and no immediate penalty.</p>"
+  +"<b style='color:#c8961e;'>Addiction</b><p>Whether the initial save succeeded or failed, when the effects end the creature makes a DC 18 Constitution saving throw.</p>"
+  +"<p>On a failure, the creature gains Sublime Craving. It must consume another dose within 7 days or begin suffering a 2 point penalty to all d20 rolls and disadvantage on death saving throws. This penalty worsens by an additional 1 point, cumulative, for every 7 days beyond that without a dose.</p>"
+  +"<p>A new dose resets the craving clock but does not remove any accumulated penalty. Blue Sublime leaves no visible physical mark, unlike Brine Salt, which makes the addiction easy to conceal.</p>"
+  +"<b style='color:#c8961e;'>Detox</b><p>Every day while detoxing, the creature makes a DC 16 Constitution saving throw. On a failure, it has 1 level of exhaustion for that day only. This does not carry forward or stack with the next day.</p>"
+  +"<p>After 21 consecutive days of detox, the craving ends and all accumulated roll penalties drop to zero immediately.</p>"
+  +"<p>Wish ends the craving and clears all penalties instantly at any point during detox.</p>"
+  +"<p>Greater Restoration requires a DC 16 Constitution saving throw. On a success, the accumulated penalty is reduced by 1 point. If repeated castings reduce the penalty to zero, the creature is fully detoxed and the craving ends.</p>";
 function openCombatRules(){
+
   showModal('<div class="modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;max-width:100vw;display:flex;flex-direction:column;padding:0;overflow:hidden;border-radius:0;border:none;">'
     +'<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#060e14;border-bottom:.5px solid #1a3a55;flex-shrink:0;">'
     +'<div style="display:flex;align-items:center;gap:12px;">'
