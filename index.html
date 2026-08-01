@@ -120,7 +120,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sg-v{font-size:12px;font-weight:500;color:#e0d8c8;}
 .trait-box{margin:0 12px 8px;background:#081828;border:0.5px solid #1a3a55;border-radius:7px;padding:7px 9px;flex-shrink:0;}
 .trait-l{font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:#3a6a8a;margin-bottom:2px;}
-.trait-t{font-size:10px;color:#7aaac8;line-height:1.5;}
+.trait-t{font-size:10px;color:#7aaac8;line-height:1.5;overflow-wrap:anywhere;word-break:break-word;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden;}
 
 /* systems section */
 #systems-wrap{padding:0 12px 8px;flex:1;}
@@ -541,6 +541,9 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
       <div class="dd-label">Generate</div>
       <div class="dd-item" onclick="openEncounterModal()"><i class="ti ti-swords" aria-hidden="true"></i> Create unique encounter</div>
       <div class="dd-sep"></div>
+      <div class="dd-label">Custom</div>
+      <div class="dd-item" onclick="openCreateCustomShipModal()"><i class="ti ti-ship" aria-hidden="true"></i> Create custom ship</div>
+      <div class="dd-sep"></div>
       <div class="dd-label">Help</div>
       <div class="dd-item" style="opacity:.5;cursor:default;"><i class="ti ti-book" aria-hidden="true"></i> How to use <span style="font-size:9px;color:#c8961e;">WIP</span></div>
     </div>
@@ -614,6 +617,7 @@ select{background:#06101a;border:0.5px solid #1a3a55;border-radius:5px;color:#8a
         <button class="cat-tab" onclick="setCatFilter('necrofleet',this)">Necro Fleet</button>
         <button class="cat-tab" onclick="setCatFilter('stormwrecked',this)">Storm Wrecked</button>
         <button class="cat-tab" onclick="setCatFilter('barge',this)">Barge</button>
+        <button id="custom-cat-tab" class="cat-tab" onclick="setCatFilter('custom',this)" style="border-color:#c8961e;color:#e0c890;display:none;">Custom</button>
       </div>
     </div>
     <div id="ship-list"></div>
@@ -1929,7 +1933,7 @@ const SHIP_CAT=(function(){
   ].forEach(function(pair){ pair[0].forEach(function(id){ m[id]=pair[1]; }); });
   return m;
 })();
-function getShipCat(ship){ return SHIP_CAT[ship.id]||(ship.unique?'cultural':'standard'); }
+function getShipCat(ship){ if(ship.isCustom) return 'custom'; return SHIP_CAT[ship.id]||(ship.unique?'cultural':'standard'); }
 
 function toggleCatalogue(){
   var cat=document.getElementById('catalogue');
@@ -2000,8 +2004,10 @@ function renderCat(){
   list.innerHTML=ships.map(s=>`
     <div class="ship-chip" draggable="true" data-sid="${s.id}"
       ondragstart="chipDS(event,'${s.id}')" ondragend="chipDE(event)"
+      ${s.isCustom?'style="border-color:#c8961e;background:linear-gradient(180deg,#1a1400,transparent);position:relative;"':''}
 >
-      <div class="sc-name">${s.name}</div>
+      ${s.isCustom?'<i class="ti ti-settings" aria-hidden="true" style="position:absolute;top:8px;right:8px;color:#b060f0;cursor:pointer;font-size:14px;" title="Edit ship" onclick="event.stopPropagation();openEditCustomShipModal(\''+s.id+'\')"></i>':''}
+      <div class="sc-name" style="${s.isCustom?'color:#e0c890;':''}">${s.name}${s.isCustom?' <span style="font-size:8px;color:#c8961e;border:.5px solid #c8961e;border-radius:3px;padding:0 4px;">CUSTOM</span>':''}</div>
       <div class="sc-origin">${s.origin}</div>
       <div class="sc-row">
         <span class="sc-badge t${Math.min(s.tier,4)}b">T${s.tier}</span>
@@ -7357,6 +7363,7 @@ let currentDeckTab = 'above';
 let roomPickerFilter = 'all';
 
 function getRoomSlots(ship){
+  if(ship.isCustom && ship.roomSlots!==undefined) return ship.roomSlots;
   // Merchant ships get extra room slots
   if(ship.id==='cog') return 5;
   if(ship.id==='caravel') return 7;
@@ -7581,7 +7588,7 @@ function renderDetail(){
         <div class="sg"><div class="sg-l">Crew cap</div><div class="sg-v">${cs.crewStr}</div></div>
         <div class="sg"><div class="sg-l">Cost</div><div class="sg-v">${cs.costStr}</div></div>
       </div>
-      <div class="trait-box"><div class="trait-l">Unique trait</div><div class="trait-t">${formatSpecial(ship.special)}</div></div>
+      <div class="trait-box"><div style="display:flex;align-items:center;justify-content:space-between;"><div class="trait-l">${ship.isCustom?'Notes':'Unique trait'}</div>${ship.isCustom?'<i class="ti ti-arrows-maximize" aria-hidden="true" style="color:#f0a040;cursor:pointer;font-size:12px;" title="Expand" onclick="expandShipNotes(\''+ship.id+'\')"></i>':''}</div><div class="trait-t">${formatSpecial(ship.special)}</div>${ship.isCustom?'<div style="font-size:9px;color:#f0a040;cursor:pointer;margin-top:4px;" onclick="editShipNotes(\''+ship.id+'\')">Edit Notes</div>':''}</div>
       ${renderHelmSection(inst)}
       ${ship.fixed.nest&&ship.nestSlots>0?renderNestSection(inst,ship):''}
       ${renderRiggerSection(inst)}
@@ -7893,6 +7900,18 @@ function renderBelowDeck(inst,ship,slots){
       '<div class="rooms-slots">'+rooms.length+' / '+slots+' slots used</div>'+
     '</div>'+
     rooms.map((rid,ri)=>{
+      if(typeof rid==='string'&&rid.indexOf('__custom__')===0){
+        const key=rid.slice('__custom__'.length);
+        const ce=(inst.customEntries&&inst.customEntries[key])||{name:'(removed)',desc:''};
+        return '<div class="room-slot filled" style="border-left:3px solid #c8961e;">'
+          +'<div class="room-slot-head">'
+            +'<div class="room-slot-name">'+ce.name+' <span style="font-size:9px;color:#c8961e;">CUSTOM</span></div>'
+            +'<span class="room-rm" onclick="removeCustomEntry(\''+key+'\')" title="Remove">&times;</span>'
+          +'</div>'
+          +(ce.desc?'<div class="room-slot-meta">'+ce.desc.replace(/</g,'&lt;')+'</div>':'')
+          +'<div style="font-size:9px;color:#3a6a8a;margin-top:4px;cursor:pointer;" onclick="openCustomEntryModal(\'rooms\','+ri+',\'room\')">Edit</div>'
+        +'</div>';
+      }
       const room=SHIP_ROOMS.find(r=>r.id===rid);
       if(!room)return'';
       const workers=room.workers||0;
@@ -8074,14 +8093,94 @@ function _roomPickerCard(r,inst){
       <div class="rpc-meta">${r.cost} · ${r.workers} worker${r.workers!==1?'s':''}${label?' · <span style="color:#c85040;">'+label+'</span>':''}</div>
     </div>`;
 }
+// A card for a saved library entry — clicking it reuses that exact
+// custom name/description on the current slot, without retyping it.
+function _libraryPickerCard(entry, arrayKey, slotIdx){
+  return `<div class="rpc" style="border-left:3px solid #c8961e;" onclick="_useLibraryEntry('${arrayKey}',${slotIdx},'${entry.libId}')">
+      <div class="rpc-name">${entry.name} <span style="font-size:8px;color:#c8961e;background:#c8961e22;padding:1px 5px;border-radius:99px;vertical-align:1px;">CUSTOM</span></div>
+      <div class="rpc-sub">${(entry.desc||'').slice(0,80)}${entry.desc&&entry.desc.length>80?'…':''}</div>
+    </div>`;
+}
+// Shows a hover tooltip for a filled custom slot — name plus description,
+// same tooltip element the real catalog uses. Clicking a filled custom
+// slot no longer jumps straight into editing it; that's now a deliberate
+// separate action via the small Edit link on the card.
+function showCustomEntryTip(e,key){
+  if(window.innerWidth<=700) return;
+  const inst=_armadaGet(selectedUid); if(!inst||!inst.customEntries) return;
+  const ce=inst.customEntries[key];
+  if(!ce) return;
+  RTIP.innerHTML='<b>'+ce.name+'</b>'+(ce.desc?'<br><span style="font-size:10px;color:#8ab8d8;">'+ce.desc.replace(/</g,'&lt;')+'</span>':'')
+    +'<div style="font-size:9px;color:#c8961e;margin-top:4px;">CUSTOM</div>';
+  RTIP.style.display='block';
+  moveRoomTip(e);
+}
+function _useLibraryEntry(arrayKey, slotIdx, libId){
+  const inst=_armadaGet(selectedUid); if(!inst) return;
+  const libKey=_libraryKeyFor(arrayKey);
+  const entry=(_customLibrary[libKey]||[]).find(function(e){ return e.libId===libId; });
+  if(!entry) return;
+  if(!inst.customEntries) inst.customEntries={};
+  const key=arrayKey+'_'+slotIdx;
+  inst.customEntries[key]={ name:entry.name, desc:entry.desc };
+  if(arrayKey==='rooms'){
+    inst.rooms=inst.rooms||[];
+    inst.rooms[slotIdx]='__custom__'+key;
+  } else if(arrayKey==='upgrades'){
+    inst.upgrades=inst.upgrades||[];
+    inst.upgrades[slotIdx]='__custom__'+key;
+  } else {
+    inst.systems=inst.systems||{};
+    inst.systems[arrayKey]=inst.systems[arrayKey]||[];
+    inst.systems[arrayKey][slotIdx]='__custom__'+key;
+  }
+  closeGenericModal();
+  renderDetail();
+}
 function openRoomPicker(){
   const inst=_armadaGet(selectedUid);if(!inst)return;
   const ship=_shipMap[inst.shipId];
   const slots=getRoomSlots(ship);
   const used=(inst.rooms||[]).length;
   if(used>=slots){alert('No more room slots on this ship.');return;}
-  const cats=['all','combat','crew','utility','production','creature','exploration'];
+  if(ship.isCustom){
+    openCustomOrPremadePrompt(
+      function(){ openCustomEntryModal('rooms', used, 'room'); },
+      function(){ _openRealRoomPicker(); }
+    );
+    return;
+  }
+  _openRealRoomPicker();
+}
+// Shows the Custom / Premade choice for a custom ship's empty slot.
+// onCustom and onPremade are called with no args once the player picks.
+function openCustomOrPremadePrompt(onCustom, onPremade){
+  window._cpPromptCustom=onCustom;
+  window._cpPromptPremade=onPremade;
+  const bd=document.getElementById('modal-backdrop')||_ensureModalBackdrop();
+  bd.style.display='flex';
+  bd.innerHTML='<div class="modal" style="max-width:380px;text-align:center;">'
+    +'<h2>Custom or Premade?</h2>'
+    +'<p style="font-size:11px;color:#4a7a9a;margin-bottom:14px;">This is a custom ship — pick from the real catalogue, or write your own free-text entry for this slot.</p>'
+    +'<div class="modal-btns" style="justify-content:center;">'
+      +'<button class="btn" onclick="closeGenericModal()">Cancel</button>'
+      +'<button class="btn" onclick="_cpPromptCustom();"><i class="ti ti-pencil"></i> Custom</button>'
+      +'<button class="btn btn-gold" onclick="_cpPromptPremade();"><i class="ti ti-list"></i> Premade</button>'
+    +'</div>'
+  +'</div>';
+}
+function _openRealRoomPicker(){
+  const inst=_armadaGet(selectedUid);if(!inst)return;
+  const ship=_shipMap[inst.shipId];
+  const slots=getRoomSlots(ship);
+  const used=(inst.rooms||[]).length;
+  if(used>=slots){alert('No more room slots on this ship.');return;}
+  const hasCustomLibrary=(_customLibrary.rooms||[]).length>0;
+  const cats=['all','combat','crew','utility','production','creature','exploration'].concat(hasCustomLibrary?['custom']:[]);
   const renderGrid=(filter)=>{
+    if(filter==='custom'){
+      return _customLibrary.rooms.map(function(e){ return _libraryPickerCard(e,'rooms',used); }).join('')||'<p style="font-size:11px;color:#4a7a9a;padding:8px;">No custom rooms saved yet.</p>';
+    }
     const available=SHIP_ROOMS.filter(r=>r.minTier<=ship.tier&&(filter==='all'||r.cat===filter));
     return available.map(r=>_roomPickerCard(r,inst)).join('')||'<p style="font-size:11px;color:#4a7a9a;padding:8px;">No rooms available in this category.</p>';
   };
@@ -8093,7 +8192,7 @@ function openRoomPicker(){
     </div>
     <p style="font-size:11px;color:#4a7a9a;margin-bottom:6px;">Hover over a room to see full details. T${ship.tier} ship: ${slots-used} slot${slots-used!==1?'s':''} remaining.</p>
     <div class="room-filter-tabs" id="rft-bar">
-      ${cats.map(c=>`<button class="rft${roomPickerFilter===c?' active':''}" onclick="setRoomFilter('${c}')">${c}</button>`).join('')}
+      ${cats.map(c=>`<button class="rft${roomPickerFilter===c?' active':''}" style="${c==='custom'?'border-color:#c8961e;color:#e0c890;':''}" onclick="setRoomFilter('${c}')">${c}</button>`).join('')}
     </div>
     <input type="text" id="picker-search-input" placeholder="Search name or description…" style="display:none;width:100%;padding:8px 10px;margin-bottom:8px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:12px;" oninput="onPickerSearchInput(this.value)">
     <div class="room-picker-grid" id="room-picker-grid">${renderGrid(roomPickerFilter)}</div>
@@ -8151,15 +8250,21 @@ function setRoomFilter(cat){
   // Re-render just the grid and filter bar
   const inst=_armadaGet(selectedUid);if(!inst)return;
   const ship=_shipMap[inst.shipId];
+  const used=(inst.rooms||[]).length;
   const grid=document.getElementById('room-picker-grid');
   const bar=document.getElementById('rft-bar');
+  const hasCustomLibrary=(_customLibrary.rooms||[]).length>0;
   if(bar){
-    const cats=['all','combat','crew','utility','production','creature','exploration'];
-    bar.innerHTML=cats.map(c=>`<button class="rft${roomPickerFilter===c?' active':''}" onclick="setRoomFilter('${c}')">${c}</button>`).join('');
+    const cats=['all','combat','crew','utility','production','creature','exploration'].concat(hasCustomLibrary?['custom']:[]);
+    bar.innerHTML=cats.map(c=>`<button class="rft${roomPickerFilter===c?' active':''}" style="${c==='custom'?'border-color:#c8961e;color:#e0c890;':''}" onclick="setRoomFilter('${c}')">${c}</button>`).join('');
   }
   if(grid){
-    const available=SHIP_ROOMS.filter(r=>r.minTier<=ship.tier&&(cat==='all'||r.cat===cat));
-    grid.innerHTML=available.map(r=>_roomPickerCard(r,inst)).join('')||'<p style="font-size:11px;color:#4a7a9a;padding:8px;">No rooms available.</p>';
+    if(cat==='custom'){
+      grid.innerHTML=_customLibrary.rooms.map(function(e){ return _libraryPickerCard(e,'rooms',used); }).join('')||'<p style="font-size:11px;color:#4a7a9a;padding:8px;">No custom rooms saved yet.</p>';
+    } else {
+      const available=SHIP_ROOMS.filter(r=>r.minTier<=ship.tier&&(cat==='all'||r.cat===cat));
+      grid.innerHTML=available.map(r=>_roomPickerCard(r,inst)).join('')||'<p style="font-size:11px;color:#4a7a9a;padding:8px;">No rooms available.</p>';
+    }
   }
 }
 
@@ -8486,6 +8591,17 @@ function removeLastRigger(){
 }
 
 function makeRigSlot(sysId,idx){
+  if(sysId && typeof sysId==='string' && sysId.indexOf('__custom__')===0){
+    const key=sysId.slice('__custom__'.length);
+    const inst2=_armadaGet(selectedUid);
+    const ce=(inst2&&inst2.customEntries&&inst2.customEntries[key])||{name:'(removed)'};
+    return `<div class="slot filled" style="border-color:#c8961e40;" onmouseenter="showCustomEntryTip(event,'${key}')" onmouseleave="hideRoomTip()">
+      <div class="sl-rm" onclick="event.stopPropagation();removeCustomEntry('${key}')">&times;</div>
+      <div class="sl-tier" style="color:#c8961e;">CUSTOM</div>
+      <div class="sl-name">${ce.name}</div>
+      <div style="font-size:9px;color:#3a6a8a;cursor:pointer;" onclick="event.stopPropagation();openCustomEntryModal('riggers',${idx},'rigger')">Edit</div>
+    </div>`;
+  }
   if(sysId){
     const s=findSys(sysId);
     return `<div class="slot filled" style="border-color:#1e5a1e;"
@@ -8567,6 +8683,17 @@ function _getMountType(ship, slotIdx){
 }
 
 function makeFlexSlot(sysId,idx){
+  if(sysId && typeof sysId==='string' && sysId.indexOf('__custom__')===0){
+    const key=sysId.slice('__custom__'.length);
+    const inst2=_armadaGet(selectedUid);
+    const ce=(inst2&&inst2.customEntries&&inst2.customEntries[key])||{name:'(removed)'};
+    return `<div class="slot filled" style="border-color:#c8961e40;" onmouseenter="showCustomEntryTip(event,'${key}')" onmouseleave="hideRoomTip()">
+      <div class="sl-rm" onclick="event.stopPropagation();removeCustomEntry('${key}')">&times;</div>
+      <div class="sl-tier" style="color:#c8961e;">CUSTOM</div>
+      <div class="sl-name">${ce.name}</div>
+      <div style="font-size:9px;color:#3a6a8a;cursor:pointer;" onclick="event.stopPropagation();openCustomEntryModal('mounts',${idx},'flex')">Edit</div>
+    </div>`;
+  }
   if(sysId){
     const s=findSys(sysId);
     const cat=Object.keys(SYSTEMS).find(k=>SYSTEMS[k].some(x=>x.id===sysId))||'cannon';
@@ -8599,6 +8726,17 @@ function renderUpgradesSection(inst,ship){
 
 function makeSlot(sysId,acceptType,slotIdx,arrayKey,arrayIdx){
   const realIdx=arrayIdx!==undefined?arrayIdx:slotIdx;
+  if(sysId && typeof sysId==='string' && sysId.indexOf('__custom__')===0){
+    const key=sysId.slice('__custom__'.length);
+    const inst2=_armadaGet(selectedUid);
+    const ce=(inst2&&inst2.customEntries&&inst2.customEntries[key])||{name:'(removed)'};
+    return `<div class="slot filled" style="border-color:#c8961e40;" onmouseenter="showCustomEntryTip(event,'${key}')" onmouseleave="hideRoomTip()">
+      <div class="sl-rm" onclick="event.stopPropagation();removeCustomEntry('${key}')">&times;</div>
+      <div class="sl-tier" style="color:#c8961e;">CUSTOM</div>
+      <div class="sl-name">${ce.name}</div>
+      <div style="font-size:9px;color:#3a6a8a;cursor:pointer;" onclick="event.stopPropagation();openCustomEntryModal('${arrayKey}',${realIdx},'${acceptType}')">Edit</div>
+    </div>`;
+  }
   if(sysId){
     const s=findSys(sysId);
     const tc=TYPE_COLORS[acceptType]||'#4a7a9a';
@@ -8618,6 +8756,16 @@ function makeSlot(sysId,acceptType,slotIdx,arrayKey,arrayIdx){
 }
 
 function makeUpgSlot(upgId,idx){
+  if(upgId && typeof upgId==='string' && upgId.indexOf('__custom__')===0){
+    const key=upgId.slice('__custom__'.length);
+    const inst2=_armadaGet(selectedUid);
+    const ce=(inst2&&inst2.customEntries&&inst2.customEntries[key])||{name:'(removed)'};
+    return `<div class="upg-slot filled" onmouseenter="showCustomEntryTip(event,'${key}')" onmouseleave="hideRoomTip()">
+      <div class="sl-rm" onclick="event.stopPropagation();removeCustomEntry('${key}')">&times;</div>
+      <div class="upg-name">${ce.name} <span style="font-size:9px;color:#c8961e;">CUSTOM</span></div>
+      <div style="font-size:9px;color:#3a6a8a;cursor:pointer;" onclick="event.stopPropagation();openCustomEntryModal('upgrades',${idx},'upgrade')">Edit</div>
+    </div>`;
+  }
   if(upgId){
     const u=UPGRADES.find(x=>x.id===upgId);
     return `<div class="upg-slot filled"
@@ -9069,7 +9217,8 @@ function saveFleet(){
       if(_currentWaterId==='home') _homeArmadaStash=armada;
       else { const cur=getIslandById(_currentWaterId); if(cur) cur.armada=armada; }
       const savedIslands=_islands.map(function(i){ return {id:i.id,name:i.name,icon:i.icon,armada:i.armada}; });
-      const json=JSON.stringify({version:2,waW,waH,armada:_homeArmadaStash,globalCrew,_crewSeq,ledger:_ledger,islands:savedIslands},null,2);
+      const savedCustomShips=SHIPS.filter(function(s){return s.isCustom;});
+      const json=JSON.stringify({version:3,waW,waH,armada:_homeArmadaStash,globalCrew,_crewSeq,ledger:_ledger,islands:savedIslands,customShips:savedCustomShips,customLibrary:_customLibrary,_customShipSeq,_customEntrySeq},null,2);
       const blob=new Blob([json],{type:'application/json'});
       const a=document.createElement('a');
       a.href=URL.createObjectURL(blob);
@@ -9102,6 +9251,23 @@ function openLoadModal(){
 }
 function loadFleetData(json){
   if(!json||!json.armada) throw new Error('Missing armada data');
+  // Restore custom ship templates before anything else touches SHIPS or
+  // _shipMap, so armada entries referencing a custom shipId can actually
+  // resolve. Merge by id rather than pushing blindly, in case some of
+  // these custom ships already exist in this session (e.g. reloading the
+  // same file twice, or loading a second fleet that shares one).
+  if(Array.isArray(json.customShips)){
+    json.customShips.forEach(function(cs){
+      if(!SHIPS.some(function(s){return s.id===cs.id;})) SHIPS.push(cs);
+    });
+    _rebuildShipMap();
+  }
+  if(json.customLibrary && typeof json.customLibrary==='object'){
+    _customLibrary=Object.assign({rooms:[],systems:[],upgrades:[],riggers:[]},json.customLibrary);
+  }
+  if(json._customShipSeq!==undefined) _customShipSeq=Math.max(_customShipSeq||0,json._customShipSeq);
+  if(json._customEntrySeq!==undefined) _customEntrySeq=Math.max(_customEntrySeq||0,json._customEntrySeq);
+  if(typeof _updateCustomTabVisibility==='function') _updateCustomTabVisibility();
   if(json.globalCrew){ globalCrew=json.globalCrew; _crewSeq=json._crewSeq||globalCrew.length+1; }
   else { globalCrew=[]; _crewSeq=1; }
   _ledger=json.ledger&&typeof json.ledger==='object'
@@ -9192,6 +9358,366 @@ function handleFleetDrop(e){
 
 // Encounter generator
 var _encPreviewFleet=[];
+// ── Custom Ships ─────────────────────────────────────────────────────
+// A custom ship is a real entry in SHIPS, exactly like any built-in ship
+// — same catalogue, same drag-to-water, same _shipMap lookup — just
+// created by the player instead of pre-authored. What's actually
+// different is what happens when you click one of ITS slots: instead of
+// the normal catalog picker, it opens a free-text entry instead, since
+// there's no real mechanical system backing a custom room/system/upgrade.
+let _customShipSeq=0;
+// A reusable library of custom entries, per type — created once, then
+// selectable again from the real catalog picker's "Custom" filter for
+// that same type, rather than having to retype the same room/system/
+// upgrade every time it's wanted on another slot or another ship.
+let _customLibrary={ rooms:[], systems:[], upgrades:[], riggers:[] };
+let _customEntrySeq=0;
+function _libraryKeyFor(arrayKey){
+  if(arrayKey==='rooms') return 'rooms';
+  if(arrayKey==='upgrades') return 'upgrades';
+  if(arrayKey==='riggers') return 'riggers';
+  return 'systems'; // mounts (cannon/harpoon/focus/flex) all share one library
+}
+function openCreateCustomShipModal(){
+  const bd=document.getElementById('modal-backdrop')||_ensureModalBackdrop();
+  bd.style.display='flex';
+  bd.innerHTML='<div class="modal" style="max-width:520px;max-height:85vh;overflow-y:auto;">'
+    +'<h2>Create Custom Ship</h2>'
+    +'<p style="font-size:11px;color:#4a7a9a;margin-bottom:12px;">Pick a token and set every stat and slot count yourself. No pre-built mechanics attach to it beyond what you enter here.</p>'
+    +'<label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">Ship name</label>'
+    +'<input type="text" id="cs-name" placeholder="e.g. The Widow\'s Reach" style="width:100%;padding:8px;margin-bottom:10px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:13px;">'
+    +'<label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">Ship token (visual size on the water)</label>'
+    +'<select id="cs-token" style="width:100%;padding:8px;margin-bottom:10px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:13px;">'
+      +'<option value="0">Tiny (T0 shape)</option><option value="1" selected>Small (T1 shape)</option><option value="2">Medium (T2 shape)</option><option value="3">Large (T3 shape)</option><option value="4">Huge (T4 shape)</option>'
+    +'</select>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">'
+      +_csField('cs-ac','AC','16')
+      +_csField('cs-hp','HP','600')
+      +_csField('cs-speed','Speed','10')
+      +_csField('cs-turn','Turn radius','1 sq')
+      +_csField('cs-crew','Crew range','4–8')
+      +_csField('cs-cost','Cost (gp)','20000')
+    +'</div>'
+    +'<label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">Mount slots</label>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">'
+      +_csField('cs-cannon','Cannon','2')
+      +_csField('cs-harpoon','Harpoon','0')
+      +_csField('cs-focus','Focus','0')
+    +'</div>'
+    +'<label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">Other slots</label>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">'
+      +_csField('cs-upgrades','Upgrade slots','2')
+      +_csField('cs-rooms','Room slots','4')
+      +_csField('cs-nest','Nest slots','1')
+    +'</div>'
+    +'<label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">Notes (optional)</label>'
+    +'<textarea id="cs-special" rows="3" placeholder="Any notes about this ship" style="width:100%;padding:8px;margin-bottom:10px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:12px;resize:vertical;"></textarea>'
+    +'<div class="modal-btns"><button class="btn" onclick="closeGenericModal()">Cancel</button>'
+    +'<button class="btn btn-gold" onclick="submitCustomShip()">Create Ship</button></div>'
+  +'</div>';
+}
+function _csField(id,label,placeholder,value){
+  return '<div><label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">'+label+'</label>'
+    +'<input type="text" id="'+id+'" placeholder="'+placeholder+'" value="'+(value!==undefined&&value!==null?String(value).replace(/"/g,'&quot;'):'')+'" style="width:100%;padding:7px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:12px;"></div>';
+}
+function _val(id,fallback){
+  const el=document.getElementById(id);
+  const v=el?el.value.trim():'';
+  return v||fallback;
+}
+function _numVal(id,fallback){
+  const n=parseInt(_val(id,fallback));
+  return isNaN(n)?parseInt(fallback):n;
+}
+function submitCustomShip(){
+  const name=_val('cs-name','');
+  if(!name){ alert('Give the ship a name first.'); return; }
+  const tokenTier=_numVal('cs-token','1');
+  const id='custom_'+(++_customShipSeq)+'_'+name.toLowerCase().replace(/[^a-z0-9]+/g,'_').slice(0,24);
+  const ship={
+    id:id, name:name, origin:'Custom — player-created', tier:tokenTier, isCustom:true,
+    ac:_numVal('cs-ac','16'), hp:_numVal('cs-hp','600'), speed:_numVal('cs-speed','10'),
+    turn:_val('cs-turn','1 sq'), crew:_val('cs-crew','4–8'), cost:_numVal('cs-cost','20000'),
+    mounts:{cannon:_numVal('cs-cannon','2'),harpoon:_numVal('cs-harpoon','0'),focus:_numVal('cs-focus','0'),flex:false},
+    fixed:{helm:true,nest:_numVal('cs-nest','0')>0,rigger:true},
+    nestSlots:_numVal('cs-nest','1'), upgradeSlots:_numVal('cs-upgrades','2'), roomSlots:_numVal('cs-rooms','4'),
+    special:_val('cs-special','')||'Custom ship — no pre-built special abilities.', unique:true,
+  };
+  SHIPS.push(ship);
+  _rebuildShipMap();
+  _updateCustomTabVisibility();
+  closeGenericModal();
+  renderCat();
+  alert('"'+name+'" created — find it in the ship catalogue to drag it onto the water.');
+}
+// Editing a custom ship reuses the same form as creating one, pre-filled
+// with its current values. Saving mutates the existing ship object in
+// place rather than replacing it — every armada instance referencing it
+// looks it up by id through _shipMap, so they all pick up the change
+// automatically, no separate propagation step needed.
+function openEditCustomShipModal(shipId){
+  const ship=SHIPS.find(function(s){return s.id===shipId;});
+  if(!ship) return;
+  const bd=document.getElementById('modal-backdrop')||_ensureModalBackdrop();
+  bd.style.display='flex';
+  const instanceCount=getAllFleetShipsEverywhere().filter(function(i){return i.shipId===shipId;}).length;
+  bd.innerHTML='<div class="modal" style="max-width:520px;max-height:85vh;overflow-y:auto;">'
+    +'<h2>Edit Custom Ship</h2>'
+    +'<p style="font-size:11px;color:#4a7a9a;margin-bottom:12px;">'+(instanceCount>0?'Changes apply to all '+instanceCount+' ship'+(instanceCount!==1?'s':'')+' of this type already on the water.':'No ships of this type are on the water yet.')+'</p>'
+    +'<label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">Ship name</label>'
+    +'<input type="text" id="cs-name" value="'+ship.name.replace(/"/g,'&quot;')+'" style="width:100%;padding:8px;margin-bottom:10px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:13px;">'
+    +'<label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">Ship token (visual size on the water)</label>'
+    +'<select id="cs-token" style="width:100%;padding:8px;margin-bottom:10px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:13px;">'
+      +[0,1,2,3,4].map(function(t){ const lbl=['Tiny (T0 shape)','Small (T1 shape)','Medium (T2 shape)','Large (T3 shape)','Huge (T4 shape)'][t]; return '<option value="'+t+'"'+(ship.tier===t?' selected':'')+'>'+lbl+'</option>'; }).join('')
+    +'</select>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">'
+      +_csField('cs-ac','AC','16',ship.ac)
+      +_csField('cs-hp','HP','600',ship.hp)
+      +_csField('cs-speed','Speed','10',ship.speed)
+      +_csField('cs-turn','Turn radius','1 sq',ship.turn)
+      +_csField('cs-crew','Crew range','4–8',ship.crew)
+      +_csField('cs-cost','Cost (gp)','20000',ship.cost)
+    +'</div>'
+    +'<label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">Mount slots</label>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">'
+      +_csField('cs-cannon','Cannon','2',ship.mounts.cannon)
+      +_csField('cs-harpoon','Harpoon','0',ship.mounts.harpoon)
+      +_csField('cs-focus','Focus','0',ship.mounts.focus)
+    +'</div>'
+    +'<label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">Other slots</label>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">'
+      +_csField('cs-upgrades','Upgrade slots','2',ship.upgradeSlots)
+      +_csField('cs-rooms','Room slots','4',ship.roomSlots)
+      +_csField('cs-nest','Nest slots','1',ship.nestSlots)
+    +'</div>'
+    +'<label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">Notes (optional)</label>'
+    +'<textarea id="cs-special" rows="3" placeholder="Any notes about this ship" style="width:100%;padding:8px;margin-bottom:10px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:12px;resize:vertical;">'+((ship.special==='Custom ship — no pre-built special abilities.')?'':ship.special)+'</textarea>'
+    +'<div class="modal-btns"><button class="btn" onclick="deleteCustomShip(\''+shipId+'\')" style="color:#e05050;">Delete Ship</button>'
+    +'<button class="btn" onclick="closeGenericModal()">Cancel</button>'
+    +'<button class="btn btn-gold" onclick="submitEditCustomShip(\''+shipId+'\')">Save Changes</button></div>'
+  +'</div>';
+}
+function submitEditCustomShip(shipId){
+  const ship=SHIPS.find(function(s){return s.id===shipId;});
+  if(!ship) return;
+  const name=_val('cs-name','');
+  if(!name){ alert('Give the ship a name first.'); return; }
+  ship.name=name;
+  ship.tier=_numVal('cs-token','1');
+  ship.ac=_numVal('cs-ac','16');
+  ship.hp=_numVal('cs-hp','600');
+  ship.speed=_numVal('cs-speed','10');
+  ship.turn=_val('cs-turn','1 sq');
+  ship.crew=_val('cs-crew','4–8');
+  ship.cost=_numVal('cs-cost','20000');
+  ship.mounts={cannon:_numVal('cs-cannon','2'),harpoon:_numVal('cs-harpoon','0'),focus:_numVal('cs-focus','0'),flex:false};
+  ship.nestSlots=_numVal('cs-nest','1');
+  ship.upgradeSlots=_numVal('cs-upgrades','2');
+  ship.roomSlots=_numVal('cs-rooms','4');
+  ship.fixed={helm:true,nest:ship.nestSlots>0,rigger:true};
+  ship.special=_val('cs-special','')||'Custom ship — no pre-built special abilities.';
+  closeGenericModal();
+  renderCat();
+  renderWater();
+  renderDetail();
+  alert('"'+name+'" updated.');
+}
+function deleteCustomShip(shipId){
+  const ship=SHIPS.find(function(s){return s.id===shipId;});
+  if(!ship) return;
+  const instanceCount=getAllFleetShipsEverywhere().filter(function(i){return i.shipId===shipId;}).length;
+  const warning=instanceCount>0
+    ? 'Delete "'+ship.name+'"? This will also remove all '+instanceCount+' ship'+(instanceCount!==1?'s':'')+' of this type currently on the water. This cannot be undone.'
+    : 'Delete "'+ship.name+'"? This cannot be undone.';
+  if(!confirm(warning)) return;
+  SHIPS.splice(SHIPS.indexOf(ship),1);
+  _rebuildShipMap();
+  // If the currently selected ship instance is one of the ones about to
+  // be removed, clear the selection first — otherwise renderDetail()
+  // below would try to render a ship instance that no longer exists.
+  const selInst=selectedUid?_armadaGet(selectedUid):null;
+  if(selInst&&selInst.shipId===shipId) selectedUid=null;
+  // The currently active water's live array, whichever water that is, is
+  // just called "armada" — filter it directly, then also clean up every
+  // parked location (Home stash and every island not currently active).
+  armada=armada.filter(function(i){return i.shipId!==shipId;});
+  _homeArmadaStash=(_homeArmadaStash||[]).filter(function(i){return i.shipId!==shipId;});
+  (_islands||[]).forEach(function(isl){
+    isl.armada=(isl.armada||[]).filter(function(i){return i.shipId!==shipId;});
+  });
+  _updateCustomTabVisibility();
+  closeGenericModal();
+  renderCat();
+  renderWater();
+  renderDetail();
+}
+function _updateCustomTabVisibility(){
+  const tab=document.getElementById('custom-cat-tab');
+  if(!tab) return;
+  tab.style.display=SHIPS.some(function(s){return s.isCustom;})?'inline-block':'none';
+}
+// Custom ships' Notes are editable any time after creation, unlike a
+// built-in ship's Unique trait which is fixed content.
+// Shows the full, un-truncated Notes text in its own modal — the trait
+// box itself clamps to a handful of lines and ellipses past that, this
+// is the escape hatch for actually reading a long note in full.
+function expandShipNotes(shipId){
+  const ship=SHIPS.find(function(s){return s.id===shipId;});
+  if(!ship) return;
+  const bd=document.getElementById('modal-backdrop')||_ensureModalBackdrop();
+  bd.style.display='flex';
+  bd.innerHTML='<div class="modal" style="max-width:520px;max-height:80vh;overflow-y:auto;">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">'
+      +'<h2 style="margin:0;">Notes</h2>'
+      +'<i class="ti ti-x" aria-hidden="true" style="color:#4a7a9a;cursor:pointer;" onclick="closeGenericModal()"></i>'
+    +'</div>'
+    +'<p style="font-size:11px;color:#4a7a9a;margin-bottom:12px;">'+ship.name+'</p>'
+    +'<div style="font-size:12px;color:#c8d8e8;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;">'+formatSpecial(ship.special)+'</div>'
+    +'<div class="modal-btns"><button class="btn" onclick="closeGenericModal()">Close</button>'
+    +'<button class="btn btn-gold" onclick="closeGenericModal();editShipNotes(\''+shipId+'\')">Edit Notes</button></div>'
+  +'</div>';
+}
+function editShipNotes(shipId){
+  const ship=SHIPS.find(function(s){return s.id===shipId;});
+  if(!ship) return;
+  const bd=document.getElementById('modal-backdrop')||_ensureModalBackdrop();
+  bd.style.display='flex';
+  const current=(ship.special==='Custom ship — no pre-built special abilities.')?'':ship.special;
+  bd.innerHTML='<div class="modal" style="max-width:440px;">'
+    +'<h2>Edit Notes</h2>'
+    +'<p style="font-size:11px;color:#4a7a9a;margin-bottom:10px;">'+ship.name+'</p>'
+    +'<textarea id="esn-text" rows="5" placeholder="Any notes about this ship" style="width:100%;padding:8px;margin-bottom:10px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:12px;resize:vertical;">'+(current||'')+'</textarea>'
+    +'<div class="modal-btns"><button class="btn" onclick="closeGenericModal()">Cancel</button>'
+    +'<button class="btn btn-gold" onclick="_saveShipNotes(\''+shipId+'\')">Save</button></div>'
+  +'</div>';
+}
+function _saveShipNotes(shipId){
+  const ship=SHIPS.find(function(s){return s.id===shipId;});
+  if(!ship) return;
+  const text=(document.getElementById('esn-text').value||'').trim();
+  ship.special=text||'Custom ship — no pre-built special abilities.';
+  closeGenericModal();
+  renderDetail();
+}
+function _ensureModalBackdrop(){
+  let bd=document.getElementById('modal-backdrop');
+  if(!bd){
+    bd=document.createElement('div');
+    bd.id='modal-backdrop';
+    bd.className='modal-backdrop';
+    bd.onclick=function(e){ if(e.target===bd) closeGenericModal(); };
+    document.body.appendChild(bd);
+  }
+  return bd;
+}
+function closeGenericModal(){
+  const bd=document.getElementById('modal-backdrop');
+  if(bd) bd.style.display='none';
+}
+
+// ── Custom slot entries (name/description, no mechanics) ───────────────
+function openCustomEntryModal(arrayKey, slotIdx, acceptType){
+  const inst=_armadaGet(selectedUid); if(!inst) return;
+  if(!inst.customEntries) inst.customEntries={};
+  const key=arrayKey+'_'+slotIdx;
+  const existing=inst.customEntries[key]||{};
+  const bd=document.getElementById('modal-backdrop')||_ensureModalBackdrop();
+  bd.style.display='flex';
+  bd.innerHTML='<div class="modal" style="max-width:440px;">'
+    +'<h2>Custom '+(acceptType?acceptType[0].toUpperCase()+acceptType.slice(1):'Entry')+'</h2>'
+    +'<p style="font-size:11px;color:#4a7a9a;margin-bottom:10px;">Plain text — nothing here plugs into any game mechanic automatically.</p>'
+    +'<label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">Name</label>'
+    +'<input type="text" id="ce-name" value="'+(existing.name||'').replace(/"/g,'&quot;')+'" placeholder="e.g. Warded Figurehead" style="width:100%;padding:8px;margin-bottom:10px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:13px;">'
+    +'<label style="font-size:10px;color:#8ab8d8;display:block;margin-bottom:3px;">Description</label>'
+    +'<textarea id="ce-desc" rows="4" placeholder="What it does, in your own words" style="width:100%;padding:8px;margin-bottom:10px;background:#0a1420;border:.5px solid #1a3a55;border-radius:6px;color:#e8f0f8;font-size:12px;resize:vertical;">'+(existing.desc||'')+'</textarea>'
+    +'<div class="modal-btns">'
+      +(existing.name?'<button class="btn" onclick="removeCustomEntry(\''+key+'\')" style="color:#e05050;">Remove</button>':'')
+      +'<button class="btn" onclick="closeGenericModal()">Cancel</button>'
+      +'<button class="btn btn-gold" onclick="saveCustomEntry(\''+arrayKey+'\','+slotIdx+')">Save</button>'
+    +'</div>'
+  +'</div>';
+}
+function saveCustomEntry(arrayKey, slotIdx){
+  const inst=_armadaGet(selectedUid); if(!inst) return;
+  if(!inst.customEntries) inst.customEntries={};
+  const name=_val('ce-name','');
+  if(!name){ alert('Give it a name first.'); return; }
+  const desc=_val('ce-desc','');
+  const key=arrayKey+'_'+slotIdx;
+  inst.customEntries[key]={
+    name:name, desc:desc,
+  };
+  // Add to the reusable library for this type too, so the same custom
+  // room/system/upgrade can be picked again on another slot without
+  // retyping it — skip if an identical name+desc is already in there.
+  const libKey=_libraryKeyFor(arrayKey);
+  _customLibrary[libKey]=_customLibrary[libKey]||[];
+  const alreadyInLibrary=_customLibrary[libKey].some(function(e){ return e.name===name && e.desc===desc; });
+  if(!alreadyInLibrary){
+    _customLibrary[libKey].push({ libId:'lib_'+(++_customEntrySeq), name:name, desc:desc });
+  }
+  // Mark the underlying slot as filled with a placeholder so slot-count
+  // logic (openCount, filled-slot checks) sees it as occupied, the same
+  // way a real system/upgrade/room fills its slot.
+  const arr=inst[arrayKey==='rooms'?'rooms':arrayKey==='upgrades'?'upgrades':'systems'];
+  if(arrayKey==='rooms'){
+    inst.rooms=inst.rooms||[];
+    inst.rooms[slotIdx]='__custom__'+key;
+  } else if(arrayKey==='upgrades'){
+    inst.upgrades=inst.upgrades||[];
+    inst.upgrades[slotIdx]='__custom__'+key;
+  } else {
+    inst.systems=inst.systems||{};
+    inst.systems[arrayKey]=inst.systems[arrayKey]||[];
+    inst.systems[arrayKey][slotIdx]='__custom__'+key;
+  }
+  closeGenericModal();
+  renderDetail();
+  renderWater();
+  alert(name+' has been added to Premade.');
+}
+function removeCustomEntry(key){
+  const inst=_armadaGet(selectedUid); if(!inst) return;
+  if(inst.customEntries) delete inst.customEntries[key];
+  const parts=key.split('_');
+  const slotIdx=parseInt(parts.pop());
+  const arrayKey=parts.join('_');
+  if(arrayKey==='rooms' && inst.rooms){
+    // Rooms are a growing array (added like a push), not a fixed set of
+    // slots — setting this index to null would leave a hole that still
+    // counts toward "slots used" even though nothing is really there.
+    // Splice it out properly, the same way a normal room removal does,
+    // and re-index any other custom rooms after it so their stored
+    // customEntries keys still point at the right slot.
+    inst.rooms.splice(slotIdx,1);
+    if(inst.customEntries){
+      const shifted={};
+      Object.keys(inst.customEntries).forEach(function(k){
+        const m=k.match(/^rooms_(\d+)$/);
+        if(m){
+          const n=parseInt(m[1]);
+          if(n>slotIdx) shifted['rooms_'+(n-1)]=inst.customEntries[k];
+          else if(n<slotIdx) shifted[k]=inst.customEntries[k];
+        } else { shifted[k]=inst.customEntries[k]; }
+      });
+      inst.customEntries=shifted;
+      // Room ids in the rooms array itself also embed their slot index
+      // in the __custom__rooms_N marker — refresh those to match too.
+      inst.rooms.forEach(function(rid,i){
+        if(typeof rid==='string' && rid.indexOf('__custom__rooms_')===0){
+          inst.rooms[i]='__custom__rooms_'+i;
+        }
+      });
+    }
+  }
+  else if(arrayKey==='upgrades' && inst.upgrades) inst.upgrades[slotIdx]=null;
+  else if(arrayKey==='riggers' && inst.riggers) inst.riggers[slotIdx]='';
+  else if(inst.systems && inst.systems[arrayKey]) inst.systems[arrayKey][slotIdx]=null;
+  closeGenericModal();
+  hideRoomTip();
+  renderDetail();
+  renderWater();
+}
 function openEncounterModal(){
   document.getElementById('dockyard-dropdown').classList.remove('open');
   _encPreviewFleet=[];
@@ -9669,6 +10195,18 @@ var _pickCtx = null;
 function openPicker(acceptType, arrayKey, slotIdx){
   const inst = _armadaGet(selectedUid); if(!inst) return;
   const ship = _shipMap[inst.shipId];
+  if(ship.isCustom){
+    openCustomOrPremadePrompt(
+      function(){ openCustomEntryModal(arrayKey, slotIdx, acceptType); },
+      function(){ _openRealPicker(acceptType, arrayKey, slotIdx); }
+    );
+    return;
+  }
+  _openRealPicker(acceptType, arrayKey, slotIdx);
+}
+function _openRealPicker(acceptType, arrayKey, slotIdx){
+  const inst = _armadaGet(selectedUid); if(!inst) return;
+  const ship = _shipMap[inst.shipId];
   const isFlex = acceptType==='flex';
   const isUpg  = arrayKey==='upgrades';
   const isRig  = arrayKey==='riggers';
@@ -9765,17 +10303,22 @@ function openPicker(acceptType, arrayKey, slotIdx){
 
   } else if(isMountType){
     const tabs = MOUNT_TABS[acceptType]||[];
+    const libKeyForMountTabs=_libraryKeyFor(arrayKey);
+    const hasCustomLibForMounts=(_customLibrary[libKeyForMountTabs]||[]).length>0;
     tabsHtml = '<div class="room-filter-tabs" style="margin-bottom:10px;">'
       +tabs.map(function(t,i){return '<button class="rft'+(i===0?' active':'')
         +'" onclick="pickerSetTab(this,\''+t.k+'\')">'+t.label+'</button>';}).join('')
+      +(hasCustomLibForMounts?'<button class="rft" style="border-color:#c8961e;color:#e0c890;" onclick="pickerSetTab(this,\'custom\')">Custom</button>':'')
       +'</div>';
   } else if(acceptType==='helm'||acceptType==='nest'||isRig){
     window._sysFilterCat='all'; window._sysFilterTier='all';
-    const cats=['all','standard','anima','zadelian','electric'];
+    const libKeyForTabs=_libraryKeyFor(arrayKey);
+    const hasCustomLib=(_customLibrary[libKeyForTabs]||[]).length>0;
+    const cats=['all','standard','anima','zadelian','electric'].concat(hasCustomLib?['custom']:[]);
     const tiers=['all','1','2','3','4'];
     tabsHtml='<div class="room-filter-tabs" style="margin-bottom:4px;" id="sys-cat-bar">'
       +cats.map(function(k){const l=k==='all'?'All':k[0].toUpperCase()+k.slice(1);
-        return '<button class="rft'+(k==='all'?' active':'')+'" data-syscat="'+k+'" onclick="sysSetCat(this)">'+l+'</button>';
+        return '<button class="rft'+(k==='all'?' active':'')+'" style="'+(k==='custom'?'border-color:#c8961e;color:#e0c890;':'')+'" data-syscat="'+k+'" onclick="sysSetCat(this)">'+l+'</button>';
       }).join('')+'</div>'
       +'<div class="room-filter-tabs" style="margin-bottom:10px;" id="sys-tier-bar">'
       +tiers.map(function(k){const l=k==='all'?'All':'T'+k;
@@ -9988,7 +10531,15 @@ function pickerSetTab(btn, cat){
   btn.closest('.room-filter-tabs').querySelectorAll('.rft').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   const g=document.getElementById('picker-grid');
-  if(g) g.innerHTML=buildPickerGrid(cat, false);
+  if(g){
+    if(cat==='custom' && _pickCtx){
+      const libKey=_libraryKeyFor(_pickCtx.arrayKey);
+      const entries=_customLibrary[libKey]||[];
+      g.innerHTML=entries.map(function(e){ return _libraryPickerCard(e,_pickCtx.arrayKey,_pickCtx.slotIdx); }).join('')||'<p style="font-size:11px;color:#4a7a9a;padding:8px;">No custom entries saved yet.</p>';
+    } else {
+      g.innerHTML=buildPickerGrid(cat, false);
+    }
+  }
   if(_pickCtx) _pickCtx.filterCat=cat;
 }
 
@@ -11431,6 +11982,12 @@ function sysSetTier(btn){
 function _refreshSysGrid(){
   const grid=document.getElementById('picker-grid'); if(!grid) return;
   const at = _pickCtx&&_pickCtx.acceptType||'helm';
+  if(window._sysFilterCat==='custom' && _pickCtx){
+    const libKey=_libraryKeyFor(_pickCtx.arrayKey);
+    const entries=_customLibrary[libKey]||[];
+    grid.innerHTML=entries.map(function(e){ return _libraryPickerCard(e,_pickCtx.arrayKey,_pickCtx.slotIdx); }).join('')||'<p style="font-size:11px;color:#4a7a9a;padding:8px;">No custom entries saved yet.</p>';
+    return;
+  }
   grid.innerHTML = buildSysGrid(at, window._sysFilterCat||'all', window._sysFilterTier||'all');
 }
 
