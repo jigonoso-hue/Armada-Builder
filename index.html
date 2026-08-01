@@ -7282,6 +7282,8 @@ const SHIP_ROOMS = [
    tip:"<b>Widow's Kiss Lab</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 2 workers · 28,000 gp · T2+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Refines Blackwater Toxin and Webvenom Doses together into a precision contact poison, meant for coating a single blade ahead of a specific, planned encounter rather than general combat use.<br>Output: 2 units per 7 days.<br>Supply Chain (passive): consumes 2 Blackwater Toxin, 2 Webvenom Doses, and 300 gp from the fleet's Treasury per cycle — scarcest one sets the pace.<br><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Widow's Kiss — 2,800 gp/unit · 5,600 gp/batch. Coated on a weapon ahead of time, not thrown. On the weapon's next hit, DC 18 Con save or the target is Poisoned and their speed is halved for 10 minutes. Deals no damage of its own.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Assassins' Guilds — pay +50% for this good.</span>"},
   {id:"levitation_distillery",name:"Levitation Distillery",cat:"production",catLabel:"⚗️ Production",sub:"Distills pressure oil and luminance vials into a drinkable levitation draught",cost:"40,000 gp",minTier:3,workers:3,buyer:"Wizards' Circles",
    tip:"<b>Levitation Distillery</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 3 workers · 40,000 gp · T3+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>Distills pressure oil and luminance vials into a drinkable version of true levitation — a real utility potion for boarding actions, ship-to-ship gaps, or getting off a sinking vessel.<br>Output: 2 units per 10 days.<br>Supply Chain (passive): consumes 1 Pressure Oil, 2 Luminance Vials, and 800 gp from the fleet's Treasury per cycle — scarcest one sets the pace.<br><div style='font-size:10px;color:#c8d8e8;margin-top:4px;'>Levitation Draught — 5,000 gp/unit · 10,000 gp/batch. Drunk as an action, grants the effect of the Levitation spell for 10 minutes. No concentration required, since it's a potion effect rather than a cast spell.</div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
+  {id:"clockwork_foundry",name:"Clockwork Foundry",cat:"production",catLabel:"⚗️ Production",sub:"An extraordinarily complex process animating a fully mechanical crew member",cost:"150,000 gp",minTier:4,workers:4,buyer:"Wizards' Circles",
+   tip:"<b>Clockwork Foundry</b><br><span style='color:#1A6B1A;font-size:10px;'>⚗️ Production · 4 workers · 150,000 gp · T4+</span><hr style='border:none;border-top:.5px solid #1e3a55;margin:4px 0 3px;'>The most complex process in the fleet, and the only one built entirely from already-refined materials — nothing here traces back to a raw good. A substantial quantity of Industrial Components forms the mechanical frame and structure, Voidglass Lens for genuine sight, Runic Warding Ink binds and stabilizes the animation, Reagent Concentrate provides the alchemical spark that actually brings it to life, and Refined Fuel keeps it running afterward rather than burning out after a single ignition. What comes out is not a tool or a weapon, but a fully mechanical crew member.<br>Output: 1 unit per 30 days.<br>Supply Chain (passive): consumes 10 Industrial Components, 2 Voidglass Lens, 2 Runic Warding Ink, 1 Reagent Concentrate, 2 Refined Fuel, and 10,000 gp from the fleet's Treasury per cycle — scarcest one sets the pace.<br><div style='margin-bottom:4px;margin-top:6px;'><b style='color:#c8961e;font-size:10px;'>🏪 Trade Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Clockwork Crew — 200,000 gp/unit</div></div><div style='margin-bottom:4px;'><b style='color:#40b0a0;font-size:10px;'>⚓ Crew Goods</b><div style='font-size:10px;color:#c8d8e8;margin-top:2px;padding-left:8px;'>Deploy immediately as a genuine crew member — added straight to the Crew Pool the moment it's used, no assignment step needed. Costs 200 gp/week in upkeep, deducted automatically alongside regular crew wages, as long as it remains active.</div></div><br><span style='color:#c8961e;font-size:10px;'>&#9733; Prime Buyers: Wizards' Circles — pay +50% for this good.</span>"},
 ];
 
 // Production rooms that produce a single raw/passive resource rather than a
@@ -7292,7 +7294,7 @@ const RAW_PROD_ROOMS=['brine_lab','clam_chamber','nutrient_processor','oil_derri
 // sync with CARGO_CONSUMING_ROOMS in simulateWeek(). Used purely to color
 // these rooms differently (purple) wherever they're displayed, so they
 // read as visually distinct from plain raw-material producers.
-const REFINERY_ROOM_IDS=['refined_fuel_cracking_still','gilded_table','salt_cure_house','wax_sealant_works','tanning_yard','ink_refinery','herbal_distillate_still','alchemical_reagent_concentrate','runic_warding_atelier','incendiary_munitions_works','captains_table','voidglass_lens_grinder','pearl_gold_jewelry_atelier','bespoke_armory','chartered_trade_license_office','ceremonial_regalia_workshop','chromatic_paints_workshop','luxury_leather_works','haute_couture_atelier','superior_healing_potion_distillery','pharmaceutical_works','depth_charge_foundry','distillery','sublime_distillery','military_components_works','bespoke_armorworks','fulmination_forge','brinesalt_works','tidewrack_distillery','widows_kiss_lab','levitation_distillery'];
+const REFINERY_ROOM_IDS=['refined_fuel_cracking_still','gilded_table','salt_cure_house','wax_sealant_works','tanning_yard','ink_refinery','herbal_distillate_still','alchemical_reagent_concentrate','runic_warding_atelier','incendiary_munitions_works','captains_table','voidglass_lens_grinder','pearl_gold_jewelry_atelier','bespoke_armory','chartered_trade_license_office','ceremonial_regalia_workshop','chromatic_paints_workshop','luxury_leather_works','haute_couture_atelier','superior_healing_potion_distillery','pharmaceutical_works','depth_charge_foundry','distillery','sublime_distillery','military_components_works','bespoke_armorworks','fulmination_forge','brinesalt_works','tidewrack_distillery','widows_kiss_lab','levitation_distillery','clockwork_foundry'];
 // Rooms whose good is a genuine combat consumable (thrown, loaded, or drunk
 // for an immediate effect) rather than a plain sale good — flagged with a
 // glittering asterisk in the Trade Goods tab so they read as distinct from
@@ -7336,6 +7338,7 @@ const CARGO_CONSUMING_ROOMS={
   tidewrack_distillery:{inputs:[{item:'Elemental Essence Vial',qty:2},{item:'Herbal Distillate',qty:2},{item:'__gold__',qty:500}]},
   widows_kiss_lab:{inputs:[{item:'Blackwater Toxin',qty:2},{item:'Webvenom Doses',qty:2},{item:'__gold__',qty:300}]},
   levitation_distillery:{inputs:[{item:'Pressure Oil',qty:1},{item:'Luminance Vials',qty:2},{item:'__gold__',qty:800}]},
+  clockwork_foundry:{inputs:[{item:'Industrial Components',qty:10},{item:'Voidglass Lens',qty:2},{item:'Runic Warding Ink',qty:2},{item:'Reagent Concentrate',qty:1},{item:'Refined Fuel',qty:2},{item:'__gold__',qty:10000}]},
   chartered_trade_license_office:{inputs:[{item:'Nautical Charts',qty:3},{item:'Luxury Provisions',qty:2},{item:'__gold__',qty:1000}]},
   ceremonial_regalia_workshop:{inputs:[{item:'Coral Pigment Vials',qty:2},{item:'Bioluminescent Ink',qty:2},{item:'Spiced Cacao Bricks',qty:2}]},
   chromatic_paints_workshop:{inputs:[{item:'Luminance Vials',qty:2},{item:'Coral Pigment Vials',qty:2},{item:'Refined Fuel',qty:1}]},
@@ -8249,6 +8252,7 @@ function buildProdInfo(roomId, mode, inst){
     tidewrack_distillery:{raw:true,item:'Tidewrack Draught',output:'3 units per 8 days',value:'1,800 gp/unit · 5,400 gp/batch. Drunk, element chosen on consumption — resistance to that damage type for 1 hour. The drinker also does not need to make Constitution saves to maintain concentration from damage of that type specifically.'},
     widows_kiss_lab:{raw:true,item:"Widow's Kiss",output:'2 units per 7 days',value:'2,800 gp/unit · 5,600 gp/batch. Coated on a weapon ahead of time, not thrown. On the weapon\'s next hit, DC 18 Con save or the target is Poisoned and their speed is halved for 10 minutes. Deals no damage of its own.'},
     levitation_distillery:{raw:true,item:'Levitation Draught',output:'2 units per 10 days',value:'5,000 gp/unit · 10,000 gp/batch. Drunk as an action, grants the effect of the Levitation spell for 10 minutes. No concentration required, since it\'s a potion effect rather than a cast spell.'},
+    clockwork_foundry:{item:'Clockwork Crew',output:'1 unit per 30 days',trade:'200,000 gp/unit',crew:'Deploy immediately as a genuine crew member — added straight to the Crew Pool the moment it\'s used, no assignment step needed. Costs 200 gp/week in upkeep, deducted automatically alongside regular crew wages, as long as it remains active.'},
     bespoke_armorworks:{item:'+3 Armor (any type)',output:'1 unit per 21 days',trade:'50,000 gp/unit',crew:'Equips one crew member, chosen by the captain, with a genuine +3 armor of any type: +3 AC, permanent. Made to Order trait: choose one damage type (any except psychic) to gain resistance to while worn.'},
     apiary:{
       item:'Sea-Blossom Mead',
@@ -10371,6 +10375,7 @@ function getProdData(roomId){
     tidewrack_distillery:{raw:true,item:'Tidewrack Draught',output:'3 units per 8 days',value:'1,800 gp/unit · 5,400 gp/batch. Drunk, element chosen on consumption — resistance to that damage type for 1 hour. The drinker also does not need to make Constitution saves to maintain concentration from damage of that type specifically.'},
     widows_kiss_lab:{raw:true,item:"Widow's Kiss",output:'2 units per 7 days',value:'2,800 gp/unit · 5,600 gp/batch. Coated on a weapon ahead of time, not thrown. On the weapon\'s next hit, DC 18 Con save or the target is Poisoned and their speed is halved for 10 minutes. Deals no damage of its own.'},
     levitation_distillery:{raw:true,item:'Levitation Draught',output:'2 units per 10 days',value:'5,000 gp/unit · 10,000 gp/batch. Drunk as an action, grants the effect of the Levitation spell for 10 minutes. No concentration required, since it\'s a potion effect rather than a cast spell.'},
+    clockwork_foundry:{item:'Clockwork Crew',output:'1 unit per 30 days',trade:'200,000 gp/unit',crew:'Deploy immediately as a genuine crew member — added straight to the Crew Pool the moment it\'s used, no assignment step needed. Costs 200 gp/week in upkeep, deducted automatically alongside regular crew wages, as long as it remains active.'},
     bespoke_armorworks:{item:'+3 Armor (any type)',output:'1 unit per 21 days',trade:'50,000 gp/unit',crew:'Equips one crew member, chosen by the captain, with a genuine +3 armor of any type: +3 AC, permanent. Made to Order trait: choose one damage type (any except psychic) to gain resistance to while worn.'},
     apiary:{item:'Sea-Blossom Mead',output:'6 bottles per 4 days',trade:'22 gp/bottle · 132 gp/batch',crew:'Advantage on saves vs poison for 1 hour. Each bottle counts as 1 ration.'},
     brine_lab:{item:'Raw Brine Salt',output:'1 barrel per 30 days · 40 units per barrel',value:'200 gp/unit · 8,000 gp/barrel',raw:true},
@@ -10923,6 +10928,20 @@ function confirmCargoAdjust(itemName){
   closeModal();
   renderTradeModal();
 }
+// Deploying a Clockwork Crew unit is immediate — no confirm step, no name
+// entry — it consumes one from cargo and adds a real entry to the global
+// Crew Pool right away. Uses the star-crew salary field so its 200 gp/week
+// upkeep is automatically picked up by the existing wage deduction in
+// simulateWeek(), the same system real crew salaries already run through.
+function deployClockworkCrew(){
+  const entry=_ledger.cargo['Clockwork Crew'];
+  if(!entry||entry.qty<=0) return;
+  entry.qty-=1;
+  const id=(_crewSeq=(_crewSeq||0)+1);
+  globalCrew.push({id:'clockwork-'+id,type:'star',name:'Clockwork Crew',salary:200,isConstruct:true});
+  _ledger.log.unshift({type:'cargo_adjust',day:_ledger.day,item:'Clockwork Crew',mode:'remove',amount:1,note:'Deployed to Crew Pool — now drawing 200 gp/week upkeep'});
+  renderTradeModal();
+}
 
 let _tradeModalTab='cargo';
 function switchTradeTab(tab){
@@ -11147,13 +11166,16 @@ function renderCargoTab(body){
     const total=c.qty*c.unitPrice;
     grandTotal+=total;
     const isConsumable=COMBAT_CONSUMABLE_ROOM_IDS.indexOf(c.roomId)!==-1;
-    const star=isConsumable?'<span class="consumable-star" style="cursor:pointer;" onclick="openAdjustCargoModal(\''+item.replace(/'/g,"\\'")+'\')" onmouseenter="showGoodTip(event,\''+item.replace(/'/g,"\\'")+'\')" onmouseleave="hideRoomTip()">&#10022;</span>':'';
+    const isClockworkCrew=item==='Clockwork Crew';
+    const star=(isConsumable&&!isClockworkCrew)?'<span class="consumable-star" style="cursor:pointer;" onclick="openAdjustCargoModal(\''+item.replace(/'/g,"\\'")+'\')" onmouseenter="showGoodTip(event,\''+item.replace(/'/g,"\\'")+'\')" onmouseleave="hideRoomTip()">&#10022;</span>':'';
     html+='<div style="border:.5px solid #2a4a1a;border-radius:8px;padding:9px 12px;margin-bottom:8px;background:#0a1606;display:flex;align-items:center;justify-content:space-between;">'
       +'<div>'
         +'<div style="font-size:12px;font-weight:500;color:#c0d890;">'+item+star+'</div>'
         +'<div style="font-size:10px;color:#6a9a50;margin-top:2px;">'+c.qty.toLocaleString()+' units'+(c.unitPrice?' · '+c.unitPrice.toLocaleString()+' gp/unit':'')+'</div>'
       +'</div>'
-      +'<div style="font-size:12px;font-weight:600;color:#c8961e;text-align:right;">'+(total?total.toLocaleString()+' gp':'—')+'</div>'
+      +(isClockworkCrew
+        ? '<button class="btn btn-gold" onclick="deployClockworkCrew()" style="font-size:10px;padding:5px 10px;"><i class="ti ti-robot" aria-hidden="true"></i> Deploy to Crew Pool</button>'
+        : '<div style="font-size:12px;font-weight:600;color:#c8961e;text-align:right;">'+(total?total.toLocaleString()+' gp':'—')+'</div>')
     +'</div>';
   });
   html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:.5px solid #1a3a55;">'
@@ -12011,6 +12033,7 @@ function openBrineRules(){
       +_brineEntryHtml('brine-salt','Brine Salt','Raw crystal — used directly, or refined into Brineblood Tonic',_BRINE_SALT_RULES)
       +_brineEntryHtml('brineblood-tonic','Brineblood Tonic','Distilled and stabilized — same enhancement, plus passive healing, still capped at 4',_BRINEBLOOD_TONIC_RULES)
       +_brineEntryHtml('blue-sublime','Blue Sublime','Highly addictive, extraordinarily powerful — refined from Brineblood Tonic and Pharmaceuticals',_BLUE_SUBLIME_RULES)
+      +_brineEntryHtml('brinesalt-powder','Brinesalt Powder','A cheaper synthetic cut with real Brine Salt — a common substitute among addicts who can\'t always afford the real thing',_BRINESALT_POWDER_RULES)
     +'</div>'
   +'</div>');
   var bd=document.getElementById('modal-backdrop');
@@ -12087,6 +12110,10 @@ const _BLUE_SUBLIME_RULES="<p>A pale blue, viscous elixir distilled by combining
   +"<p>After 21 consecutive days of detox, the craving ends and all accumulated roll penalties drop to zero immediately.</p>"
   +"<p>Wish ends the craving and clears all penalties instantly at any point during detox.</p>"
   +"<p>Greater Restoration requires a DC 16 Constitution saving throw. On a success, the accumulated penalty is reduced by 1 point. If repeated castings reduce the penalty to zero, the creature is fully detoxed and the craving ends.</p>";
+const _BRINESALT_POWDER_RULES="<p>Ground and cut from real Brine Salt, stretched much further with cheap filler ingredients rather than sold in its raw crystal form. Used by Brine Salt addicts as a cheaper synthetic substitute, when the real crystal is too expensive, too scarce, or simply not available, this is what a habit falls back on.</p>"
+  +"<p>Applied directly, food, drink, or contact, no attack roll needed. The target makes a DC 17 Constitution saving throw or suffers Brine Sickness: disadvantage on all d20 rolls for 1 hour.</p>"
+  +"<p>A failed save also carries a small chance of a mild, involuntary Salt Crash echo once the hour wears off, a faint shadow of the real thing's crash rather than the full effect, but still unpleasant.</p>"
+  +"<p>Unlike raw Brine Salt, Brinesalt Powder does not carry Depth Equalization, and it grants no Brine Surge enhancement at all, it exists purely as a means of poisoning someone, not empowering them. For an addict, using it to satisfy Brine Addiction's daily requirement works exactly like a real dose would.</p>";
 function openCombatRules(){
 
   showModal('<div class="modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;max-width:100vw;display:flex;flex-direction:column;padding:0;overflow:hidden;border-radius:0;border:none;">'
